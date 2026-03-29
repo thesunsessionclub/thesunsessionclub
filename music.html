@@ -1,0 +1,430 @@
+﻿<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<script>
+(function(){
+  const explicit = (window.SUNSESH_API || '').trim();
+ const currentPort = String(location.port || '');
+ const hasLikelyDevPort = !!currentPort && !['80', '443', '4000'].includes(currentPort);
+ const isLanIp = /^\d{1,3}(?:\.\d{1,3}){3}$/.test(location.hostname);
+ const preferLocalApi = isLanIp || location.hostname === 'localhost' || location.hostname === '127.0.0.1' || hasLikelyDevPort;
+  const origin = (location.origin && location.origin !== 'null') ? location.origin : '';
+ const base = explicit || (preferLocalApi ? (location.protocol + '//' + location.hostname + ':4000') : origin);
+  window.__SUNSESH_API_BASE = String(base || '').replace(/\/$/, '');
+})();
+</script>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lanzamientos Musicales  Sun Session Club</title>
+  <link href="assets/css/site.css?v=20260329-01" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script>tailwind.config={theme:{extend:{colors:{primary:'#006400',secondary:'#00FFAA'},borderRadius:{'button':'8px'}}}}</script>
+<style>
+.rounded-button{border-radius:8px}
+.card-hover{transition:all .3s cubic-bezier(0.175,0.885,0.32,1.275)}
+.card-hover:hover{transform:translateY(-6px);box-shadow:0 10px 24px rgba(0,100,0,.35)}
+.chip{border:1px solid rgba(255,255,255,.15);border-radius:9999px;padding:.15rem .5rem;font-size:.7rem;color:#bbb}
+.chip-dark{background:#141414}
+.badge{background:#DAA520;color:#000;border-radius:9999px;padding:.2rem .5rem;font-weight:700;font-size:.75rem}
+.music-hero{
+--ssc-hero-image: url('https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=1800&q=80');
+--ssc-hero-position: center 32%;
+}
+body{font-family:'Montserrat',sans-serif}
+</style>
+</head>
+<body class="bg-black text-white">
+<nav class="ssc-nav bg-black sticky top-0 z-50 border-b border-white/10">
+<div class="container mx-auto px-6 py-4 grid grid-cols-3 items-center">
+<div class="flex items-center space-x-3">
+<a href="sunsessionesp_fixed_v3.html" class="text-white hover:text-primary flex items-center space-x-2"><i class="ri-arrow-left-line"></i><span class="text-sm">Volver al inicio</span></a>
+<img src="/assets/img/logo.jpg" alt="The Sun Session Club Logo" class="h-12 ml-4 object-contain">
+</div>
+<ul class="hidden md:flex justify-center space-x-6">
+<li><a href="sunsessionesp_fixed_v3.html" class="text-white hover:text-primary uppercase text-sm">Inicio</a></li>
+<li><a href="artistas_sunsssesion.html" class="text-white hover:text-primary uppercase text-sm">Artistas</a></li>
+<li><a href="sunsessionesp_fixed_v3.html#events" class="text-white hover:text-primary uppercase text-sm">Eventos</a></li>
+<li><a href="music.html" class="text-primary uppercase text-sm font-bold">Música</a></li>
+<li><a href="videos.html" class="text-white hover:text-primary uppercase text sm">Videos</a></li>
+<li><a href="sunsessionesp_fixed_v3.html#about" class="text-white hover:text-primary uppercase text-sm">Nosotros</a></li>
+<li><a href="gallery.html" class="text-white hover:text-primary uppercase text-sm">Galería</a></li>
+          <li><a href="sunsessionesp_fixed_v3.html#merch" class="text-white hover:text-primary uppercase text-sm">MERCH</a></li>
+<li><a href="sunsessionesp_fixed_v3.html#contact" class="text-white hover:text-primary uppercase text-sm">Contacto</a></li>
+</ul>
+<div class="flex justify-end items-center space-x-3">
+<button onclick="openCart()" class="bg-white bg-opacity-10 hover:bg-opacity-20 text-white font-medium py-2 px-3 rounded-button shadow-soft flex items-center space-x-2"><i class="ri-shopping-cart-line"></i><span>Carrito</span></button>
+<a href="login.html" class="bg-primary hover:bg-opacity-90 text-black font-bold py-2 px-4 rounded-button whitespace-nowrap">INICIAR SESIÓN</a>
+</div>
+</div>
+</nav>
+<header class="ssc-page-hero music-hero" data-parallax="0.13" data-parallax-mode="bg">
+<div class="container mx-auto px-6">
+<h1 class="text-4xl md:text-5xl font-extrabold">LANZAMIENTOS MUSICALES</h1>
+<p class="text-white/70 mt-3">Sets crudos, presión underground y cero relleno. Solo tracks para quienes sí entienden la vibra.</p>
+</div>
+</header>
+<section class="ssc-section">
+<div class="container mx-auto px-6">
+<div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+<div class="md:col-span-2"><input id="searchTracks" type="text" class="w-full px-4 py-3 bg-[#121212] border border-white/10 rounded-button" placeholder="Buscar tracks, artistas o géneros"></div>
+<div class="flex space-x-3 justify-end"><button id="gridMode" class="bg-primary text-black font-bold px-3 py-2 rounded-button">Cuadrícula</button><button id="listMode" class="bg-white/10 text-white px-3 py-2 rounded-button">Lista</button><select id="sortMusic" class="bg-[#121212] border border-white/10 rounded-button px-2"><option value="recent">Más recientes</option><option value="oldest">Más antiguas</option></select></div>
+</div>
+<div id="tracksGrid" class="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+</div>
+</section>
+<section class="py-14 bg-[#0f0f0f] border-t border-white/10">
+<div class="container mx-auto px-6">
+<div class="flex items-end justify-between">
+<div>
+<h2 class="text-3xl font-extrabold">Vinilos</h2>
+<p class="text-white/70 mt-2">Lanzamientos físicos exclusivos disponibles para coleccionistas.</p>
+</div>
+<div class="text-white/60 text-sm">Filtros</div>
+</div>
+<div id="vinylGrid" class="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+</div>
+</section>
+<div id="cartModal" class="fixed inset-0 bg-black/50 z-50 hidden">
+<div id="cartContent" class="absolute right-0 top-0 h-full w-full sm:w-[420px] bg-white rounded-l-lg p-6 transform translate-x-full transition-transform">
+<div class="flex justify-between items-center mb-4"><h3 class="text-xl font-bold">Tu Carrito</h3><button onclick="closeCart()" class="text-gray-700 hover:text-black"><i class="ri-close-line text-2xl"></i></button></div>
+<div id="cartItems" class="space-y-3"></div>
+<div class="mt-6 flex justify-between items-center"><span class="font-bold">Total:</span><span id="cartTotal" class="text-xl font-extrabold">$0.00</span></div>
+<div class="mt-6 space-y-3"><a href="sunsessionesp_fixed_v3.html#merch" class="block text-center bg-primary text-black font-bold py-3 rounded-button">Pagar en Tienda</a><button onclick="closeCart()" class="w-full border border-gray-300 text-gray-700 py-3 rounded-button">Seguir navegando</button></div>
+</div>
+</div>
+<footer class="bg-black text-white py-16">
+<div class="container mx-auto px-6">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+<div><img src="/assets/img/logo.jpg" alt="The Sun Session Club Logo" class="h-16 mb-6 object-contain"><p class="text-gray-400 mb-6">The Sun Session Club es un punto de encuentro para la cultura electrónica en Mexicali. Descubre lanzamientos, sets y ediciones especiales.</p><div class="flex space-x-4"><a href="#" class="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-primary transition-colors"><i class="ri-facebook-fill text-xl"></i></a><a href="#" class="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-primary transition-colors"><i class="ri-instagram-fill text-xl"></i></a><a href="#" class="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-primary transition-colors"><i class="ri-twitter-fill text-xl"></i></a><a href="#" class="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-primary transition-colors"><i class="ri-youtube-fill text-xl"></i></a></div></div>
+<div><h3 class="text-xl font-bold mb-6">Enlaces Rápidos</h3><ul class="space-y-3"><li><a href="artistas_sunsssesion.html" class="text-gray-400 hover:text-primary transition-colors">Artistas</a></li><li><a href="sunsessionesp_fixed_v3.html#events" class="text-gray-400 hover:text-primary transition-colors">Eventos</a></li><li><a href="music.html" class="text-gray-400 hover:text-primary transition-colors">Música</a></li><li><a href="sunsessionesp_fixed_v3.html#about" class="text-gray-400 hover:text-primary transition-colors">Nosotros</a></li><li><a href="gallery.html" class="text-gray-400 hover:text-primary transition-colors">Galería</a></li><li><a href="sunsessionesp_fixed_v3.html#contact" class="text-gray-400 hover:text-primary transition-colors">Contacto</a></li></ul></div>
+<div><h3 class="text-xl font-bold mb-6">Información de Contacto</h3><ul class="space-y-3"><li class="flex items-start space-x-3"><div class="w-5 h-5 flex items-center justify-center text-primary mt-1"><i class="ri-map-pin-line"></i></div><span class="text-gray-400">Mexicali B.C.</span></li><li class="flex items-start space-x-3"><div class="w-5 h-5 flex items-center justify-center text-primary mt-1"><i class="ri-mail-line"></i></div><span class="text-gray-400">thesunsessionclub@gmail.com</span></li><li class="flex items-start space-x-3"><div class="w-5 h-5 flex items-center justify-center text-primary mt-1"><i class="ri-phone-line"></i></div><span class="text-gray-400">+1 (686) 109-5015</span></li></ul></div>
+<div><h3 class="text-xl font-bold mb-6">Noticias</h3><p class="text-gray-400 mb-4">Suscríbete para recibir de primera mano los próximos eventos y ofertas especiales.</p><form class="space-y-4"><div class="relative"><input type="email" placeholder="Tu correo electrónico" class="w-full px-4 py-3 bg-gray-800 border-none rounded text-white focus:outline-none focus:ring-2 focus:ring-primary"></div><div class="flex items-center"><input type="checkbox" id="footer-consent-music" class="custom-checkbox mr-3"><label for="footer-consent-music" class="text-gray-400 text-sm">Acepto recibir correos electrónicos promocionales</label></div><button type="submit" class="bg-primary hover:bg-opacity-90 text-black font-bold py-3 px-6 rounded-button w-full transition-all">SUSCRIBIRSE</button></form></div>
+</div>
+<div class="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center"><p class="text-gray-500 text-sm mb-4 md:mb-0"> 2025 The Sun Session Club. Todos los derechos reservados.</p><div class="flex items-center space-x-6"><a href="privacy.html" class="text-gray-500 hover:text-primary text-sm transition-colors">Política de privacidad</a><a href="terms.html" class="text-gray-500 hover:text-primary text-sm transition-colors">Términos y condiciones</a><a href="#" class="text-gray-500 hover:text-primary text-sm transition-colors">Política de cookies</a><a href="login.html" class="hidden text-gray-500 hover:text-primary transition-colors flex items-center" title="Iniciar sesión"><i class="ri-user-3-line text-lg"></i></a></div></div>
+</div>
+</footer>
+<script>
+const STORE_KEY='ssc_store_v1';
+let tracks=[];
+let vinyls=[];
+let cart=JSON.parse(localStorage.getItem('ssc_cart')||'[]');
+
+const searchTracks=document.getElementById('searchTracks');
+const sortMusic=document.getElementById('sortMusic');
+const gridModeBtn=document.getElementById('gridMode');
+const listModeBtn=document.getElementById('listMode');
+const tracksGrid=document.getElementById('tracksGrid');
+const vinylGrid=document.getElementById('vinylGrid');
+let musicMode='grid';
+
+function parseTrackLinks(raw){
+  const out={spotify:'',soundcloud:'',youtube:'',genre:'',genres:[]};
+  if(raw&&typeof raw==='object'){
+    out.spotify=String(raw.spotify||'').trim();
+    out.soundcloud=String(raw.soundcloud||'').trim();
+    out.youtube=String(raw.youtube||'').trim();
+    out.genre=String(raw.genre||'').trim();
+    out.genres=Array.isArray(raw.genres)?raw.genres.map(x=>String(x||'').trim()).filter(Boolean):[];
+    return out;
+  }
+  const txt=String(raw||'').trim();
+  if(!txt)return out;
+  try{
+    const obj=JSON.parse(txt);
+    if(obj&&typeof obj==='object')return parseTrackLinks(obj);
+  }catch{}
+  txt.split(',').map(x=>x.trim()).filter(Boolean).forEach(url=>{
+    const l=url.toLowerCase();
+    if(!out.spotify&&l.includes('spotify.com'))out.spotify=url;
+    else if(!out.soundcloud&&l.includes('soundcloud.com'))out.soundcloud=url;
+    else if(!out.youtube&&(l.includes('youtube.com')||l.includes('youtu.be')))out.youtube=url;
+  });
+  if(!out.spotify&&!out.soundcloud&&!out.youtube&&txt)out.spotify=txt;
+  return out;
+}
+function parseVinylMeta(description){
+  const fallback={genre:'',edition:'',tracklist:[]};
+  const txt=String(description||'').trim();
+  if(!txt)return fallback;
+  try{
+    const obj=JSON.parse(txt);
+    if(obj&&typeof obj==='object'){
+      return {
+        genre:String(obj.genre||'').trim(),
+        edition:String(obj.edition||'').trim(),
+        tracklist:Array.isArray(obj.tracklist)?obj.tracklist.map(x=>String(x||'').trim()).filter(Boolean):[]
+      };
+    }
+  }catch{}
+  const m=/G[e?]nero:\s*(.*)$/i.exec(txt);
+  return {genre:m?String(m[1]||'').trim():'',edition:'',tracklist:[]};
+}
+function normalizeTrackFromApi(x){
+  const links=parseTrackLinks(x.platform_links||'');
+  const genres=Array.isArray(links.genres)&&links.genres.length?links.genres:String(links.genre||'').split(',').map(s=>s.trim()).filter(Boolean);
+  return {
+    id:x.id,
+    title:x.title||'',
+    artist:x.artist_id||'',
+    genre:genres,
+    cover:x.cover_image||'',
+    spotifyLink:links.spotify||'',
+    soundcloudLink:links.soundcloud||'',
+    youtubeLink:links.youtube||'',
+    status:x.status||'ACTIVE',
+    createdAt:x.createdAt||''
+  };
+}
+function normalizeTrackFromStore(x){
+  const links=parseTrackLinks(x.platform_links||{spotify:x.spotifyLink,soundcloud:x.soundcloudLink,youtube:x.youtubeLink,genre:Array.isArray(x.genre)?x.genre.join(', '):x.genre,genres:Array.isArray(x.genre)?x.genre:[]});
+  const genres=Array.isArray(x.genre)?x.genre:String(links.genre||'').split(',').map(s=>s.trim()).filter(Boolean);
+  return {
+    id:x.id||'',
+    title:x.title||'',
+    artist:x.artist||x.artist_id||'',
+    genre:genres,
+    cover:x.cover||x.cover_image||'',
+    spotifyLink:links.spotify||'',
+    soundcloudLink:links.soundcloud||'',
+    youtubeLink:links.youtube||'',
+    status:x.status||'ACTIVE',
+    createdAt:x.createdAt||''
+  };
+}
+function normalizeVinylFromApi(x){
+  const meta=parseVinylMeta(x.description||'');
+  return {
+    id:x.id,
+    title:x.title||'',
+    artist:x.artist||'',
+    year:(x.release_date?new Date(x.release_date).getFullYear():''),
+    genre:meta.genre||'',
+    edition:meta.edition||'',
+    tracklist:meta.tracklist||[],
+    price:Number(x.price||0),
+    stock:Number(x.stock||0),
+    images:[x.cover_image].filter(Boolean),
+    status:x.status||'ACTIVE'
+  };
+}
+function normalizeVinylFromStore(x){
+  return {
+    id:x.id||'',
+    title:x.title||'',
+    artist:x.artist||'',
+    year:x.year||'',
+    genre:x.genre||'',
+    edition:x.edition||'',
+    tracklist:Array.isArray(x.tracklist)?x.tracklist:[],
+    price:Number(x.price||0),
+    stock:Number(x.stock||0),
+    images:Array.isArray(x.images)?x.images:[x.cover_image].filter(Boolean),
+    status:x.status||'ACTIVE'
+  };
+}
+
+function renderTracks(){
+  let list=[...tracks].filter(t=>String(t.status||'ACTIVE').toLowerCase()==='active');
+  const q=(searchTracks.value||'').toLowerCase();
+  if(q){
+    list=list.filter(t=>
+      String(t.title||'').toLowerCase().includes(q)||
+      String(t.artist||'').toLowerCase().includes(q)||
+      (Array.isArray(t.genre)?t.genre.join(' '):'').toLowerCase().includes(q)
+    );
+  }
+  list.sort((a,b)=>{
+    if(sortMusic.value==='oldest')return String(a.createdAt||'').localeCompare(String(b.createdAt||''));
+    return String(b.createdAt||'').localeCompare(String(a.createdAt||''));
+  });
+  tracksGrid.className=musicMode==='grid'?'mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6':'mt-8 grid grid-cols-1 gap-4';
+  tracksGrid.innerHTML='';
+  list.forEach(t=>{
+    const genres=(Array.isArray(t.genre)?t.genre:[]);
+    const card=document.createElement('div');
+    card.className='card-hover bg-[#141414] rounded-lg overflow-hidden border border-white/10';
+    const cover=t.cover||'https://placehold.co/600x600?text=NO+COVER';
+    const links=[
+      t.spotifyLink?`<a href="${t.spotifyLink}" target="_blank" class="border border-white/20 text-white rounded-button px-2 py-2 text-sm hover:border-primary hover:text-primary flex items-center justify-center space-x-1"><i class="ri-spotify-line"></i><span>Spotify</span></a>`:'',
+t.soundcloudLink?`<a href="${t.soundcloudLink}" target="_blank" class="border border-white/20 text-white rounded-button px-2 py-2 text-sm hover:border-primary hover:text-primary flex items-center justify-center space-x-1"><i class="ri-soundcloud-line"></i><span>Plataformas de streaming</span></a>`:'',
+      t.youtubeLink?`<a href="${t.youtubeLink}" target="_blank" class="border border-white/20 text-white rounded-button px-2 py-2 text-sm hover:border-primary hover:text-primary flex items-center justify-center space-x-1"><i class="ri-youtube-line"></i><span>YouTube</span></a>`:''
+    ].filter(Boolean).join('');
+    card.innerHTML=`<div class="${musicMode==='grid'?'h-48':'h-56'} overflow-hidden"><img src="${cover}" alt="${t.title||''}" class="w-full h-full object-cover"></div><div class="p-4"><h3 class="text-xl font-bold">${t.title||''}</h3><p class="text-white/60">${t.artist||''}</p><div class="mt-3 flex flex-wrap gap-2">${genres.map(g=>'<span class="chip chip-dark">'+g+'</span>').join('')}</div><div class="mt-4 ${musicMode==='grid'?'grid grid-cols-1 gap-2':'grid grid-cols-1 md:grid-cols-3 gap-2'}">${links||'<span class="text-white/50 text-sm">Sin links</span>'}</div></div>`;
+    tracksGrid.appendChild(card);
+  });
+  if(window.sscRefreshReveals)window.sscRefreshReveals();
+}
+
+function renderVinyls(){
+  const list=[...vinyls].filter(v=>String(v.status||'ACTIVE').toLowerCase()==='active');
+  vinylGrid.innerHTML='';
+  list.forEach(v=>{
+    const limited=v.stock>0&&v.stock<=5;
+    const cover=((v.images||[])[0]||'https://placehold.co/600x600?text=NO+COVER');
+    const stockText=v.stock>0?`${v.stock} en stock`:'Sin stock';
+    const card=document.createElement('div');
+    card.className='card-hover bg-[#141414] rounded-lg overflow-hidden border border-white/10';
+    card.innerHTML=`<div class="h-60 overflow-hidden"><img src="${cover}" alt="${v.title||''}" class="w-full h-full object-cover"></div><div class="p-5 text-white"><div class="flex items-center justify-between"><h3 class="text-xl font-bold">${v.title||''}</h3>${limited?'<span class="badge">Limitado</span>':''}</div><p class="text-white/80">${(v.artist||'')+'  '+(v.year||'')}</p><div class="mt-2 text-white/70 text-sm">${(v.genre||'')+(v.edition?('  '+v.edition):'')}</div><div class="mt-4 flex items-center justify-between"><span class="text-2xl font-extrabold">${Number(v.price||0).toFixed(2)}</span><span class="text-white/70 text-sm">${stockText}</span></div><div class="mt-4 grid grid-cols-2 gap-3"><a href="vinyl.html?id=${v.id||''}" class="border border-white/20 text-white rounded-button px-3 py-2 text-sm hover:border-primary hover:text-primary text-center">Ver detalles</a><button ${v.stock>0?'':'disabled'} class="bg-primary text-black font-bold px-3 py-2 rounded-button disabled:opacity-50">AGREGAR AL CARRITO</button></div></div>`;
+    const btn=card.querySelector('button');
+    if(btn){btn.onclick=()=>{if(v.stock>0)addVinylToCart(v.title,Number(v.price||0))}};
+    vinylGrid.appendChild(card);
+  });
+  if(window.sscRefreshReveals)window.sscRefreshReveals();
+}
+
+function updateCart(){
+  const items=document.getElementById('cartItems');
+  const total=document.getElementById('cartTotal');
+  items.innerHTML='';
+  cart.forEach((it,idx)=>{
+    const row=document.createElement('div');
+    row.className='flex justify-between items-center p-3 bg-gray-50 rounded';
+    row.innerHTML=`<span>${it.item}</span><div class="flex items-center space-x-4"><span>${Number(it.price||0).toFixed(2)}</span><button onclick="removeFromCart(${idx})" class="text-red-500 hover:text-red-700"><i class="ri-delete-bin-line"></i></button></div>`;
+    items.appendChild(row);
+  });
+  total.textContent=`${cart.reduce((s,i)=>s+Number(i.price||0),0).toFixed(2)}`;
+}
+function addVinylToCart(name,price){
+  cart.push({item:name,price:Number(price||0)});
+  localStorage.setItem('ssc_cart',JSON.stringify(cart));
+  updateCart();
+  openCart();
+}
+function removeFromCart(i){
+  cart.splice(i,1);
+  localStorage.setItem('ssc_cart',JSON.stringify(cart));
+  updateCart();
+}
+function openCart(){
+  const overlay=document.getElementById('cartModal');
+  const content=document.getElementById('cartContent');
+  overlay.classList.remove('hidden');
+  requestAnimationFrame(()=>{content.classList.remove('translate-x-full');content.classList.add('translate-x-0')});
+}
+function closeCart(){
+  const overlay=document.getElementById('cartModal');
+  const content=document.getElementById('cartContent');
+  content.classList.add('translate-x-full');
+  content.classList.remove('translate-x-0');
+  setTimeout(()=>overlay.classList.add('hidden'),300);
+}
+window.openCart=openCart;
+window.closeCart=closeCart;
+window.removeFromCart=removeFromCart;
+
+function setMusicMode(mode){
+  musicMode=mode==='list'?'list':'grid';
+  gridModeBtn.className=musicMode==='grid'?'bg-primary text-black font-bold px-3 py-2 rounded-button':'bg-white/10 text-white px-3 py-2 rounded-button';
+  listModeBtn.className=musicMode==='list'?'bg-primary text-black font-bold px-3 py-2 rounded-button':'bg-white/10 text-white px-3 py-2 rounded-button';
+  renderTracks();
+}
+
+function applySettings(){
+  fetch(window.__SUNSESH_API_BASE + '/api/settings',{headers:{'Cache-Control':'no-cache'},cache:'no-store'})
+    .then(r=>r.json())
+    .then(s=>{
+      const styleId='dynamic-theme';
+      let style=document.getElementById(styleId);
+      if(!style){style=document.createElement('style');style.id=styleId;document.head.appendChild(style)}
+      style.textContent=`:root{--primary:${s.primary_color||'#006400'};--secondary:${s.secondary_color||'#00FFAA'};--bg:${s.background_color||'#0b1e14'};--card:${s.card_background||'#0d1b13'};--text:${s.global_text_color||'#ffffff'};--font:${s.font_family||"'Montserrat',sans-serif"}} body{background:var(--bg)!important;color:var(--text)!important;font-family:var(--font)!important}`;
+    }).catch(()=>{});
+}
+
+async function loadMusic(){
+  try{
+    const res=await fetch(window.__SUNSESH_API_BASE + '/api/music',{headers:{'Cache-Control':'no-cache'},cache:'no-store'});
+    const data=await res.json();
+    if(Array.isArray(data)){
+      tracks=data.map(normalizeTrackFromApi);
+      try{
+        const s=JSON.parse(localStorage.getItem(STORE_KEY)||'{}');
+        s.tracks=tracks;
+        localStorage.setItem(STORE_KEY,JSON.stringify(s));
+      }catch{}
+      renderTracks();
+      return;
+    }
+  }catch{}
+  try{
+    const s=JSON.parse(localStorage.getItem(STORE_KEY)||'{}');
+    tracks=Array.isArray(s.tracks)?s.tracks.map(normalizeTrackFromStore):[];
+  }catch{tracks=[]}
+  renderTracks();
+}
+async function loadVinyl(){
+  try{
+    const res=await fetch(window.__SUNSESH_API_BASE + '/api/vinyl',{headers:{'Cache-Control':'no-cache'},cache:'no-store'});
+    const data=await res.json();
+    if(Array.isArray(data)){
+      vinyls=data.map(normalizeVinylFromApi);
+      try{
+        const s=JSON.parse(localStorage.getItem(STORE_KEY)||'{}');
+        s.vinyl=vinyls;
+        localStorage.setItem(STORE_KEY,JSON.stringify(s));
+      }catch{}
+      renderVinyls();
+      return;
+    }
+  }catch{}
+  try{
+    const s=JSON.parse(localStorage.getItem(STORE_KEY)||'{}');
+    vinyls=Array.isArray(s.vinyl)?s.vinyl.map(normalizeVinylFromStore):[];
+  }catch{vinyls=[]}
+  renderVinyls();
+}
+
+window.addEventListener('storage',function(ev){
+  if(ev.key!==STORE_KEY)return;
+  try{
+    const s=JSON.parse(ev.newValue||'{}');
+    tracks=Array.isArray(s.tracks)?s.tracks.map(normalizeTrackFromStore):tracks;
+    vinyls=Array.isArray(s.vinyl)?s.vinyl.map(normalizeVinylFromStore):vinyls;
+    renderTracks();
+    renderVinyls();
+  }catch{}
+});
+
+[searchTracks,sortMusic].forEach(el=>{
+  el.addEventListener('input',renderTracks);
+  el.addEventListener('change',renderTracks);
+});
+gridModeBtn.addEventListener('click',()=>setMusicMode('grid'));
+listModeBtn.addEventListener('click',()=>setMusicMode('list'));
+
+applySettings();
+updateCart();
+setMusicMode('grid');
+loadMusic();
+loadVinyl();
+</script>
+  <script src="assets/js/site.js?v=20260327-3"></script>
+  <script src="assets/js/ssc-ux.js" defer></script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

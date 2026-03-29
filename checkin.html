@@ -1,0 +1,175 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+<script>
+(function(){
+  const explicit = (window.SUNSESH_API || '').trim();
+ const currentPort = String(location.port || '');
+ const hasLikelyDevPort = !!currentPort && !['80', '443', '4000'].includes(currentPort);
+ const isLanIp = /^\d{1,3}(?:\.\d{1,3}){3}$/.test(location.hostname);
+ const preferLocalApi = isLanIp || location.hostname === 'localhost' || location.hostname === '127.0.0.1' || hasLikelyDevPort;
+  const origin = (location.origin && location.origin !== 'null') ? location.origin : '';
+ const base = explicit || (preferLocalApi ? (location.protocol + '//' + location.hostname + ':4000') : origin);
+  window.__SUNSESH_API_BASE = String(base || '').replace(/\/$/, '');
+})();
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Check-in Tickets</title>
+<link href="assets/css/site.css?v=20260329-01" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script>tailwind.config={darkMode:'class',theme:{extend:{colors:{primary:'#006400',secondary:'#00FFAA'},borderRadius:{'button':'8px'}}}};</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/html5-qrcode"></script>
+<style>
+body{font-family:'Montserrat',sans-serif;background:#0b1e14;color:#ffffff}
+.card{background:#0d1b13;border:1px solid rgba(0,100,0,0.2)}
+.badge-ok{background:#00FFAA;color:#000}
+.badge-bad{background:#ff5c5c;color:#000}
+</style>
+</head>
+<body data-no-anim class="min-h-screen">
+<div class="max-w-3xl mx-auto px-6 py-10">
+  <h1 class="text-3xl font-extrabold mb-2">Check-in de Tickets</h1>
+  <p class="text-white/70 mb-6">Escanea el QR o ingresa el codigo del ticket para validar la entrada.</p>
+
+  <div class="card rounded-2xl p-6 mb-6">
+    <div id="reader" class="w-full"></div>
+    <div class="mt-4 flex items-center gap-3">
+      <button id="startScan" class="bg-secondary text-black font-bold px-4 py-2 rounded-button">Iniciar camara</button>
+      <button id="stopScan" class="bg-white/10 px-4 py-2 rounded-button">Detener</button>
+    </div>
+  </div>
+
+  <div class="card rounded-2xl p-6 space-y-4">
+    <div class="text-white/70">Validacion manual</div>
+    <div class="flex flex-col md:flex-row gap-3">
+      <input id="manualCode" placeholder="Codigo del ticket o ID" class="flex-1 bg-muted border border-white/10 rounded px-3 py-2">
+      <button id="manualBtn" class="bg-secondary text-black font-bold px-4 py-2 rounded-button">Validar</button>
+    </div>
+    <div id="result" class="text-sm"></div>
+  </div>
+</div>
+
+<script>
+let scanner = null;
+let scanning = false;
+const resultEl = document.getElementById('result');
+
+function setResult(message, ok){
+  if(!resultEl) return;
+  resultEl.innerHTML = '';
+  const badge = document.createElement('span');
+  badge.className = (ok?'badge-ok':'badge-bad') + ' inline-block px-2 py-1 rounded-full text-xs font-bold mr-2';
+  badge.textContent = ok ? 'VALIDO' : 'INVALIDO';
+  resultEl.appendChild(badge);
+  const text = document.createElement('span');
+  text.textContent = message || '';
+  resultEl.appendChild(text);
+}
+
+function buildScanPayload(raw){
+  const value = String(raw || '').trim();
+  if(!value) return { code: '' };
+  if(value.startsWith('{')){
+    try{
+      const parsed = JSON.parse(value);
+      if(parsed && parsed.ticketId) return { ticket_id: parsed.ticketId };
+      if(parsed && parsed.code) return { code: parsed.code };
+    }catch(_){ }
+  }
+  return { code: value };
+}
+
+async function validateCode(code){
+  const payload = buildScanPayload(code);
+  try{
+    const res = await fetch(window.__SUNSESH_API_BASE + '/api/tickets/scan',{
+      method:'POST',
+      credentials:'include',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if(!res.ok){
+      setResult((data && data.message) || 'Ticket invalido', false);
+      return;
+    }
+    const ticket = data.ticket || {};
+    const order = ticket.order || {};
+    const event = ticket.event || {};
+    setResult(`OK: ${order.full_name||''} - ${event.title||''} (${ticket.ticket_code||''})`, true);
+  }catch(_){
+    setResult('No se pudo validar', false);
+  }
+}
+
+function initScanner(){
+  if(scanner) return;
+  scanner = new Html5Qrcode('reader');
+}
+
+async function startScan(){
+  if(scanning) return;
+
+  // La API de camara requiere HTTPS o localhost
+  if(location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1'){
+    setResult('La camara requiere HTTPS o localhost. Abre la pagina desde localhost:puerto o usa HTTPS.', false);
+    return;
+  }
+
+  initScanner();
+  scanning = true;
+
+  const onScan = (decodedText) => { if(decodedText) validateCode(decodedText); };
+  const config = { fps: 10, qrbox: 250 };
+
+  // Intenta camara trasera primero, si falla usa cualquier camara disponible
+  try{
+    await scanner.start({ facingMode: 'environment' }, config, onScan);
+  }catch(err1){
+    try{
+      await scanner.start({ facingMode: 'user' }, config, onScan);
+    }catch(err2){
+      scanning = false;
+      const msg = err2 && err2.message ? err2.message : String(err2);
+      setResult('No se pudo iniciar la camara: ' + msg, false);
+    }
+  }
+}
+
+async function stopScan(){
+  if(!scanner || !scanning) return;
+  try{
+    await scanner.stop();
+  }catch(_){ }
+  scanning = false;
+}
+
+const startBtn = document.getElementById('startScan');
+const stopBtn = document.getElementById('stopScan');
+if(startBtn) startBtn.addEventListener('click', startScan);
+if(stopBtn) stopBtn.addEventListener('click', stopScan);
+
+const manualBtn = document.getElementById('manualBtn');
+if(manualBtn){
+  manualBtn.addEventListener('click',()=>{
+    const code = (document.getElementById('manualCode')||{}).value || '';
+    if(code.trim()) validateCode(code.trim());
+    else setResult('Ingresa un codigo', false);
+  });
+}
+</script>
+  <script src="assets/js/ssc-ux.js" defer></script>
+</body>
+</html>
+
+
+
+
+
+
+
+

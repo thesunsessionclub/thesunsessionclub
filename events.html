@@ -1,0 +1,606 @@
+﻿<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<script>
+(function(){
+  const explicit = (window.SUNSESH_API || '').trim();
+ const currentPort = String(location.port || '');
+ const hasLikelyDevPort = !!currentPort && !['80', '443', '4000'].includes(currentPort);
+ const isLanIp = /^\d{1,3}(?:\.\d{1,3}){3}$/.test(location.hostname);
+ const preferLocalApi = isLanIp || location.hostname === 'localhost' || location.hostname === '127.0.0.1' || hasLikelyDevPort;
+  const origin = (location.origin && location.origin !== 'null') ? location.origin : '';
+ const base = explicit || (preferLocalApi ? (location.protocol + '//' + location.hostname + ':4000') : origin);
+  window.__SUNSESH_API_BASE = String(base || '').replace(/\/$/, '');
+})();
+</script>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Todos los Eventos</title>
+  <link href="assets/css/site.css?v=20260329-01" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script>tailwind.config={darkMode:'class',theme:{extend:{colors:{primary:'#006400',secondary:'#00FFAA'},borderRadius:{'button':'8px'}}}};</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+<style>
+.gradient-hero{
+--ssc-hero-image: url('https://images.unsplash.com/photo-1571266028243-2eb2f5f1f2d6?auto=format&fit=crop&w=2000&q=80');
+--ssc-hero-position: center 40%;
+}
+.green-shadow{box-shadow:0 10px 24px rgba(0,100,0,0.25)}
+.glow:hover{box-shadow:0 12px 28px rgba(0,255,170,0.35)}
+.badge{background:#006400;color:#fff}
+.btn{background:#00FFAA;color:#000}
+.btn:hover{filter:brightness(1.1)}
+.btn-outline{border:2px solid #00FFAA;color:#00FFAA}
+.btn-outline:hover{background:#00FFAA;color:#000}
+.card{background:#0d1b13;border:1px solid rgba(0,100,0,0.15)}
+.card:hover{transform:translateY(-6px);box-shadow:0 16px 36px rgba(0,100,0,0.25);border-color:#006400}
+.input{background:#0f2016;border:1px solid rgba(0,255,170,0.2);color:#e6ffe6}
+.select{background:#0f2016;border:1px solid rgba(0,255,170,0.2);color:#e6ffe6}
+body{font-family:'Montserrat',sans-serif;background:#0b1e14}
+</style>
+</head>
+<body class="text-white">
+<nav class="ssc-nav bg-black bg-opacity-95 sticky top-0 z-50 backdrop-blur-md border-b border-primary border-opacity-20">
+<div class="container mx-auto px-6 py-4">
+<div class="flex justify-between items-center">
+<div class="flex items-center">
+<img src="/assets/img/logo.jpg" alt="The Sun Session Club Logo" class="h-12 mr-8 cursor-pointer object-contain" onclick="window.location.href='sunsessionesp_fixed_v3.html'">
+<ul class="hidden md:flex space-x-8">
+<li><a href="sunsessionesp_fixed_v3.html#artists" class="text-white hover:text-secondary font-medium uppercase text-sm nav-link">Artistas</a></li>
+<li><a href="events.html" class="text-secondary font-bold uppercase text-sm nav-link">Eventos</a></li>
+<li><a href="music.html" class="text-white hover:text-secondary font-medium uppercase text-sm nav-link">Música</a></li>
+<li><a href="sunsessionesp_fixed_v3.html#video" class="text-white hover:text-secondary font-medium uppercase text-sm nav-link">Videos</a></li>
+<li><a href="sunsessionesp_fixed_v3.html#about" class="text-white hover:text-secondary font-medium uppercase text-sm nav-link">Nosotros</a></li>
+<li><a href="gallery.html" class="text-white hover:text-secondary font-medium uppercase text-sm nav-link">Galería</a></li>
+          <li><a href="merch.html" class="text-white hover:text-secondary font-medium uppercase text-sm nav-link">MERCH</a></li>
+<li><a href="sunsessionesp_fixed_v3.html#contact" class="text-white hover:text-secondary font-medium uppercase text-sm nav-link">Contacto</a></li>
+</ul>
+</div>
+</div>
+</div>
+</nav>
+<header class="ssc-page-hero gradient-hero py-16 green-shadow" data-parallax="0.14" data-parallax-mode="bg">
+<div class="container mx-auto px-6">
+<nav class="ssc-nav text-sm text-white/70 mb-6"><a href="sunsessionesp_fixed_v3.html" class="text-secondary">Inicio</a> / <span>Eventos</span></nav>
+<h1 class="text-5xl font-extrabold text-white text-center">EVENTOS DE ACCESO LIMITADO</h1>
+<p class="text-center text-white/80 mt-4">No hay repetición ni segunda vuelta. Asegura tu lugar antes de que se cierre la línea.</p>
+</div>
+</header>
+<main class="container mx-auto px-6 py-10">
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+<aside class="lg:col-span-1 space-y-6">
+<div class="card rounded-xl p-6">
+<h3 class="text-xl font-bold mb-4">Rango de Fechas</h3>
+<div class="grid grid-cols-2 gap-3">
+<input id="fromDate" type="date" class="input rounded px-3 py-2">
+<input id="toDate" type="date" class="input rounded px-3 py-2">
+</div>
+</div>
+<div class="card rounded-xl p-6">
+<h3 class="text-xl font-bold mb-4">Género Musical</h3>
+<div id="genreFilters" class="space-y-2"></div>
+</div>
+<div class="card rounded-xl p-6">
+<h3 class="text-xl font-bold mb-4">Lugar</h3>
+<div id="venueFilters" class="space-y-2"></div>
+</div>
+<div class="card rounded-xl p-6">
+<h3 class="text-xl font-bold mb-4">Rango de Precio</h3>
+<input id="priceRange" type="range" min="0" max="100" value="100" class="w-full accent-[#00FFAA]">
+<div class="text-sm mt-2">Max: $<span id="priceValue">100</span></div>
+<div class="grid grid-cols-2 gap-3 mt-4">
+<button id="applyFilters" class="btn rounded-button py-2 glow">APLICAR FILTROS</button>
+<button id="clearFilters" class="btn-outline rounded-button py-2">LIMPIAR TODO</button>
+</div>
+</div>
+</aside>
+<section class="lg:col-span-2">
+<div class="flex items-center justify-between mb-6">
+<div class="flex items-center gap-3 w-full">
+<input id="searchInput" placeholder="Buscar eventos, DJs, lugares..." class="input rounded-button px-4 py-3 w-full">
+<span id="foundCount" class="text-white/70"></span>
+</div>
+<div class="ml-6">
+<select id="sortSelect" class="select rounded-button px-4 py-3">
+<option value="date_desc">Fecha: más recientes</option>
+<option value="date_asc">Fecha: más antiguas</option>
+<option value="price_asc">Precio: menor a mayor</option>
+<option value="price_desc">Precio: mayor a menor</option>
+</select>
+</div>
+</div>
+<div id="featuredEventsTitle" class="text-center mb-8" style="display:none;"><h2 class="text-3xl font-bold text-yellow-600">EVENTOS DESTACADOS</h2></div>
+<div id="featuredEventsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12"></div>
+<div id="eventsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-8"></div>
+<div id="eventModal" class="fixed inset-0 bg-black/70 z-50 hidden items-center justify-center p-4">
+<div class="bg-white rounded-2xl overflow-hidden shadow-2xl max-w-5xl w-full grid grid-cols-1 md:grid-cols-2">
+<div class="relative bg-black/5">
+<img id="em_image" src="" class="w-full h-auto max-h-[70vh] object-contain">
+<div id="em_date" class="absolute top-4 left-4 bg-[#006400] text-white font-bold px-3 py-1 rounded-full text-sm"></div>
+</div>
+<div class="p-6">
+<div class="flex items-start justify-between">
+<div>
+<h3 id="em_title" class="text-2xl font-extrabold text-black mb-1"></h3>
+<p id="em_artists" class="text-black/60 mb-2"></p>
+<p id="em_desc" class="text-black/60 text-sm mb-4"></p>
+</div>
+<button id="em_close" class="text-black/50 hover:text-black text-2xl">?</button>
+</div>
+<div class="flex items-center gap-2 text-black/70 mb-2"><i class="ri-map-pin-line text-[#006400]"></i><span id="em_location"></span></div>
+<div class="flex items-center gap-2 text-black/70 mb-6"><i class="ri-time-line text-[#006400]"></i><span id="em_time"></span></div>
+<hr class="border-black/10 mb-6">
+<div id="em_ticket_block" class="mb-4 bg-black/5 rounded-xl p-3">
+  <div class="flex items-center justify-between text-black">
+    <div>
+      <div class="text-xs text-black/60">Boletos disponibles</div>
+      <div id="em_remaining" class="text-lg font-bold">-</div>
+    </div>
+    <div>
+      <div class="text-xs text-black/60">Vendidos</div>
+      <div id="em_sold" class="text-lg font-bold">-</div>
+    </div>
+    <div id="em_status" class="text-sm font-bold text-red-600"></div>
+  </div>
+</div>
+<div class="flex flex-wrap items-center gap-3">
+  <button id="em_buy" class="inline-flex items-center gap-2 bg-[#00FFAA] text-black font-bold py-3 px-6 rounded-button">COMPRAR BOLETOS</button>
+  <a id="em_cta" href="#" target="_blank" class="inline-flex items-center gap-2 bg-[#17c964] text-black font-bold py-3 px-6 rounded-button"><i id="em_cta_icon" class="ri-instagram-line"></i><span id="em_cta_text">VER EVENTO</span></a>
+</div>
+</div>
+</div>
+</div>
+<div id="ticketModal" class="fixed inset-0 bg-black/70 z-50 hidden items-center justify-center p-4">
+  <div class="bg-white rounded-2xl overflow-hidden shadow-2xl max-w-3xl w-full">
+    <div class="p-6">
+      <div class="flex items-start justify-between">
+        <div>
+          <h3 class="text-2xl font-extrabold text-black">Comprar boletos</h3>
+          <p id="ticketEventName" class="text-black/60"></p>
+        </div>
+        <button id="ticket_close" class="text-black/50 hover:text-black text-2xl">?</button>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+        <div class="bg-black/5 rounded-xl p-4">
+          <h4 class="text-lg font-bold text-black mb-3">Instrucciones de pago</h4>
+          <div class="text-sm text-black/70 space-y-2">
+            <div><strong>Banco:</strong> <span id="ticketBankName">-</span></div>
+            <div><strong>Titular:</strong> <span id="ticketBankHolder">-</span></div>
+            <div><strong>CLABE:</strong> <span id="ticketBankClabe">-</span></div>
+            <div><strong>Tarjeta:</strong> <span id="ticketBankCard">-</span></div>
+          </div>
+          <p class="text-xs text-black/70 mt-4">Complete your payment via bank transfer and submit your request form. We will contact you to confirm your tickets after payment verification.</p>
+        </div>
+        <form id="ticketForm" class="space-y-3">
+          <input id="ticketFullName" placeholder="Nombre completo" class="w-full bg-white border border-black/10 rounded px-3 py-2">
+          <input id="ticketEmail" type="email" placeholder="Email" class="w-full bg-white border border-black/10 rounded px-3 py-2">
+          <input id="ticketPhone" placeholder="Telefono" class="w-full bg-white border border-black/10 rounded px-3 py-2">
+          <input id="ticketQty" type="number" min="1" placeholder="Cantidad de boletos" class="w-full bg-white border border-black/10 rounded px-3 py-2">
+          <div>
+            <label class="block text-sm text-black/60 mb-2">Comprobante (opcional)</label>
+            <input id="ticketProof" type="file" accept="image/*" class="w-full text-sm text-black">
+          </div>
+          <div id="ticketFormError" class="text-sm text-red-600"></div>
+          <div id="ticketFormSuccess" class="text-sm text-green-600"></div>
+          <button type="submit" class="w-full bg-[#00FFAA] text-black font-bold py-3 rounded-button">Enviar solicitud</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="emptyState" class="hidden text-center text-white/70 py-10">No se encontraron eventos</div>
+</section>
+</div>
+</main>
+<script>
+const STORE_KEY='ssc_store_v1';
+let __eventsCache=[];
+let ticketSummaries = {};
+let ticketSettings = null;
+let activeEvent = null;
+let ticketSummaryTimer = null;
+
+async function fetchTicketSettings(){
+  if(ticketSettings) return ticketSettings;
+  try{
+    const res=await fetch(window.__SUNSESH_API_BASE + '/api/settings',{headers:{'Cache-Control':'no-cache'},cache:'no-store'});
+    if(!res.ok) throw new Error('settings');
+    const data=await res.json();
+    ticketSettings=data||{};
+    return ticketSettings;
+  }catch(_){
+    ticketSettings={};
+    return ticketSettings;
+  }
+}
+
+function updateTicketSettingsUI(){
+  if(!ticketSettings) return;
+  const setText=(id,val)=>{const el=document.getElementById(id);if(el) el.textContent=val||'-';};
+  setText('ticketBankName', ticketSettings.bank_name||'');
+  setText('ticketBankHolder', ticketSettings.bank_account_holder||'');
+  setText('ticketBankClabe', ticketSettings.bank_clabe||'');
+  setText('ticketBankCard', ticketSettings.bank_card||'');
+}
+
+async function fetchTicketSummaries(eventIds){
+  const ids=(eventIds||[]).filter(Boolean);
+  if(!ids.length) return;
+  try{
+    const res=await fetch(window.__SUNSESH_API_BASE + '/api/tickets/summary?event_ids='+encodeURIComponent(ids.join(',')),{headers:{'Cache-Control':'no-cache'},cache:'no-store'});
+    if(!res.ok) throw new Error('summary');
+    const data=await res.json();
+    if(Array.isArray(data)){
+      ticketSummaries={};
+      data.forEach(s=>{if(s && s.event_id) ticketSummaries[s.event_id]=s;});
+      renderTicketInfoOnCards();
+      if(activeEvent) updateEventTicketInfo(activeEvent);
+    }
+  }catch(_){ }
+}
+
+function getTicketSummary(eventId){
+  if(!eventId) return null;
+  return ticketSummaries[eventId]||null;
+}
+
+async function refreshEventSummary(eventId){
+  if(!eventId) return null;
+  try{
+    const res=await fetch(window.__SUNSESH_API_BASE + '/api/tickets/summary?event_id='+encodeURIComponent(eventId),{headers:{'Cache-Control':'no-cache'},cache:'no-store'});
+    if(!res.ok) throw new Error('summary');
+    const data=await res.json();
+    if(data && data.event_id){
+      ticketSummaries[eventId]=data;
+      renderTicketInfoOnCards();
+      if(activeEvent && activeEvent.id===eventId) updateEventTicketInfo(activeEvent);
+    }
+    return data;
+  }catch(_){ return null; }
+}
+
+function updateEventTicketInfo(event){
+  const summary=getTicketSummary(event.id);
+  const remainingEl=document.getElementById('em_remaining');
+  const soldEl=document.getElementById('em_sold');
+  const statusEl=document.getElementById('em_status');
+  const buyBtn=document.getElementById('em_buy');
+  if(!summary){
+    if(remainingEl) remainingEl.textContent='-';
+    if(soldEl) soldEl.textContent='-';
+    if(statusEl) statusEl.textContent='';
+    if(buyBtn){buyBtn.disabled=false;buyBtn.classList.remove('opacity-50');}
+    return;
+  }
+  const remaining = summary.remaining;
+  const limit = summary.limit;
+  if(remainingEl) remainingEl.textContent = (limit==null? 'Sin limite' : String(remaining));
+  if(soldEl) soldEl.textContent = String(summary.sold||0);
+  if(limit!=null && remaining<=0){
+    if(statusEl) statusEl.textContent='AGOTADO';
+    if(buyBtn){buyBtn.disabled=true;buyBtn.classList.add('opacity-50');}
+  }else{
+    if(statusEl) statusEl.textContent='';
+    if(buyBtn){buyBtn.disabled=false;buyBtn.classList.remove('opacity-50');}
+  }
+}
+
+function renderTicketInfoOnCards(){
+  document.querySelectorAll('[data-ticket-info]').forEach(info=>{
+    const card=info.closest('[data-event-id]');
+    if(!card) return;
+    const eventId=card.dataset.eventId||'';
+    const summary=getTicketSummary(eventId);
+    const btn=card.querySelector('button');
+    if(!summary){
+      info.textContent='';
+      info.className='text-xs text-black/60 mt-2';
+      if(btn){btn.disabled=false;btn.classList.remove('opacity-50');}
+      return;
+    }
+    if(summary.limit==null){
+      info.textContent='Boletos disponibles';
+      info.className='text-xs text-black/60 mt-2';
+      if(btn){btn.disabled=false;btn.classList.remove('opacity-50');}
+      return;
+    }
+    if(summary.remaining<=0){
+      info.textContent='AGOTADO';
+      info.className='text-xs text-red-600 mt-2 font-bold';
+      if(btn){btn.disabled=true;btn.classList.add('opacity-50');}
+      return;
+    }
+    info.textContent=`${summary.remaining} boletos disponibles`;
+    info.className='text-xs text-black/60 mt-2';
+    if(btn){btn.disabled=false;btn.classList.remove('opacity-50');}
+  });
+}
+
+function startTicketSummaryPolling(){
+  if(ticketSummaryTimer) return;
+  ticketSummaryTimer=setInterval(()=>{
+    const ids=(__eventsCache||[]).map(e=>e.id).filter(Boolean);
+    if(ids.length) fetchTicketSummaries(ids);
+  },20000);
+}
+
+async function openTicketModal(event){
+  const modal=document.getElementById('ticketModal');
+  if(!modal) return;
+  activeEvent=event;
+  const nameEl=document.getElementById('ticketEventName');
+  if(nameEl) nameEl.textContent=event.title||'';
+  await fetchTicketSettings();
+  updateTicketSettingsUI();
+  const err=document.getElementById('ticketFormError');
+  const ok=document.getElementById('ticketFormSuccess');
+  if(err) err.textContent='';
+  if(ok) ok.textContent='';
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+}
+
+function closeTicketModal(){
+  const modal=document.getElementById('ticketModal');
+  if(!modal) return;
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
+}
+
+function readFileAsDataUrl(file){
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onload=()=>resolve(reader.result);
+    reader.onerror=()=>reject(new Error('file'));
+    reader.readAsDataURL(file);
+  });
+}
+
+async function submitTicketRequest(ev){
+  ev.preventDefault();
+  const err=document.getElementById('ticketFormError');
+  const ok=document.getElementById('ticketFormSuccess');
+  if(err) err.textContent='';
+  if(ok) ok.textContent='';
+  if(!activeEvent || !activeEvent.id){
+    if(err) err.textContent='Evento invalido.';
+    return;
+  }
+  const fullName=(document.getElementById('ticketFullName')||{}).value||'';
+  const email=(document.getElementById('ticketEmail')||{}).value||'';
+  const phone=(document.getElementById('ticketPhone')||{}).value||'';
+  const qty=Number((document.getElementById('ticketQty')||{}).value||0);
+  if(!fullName.trim()||!email.trim()||!phone.trim()||!qty||qty<1){
+    if(err) err.textContent='Completa todos los campos requeridos.';
+    return;
+  }
+  const summary=getTicketSummary(activeEvent.id);
+  if(summary && summary.limit!=null && qty>summary.remaining){
+    if(err) err.textContent='No hay suficientes boletos disponibles.';
+    return;
+  }
+  let proofData='';
+  const proofInput=document.getElementById('ticketProof');
+  if(proofInput && proofInput.files && proofInput.files[0]){
+    try{proofData=await readFileAsDataUrl(proofInput.files[0]);}catch(_){ }
+  }
+  const payload={event_id:activeEvent.id,full_name:fullName.trim(),email:email.trim(),phone:phone.trim(),qty:qty,payment_proof:proofData};
+  try{
+    const res=await fetch(window.__SUNSESH_API_BASE + '/api/tickets/request',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    const data=await res.json();
+    if(!res.ok){
+      if(err) err.textContent=(data&&data.message)||'No se pudo enviar solicitud.';
+      return;
+    }
+    if(ok) ok.textContent='Gracias. Tus boletos seran confirmados despues de la verificacion del pago.';
+    if(document.getElementById('ticketForm')) document.getElementById('ticketForm').reset();
+    refreshEventSummary(activeEvent.id);
+  }catch(_){
+    if(err) err.textContent='No se pudo enviar solicitud.';
+  }
+}
+
+window.addEventListener('DOMContentLoaded',()=>{
+  const closeBtn=document.getElementById('ticket_close');
+  if(closeBtn) closeBtn.addEventListener('click', closeTicketModal);
+  const modal=document.getElementById('ticketModal');
+  if(modal) modal.addEventListener('click', (e)=>{ if(e.target===modal) closeTicketModal(); });
+  const form=document.getElementById('ticketForm');
+  if(form) form.addEventListener('submit', submitTicketRequest);
+});
+
+function getStore(){try{return JSON.parse(localStorage.getItem(STORE_KEY)||'{}')}catch(_){return{}}}
+function setStore(next){localStorage.setItem(STORE_KEY,JSON.stringify(next||{}))}
+function toInputDate(value){if(!value)return '';if(typeof value==='string'){const t=value.trim();const m=t.match(/^\d{4}-\d{2}-\d{2}/);if(m)return m[0]}const d=new Date(value);if(Number.isNaN(d.getTime()))return '';const y=d.getFullYear();const m=String(d.getMonth()+1).padStart(2,'0');const day=String(d.getDate()).padStart(2,'0');return `${y}-${m}-${day}`}
+function normalizeEvent(evt){const e=(evt&&typeof evt==='object')?{...evt}:{};e.date=toInputDate(e.date);e.price=Number(e.price||0);e.sort_order=Number(e.sort_order||0);const raw=String(e.status||'').toLowerCase();e.status=raw==='active'?'ACTIVE':(raw==='draft'?'DRAFT':'CANCELLED');e.featured=!!e.featured;e.isFree=!!e.isFree||e.price===0;return e}
+function getPriceRangeMax(events){const rawMax=(Array.isArray(events)?events:[]).reduce((m,e)=>Math.max(m,Number(e&&e.price||0)),0);if(rawMax<=100)return 100;if(rawMax<=500)return Math.ceil(rawMax/50)*50;return Math.ceil(rawMax/100)*100}
+function configurePriceRange(events,resetValue){const slider=document.getElementById('priceRange');const out=document.getElementById('priceValue');if(!slider)return;const max=getPriceRangeMax(events);slider.max=String(max);if(resetValue||!slider.dataset.userTouched){slider.value=String(max)}if(out)out.textContent=String(slider.value||max)}
+function eventKey(evt){const id=String((evt&&evt.id)||'').trim();if(id)return `id:${id}`;const title=String((evt&&evt.title)||'').trim().toLowerCase();const date=String((evt&&evt.date)||'').trim();const place=String((evt&&(evt.venue||evt.location))||'').trim().toLowerCase();const time=String((evt&&evt.time)||'').trim().toLowerCase();return `fp:${title}|${date}|${place}|${time}`}
+function mergeEvents(apiEvents,localEvents){const map=new Map();(Array.isArray(apiEvents)?apiEvents:[]).map(normalizeEvent).forEach(evt=>{map.set(eventKey(evt),evt)});(Array.isArray(localEvents)?localEvents:[]).map(normalizeEvent).forEach(evt=>{const id=String(evt.id||'').trim();const keepLocal=!id||id.startsWith('local-')||!!evt._localDirty;const key=eventKey(evt);if(keepLocal||!map.has(key)){map.set(key,evt)}});return Array.from(map.values())}
+function readLocalStoreEvents(){const s=getStore();return Array.isArray(s.events)?s.events.map(normalizeEvent):[]}
+function readLocalEvents(){return readLocalStoreEvents().filter(e=>((e.status||'').toLowerCase()==='active'))}
+async function fetchEvents(){
+  const localEvents=readLocalStoreEvents();
+  try{
+    const res=await fetch(window.__SUNSESH_API_BASE + '/api/events',{headers:{'Cache-Control':'no-cache'},cache:'no-store'});
+    const data=await res.json();
+    if(Array.isArray(data)){
+      const merged=mergeEvents(data,localEvents);
+      const s=getStore();
+      s.events=merged;
+      setStore(s);
+      __eventsCache=merged.filter(e=>((e.status||'').toLowerCase()==='active'));
+      const ids=__eventsCache.map(e=>e.id).filter(Boolean);
+      if(ids.length) await fetchTicketSummaries(ids);
+      startTicketSummaryPolling();
+      return;
+    }
+  }catch(_){ }
+  __eventsCache=localEvents.filter(e=>((e.status||'').toLowerCase()==='active'));
+  const ids=__eventsCache.map(e=>e.id).filter(Boolean);
+  if(ids.length) await fetchTicketSummaries(ids);
+  startTicketSummaryPolling();
+}
+async function applySettings(){try{const r=await fetch(window.__SUNSESH_API_BASE + '/api/settings',{headers:{'Cache-Control':'no-cache'},cache:'no-store'});const s=await r.json();const styleId='dynamic-theme';let style=document.getElementById(styleId);if(!style){style=document.createElement('style');style.id=styleId;document.head.appendChild(style)}style.textContent=`:root{--primary:${s.primary_color||'#006400'};--secondary:${s.secondary_color||'#00FFAA'};--bg:${s.background_color||'#0b1e14'};--card:${s.card_background||'#0d1b13'};--text:${s.global_text_color||'#ffffff'};--font:${s.font_family||"'Montserrat',sans-serif"}} .badge{background:var(--primary)!important;color:#fff} .btn{background:var(--secondary)!important;color:#000} body{background:var(--bg)!important;color:var(--text)!important;font-family:var(--font)!important} footer .text-gray-400, footer .text-gray-500, footer p, footer span, footer a, footer li{color:#ffffff!important}`;}catch{}}
+function uniq(arr){return Array.from(new Set(arr.filter(Boolean)))}
+function buildFilters(evts){
+const g=document.getElementById('genreFilters');const v=document.getElementById('venueFilters');
+g.innerHTML='';v.innerHTML='';
+uniq(evts.map(e=>e.genre)).forEach(x=>{const id='g_'+x.replace(/\s+/g,'_');const el=document.createElement('label');el.className='flex items-center gap-2 text-white/80';el.innerHTML=`<input type="checkbox" class="accent-[#00FFAA]" id="${id}" value="${x}"><span>${x}</span>`;g.appendChild(el)});
+uniq(evts.map(e=>e.venue)).forEach(x=>{const id='v_'+x.replace(/\s+/g,'_');const el=document.createElement('label');el.className='flex items-center gap-2 text-white/80';el.innerHTML=`<input type="checkbox" class="accent-[#00FFAA]" id="${id}" value="${x}"><span>${x}</span>`;v.appendChild(el)});
+}
+function badgeFromDate(str){if(!str)return'';const d=new Date(str);return d.toLocaleString('es-MX',{month:'short',day:'2-digit'}).toUpperCase()}
+function render(evts){
+const featuredGrid=document.getElementById('featuredEventsGrid');
+const regularGrid=document.getElementById('eventsGrid');
+const empty=document.getElementById('emptyState');
+const count=document.getElementById('foundCount');
+const featuredTitle=document.getElementById('featuredEventsTitle');
+if(!featuredGrid||!regularGrid||!featuredTitle)return;
+featuredGrid.innerHTML='';
+regularGrid.innerHTML='';
+const featuredEvents=evts.filter(e=>e.featured);
+const regularEvents=evts.filter(e=>!e.featured);
+function createEventCard(e,isFeatured=false){
+const isFree = e.isFree || Number(e.price||0)===0;
+const card=document.createElement('div');card.className='card-hover bg-white rounded-2xl overflow-hidden shadow-lg border border-primary/30'+(isFeatured?' ring-2 ring-yellow-400':'');
+const rightBadge = `<div class="absolute top-4 right-4 badge px-3 py-1 rounded-full text-xs font-bold">${badgeFromDate(e.date)}</div>`;
+const leftBadge = isFeatured?'<div class="absolute top-4 left-4 bg-yellow-400 text-black font-bold py-1 px-3 rounded-full text-xs">DESTACADO</div>':'';
+const bottomLeft = isFree ? `<span class="text-primary font-bold">Abierto</span>` : `<span class="text-primary font-bold">$${Number(e.price||0).toFixed(2)}</span>`;
+const bottomRight = `<button class="bg-black text-white font-semibold py-2 px-4 !rounded-button whitespace-nowrap hover:bg-primary transition-colors">VER MÁS</button>`;
+card.innerHTML=`<div class="relative h-56 overflow-hidden"><img loading="lazy" src="${proxyImage(e.image||'')}" alt="${e.title||''}" class="w-full h-full object-cover" onerror="this.src='/assets/hero-rave.png'">${leftBadge}${rightBadge}</div><div class="p-6"><h3 class="text-2xl font-bold mb-1 text-black">${e.title||''}</h3><p class="text-black/60 mb-4">${e.artists||''}</p><div class="flex items-center gap-2 text-black/60 mb-2"><i class="ri-map-pin-line text-primary"></i><span>${e.location||e.venue||''}</span></div><div class="flex items-center gap-2 text-black/60 mb-4"><i class="ri-time-line text-primary"></i><span>${e.time||''}</span></div><div class="flex items-center justify-between">${bottomLeft}${bottomRight}</div></div>`;
+card.dataset.eventId=e.id||'';
+const info=document.createElement('div');
+info.className='text-xs text-black/60 mt-2';
+info.dataset.ticketInfo='1';
+const content=card.querySelector('.p-6');
+if(content) content.appendChild(info);
+
+return card;
+}
+featuredTitle.style.display=featuredEvents.length>0?'block':'none';
+if(!evts.length){empty.classList.remove('hidden');count.textContent='0 events found';featuredTitle.style.display='none';}else{empty.classList.add('hidden');count.textContent=`${evts.length} events found`}
+featuredEvents.forEach(e=>{
+const card=createEventCard(e,true);
+featuredGrid.appendChild(card);
+const btn=card.querySelector('button');if(btn)btn.onclick=function(){openEventModal(e)}
+});
+regularEvents.forEach(e=>{
+const card=createEventCard(e,false);
+regularGrid.appendChild(card);
+const btn=card.querySelector('button');if(btn)btn.onclick=function(){openEventModal(e)}
+});
+renderTicketInfoOnCards();
+if(window.sscRefreshReveals)window.sscRefreshReveals();
+}
+function openEventModal(e){
+  activeEvent=e;
+  const modal=document.getElementById('eventModal');
+  const img=document.getElementById('em_image');
+  const dt=document.getElementById('em_date');
+  const ttl=document.getElementById('em_title');
+  const art=document.getElementById('em_artists');
+  const desc=document.getElementById('em_desc');
+  const loc=document.getElementById('em_location');
+  const tm=document.getElementById('em_time');
+  const cta=document.getElementById('em_cta');
+  const icon=document.getElementById('em_cta_icon');
+  const text=document.getElementById('em_cta_text');
+  const buy=document.getElementById('em_buy');
+  if(img) img.src=proxyImage(e.image||'');
+  if(dt) dt.textContent=badgeFromDate(e.date);
+  if(ttl) ttl.textContent=e.title||'';
+  if(art) art.textContent=e.artists||'';
+  if(desc) desc.textContent=e.description||'';
+  if(loc) loc.textContent=e.location||e.venue||'';
+  if(tm) tm.textContent=e.time||'';
+  const social=(e.socialLink||'').trim();
+  if(cta){
+    if(social){
+      cta.href=social;cta.style.display='inline-flex';
+      if(icon) icon.className='ri-instagram-line';
+      if(text) text.textContent='VER EVENTO';
+    }else{
+      cta.href='#';cta.style.display='none';
+    }
+  }
+  if(buy){
+    buy.onclick=function(){openTicketModal(e)};
+    buy.style.display='inline-flex';
+  }
+  updateEventTicketInfo(e);
+  refreshEventSummary(e.id);
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+  document.getElementById('em_close').onclick=function(){modal.classList.add('hidden');modal.classList.remove('flex')}
+}
+function currentFilters(){
+const search=(document.getElementById('searchInput').value||'').toLowerCase();
+const priceEl=document.getElementById('priceRange');
+const fallbackMax=Number((priceEl&&priceEl.max)||100);
+const maxPrice=Number((priceEl&&priceEl.value)||fallbackMax);
+const from=document.getElementById('fromDate').value;const to=document.getElementById('toDate').value;
+const genres=Array.from(document.querySelectorAll('#genreFilters input:checked')).map(x=>x.value);
+const venues=Array.from(document.querySelectorAll('#venueFilters input:checked')).map(x=>x.value);
+const sort=document.getElementById('sortSelect').value;
+return {search,maxPrice,from,to,genres,venues,sort}
+}
+function apply(evts, f){
+let out=evts.slice(0);
+if(f.search){out=out.filter(e=>([e.title,e.artists,e.venue,e.location].join(' ').toLowerCase().includes(f.search)))}
+out=out.filter(e=>Number(e.price||0)<=f.maxPrice);
+if(f.genres.length)out=out.filter(e=>f.genres.includes(e.genre));
+if(f.venues.length)out=out.filter(e=>f.venues.includes(e.venue));
+if(f.from)out=out.filter(e=>new Date(e.date)>=new Date(f.from));
+if(f.to)out=out.filter(e=>new Date(e.date)<=new Date(f.to));
+if(f.sort==='date_desc')out.sort((a,b)=>new Date(b.date)-new Date(a.date));
+if(f.sort==='date_asc')out.sort((a,b)=>new Date(a.date)-new Date(b.date));
+if(f.sort==='price_asc')out.sort((a,b)=>Number(a.price||0)-Number(b.price||0));
+if(f.sort==='price_desc')out.sort((a,b)=>Number(b.price||0)-Number(a.price||0));
+return out
+}
+async function init(){
+await applySettings();
+await fetchEvents();
+configurePriceRange(__eventsCache,true);
+buildFilters(__eventsCache);
+render(apply(__eventsCache,currentFilters()));
+document.getElementById('applyFilters').onclick=()=>render(apply(__eventsCache,currentFilters()));
+document.getElementById('clearFilters').onclick=()=>{const slider=document.getElementById('priceRange');document.getElementById('searchInput').value='';if(slider){slider.dataset.userTouched='';slider.value=String(slider.max||getPriceRangeMax(__eventsCache));}configurePriceRange(__eventsCache,false);document.getElementById('fromDate').value='';document.getElementById('toDate').value='';document.querySelectorAll('#genreFilters input:checked').forEach(x=>x.checked=false);document.querySelectorAll('#venueFilters input:checked').forEach(x=>x.checked=false);document.getElementById('sortSelect').value='date_desc';render(apply(__eventsCache,currentFilters()))};
+document.getElementById('priceRange').oninput=(e)=>{e.target.dataset.userTouched='1';document.getElementById('priceValue').textContent=e.target.value}
+document.getElementById('sortSelect').onchange=()=>render(apply(__eventsCache,currentFilters()));
+document.getElementById('searchInput').oninput=()=>render(apply(__eventsCache,currentFilters()));
+window.addEventListener('storage',function(ev){if(ev.key===STORE_KEY){__eventsCache=readLocalEvents();configurePriceRange(__eventsCache,false);buildFilters(__eventsCache);render(apply(__eventsCache,currentFilters()))}});
+}
+document.addEventListener('DOMContentLoaded',init);
+function proxyImage(u){if(!u)return'';if(/^https?:\/\//.test(u))return `${window.__SUNSESH_API_BASE}/api/proxy/image?url=${encodeURIComponent(u)}`;return u}
+</script>
+
+<script>
+(function(){if(document.querySelector('footer'))return;fetch('sunsessionesp_fixed_v3.html').then(r=>r.text()).then(html=>{const doc=new DOMParser().parseFromString(html,'text/html');const f=doc.querySelector('footer');if(f){document.body.appendChild(f)}}).catch(()=>{})})();
+</script>
+  <script src="assets/js/site.js?v=20260327-3"></script>
+  <script src="assets/js/ssc-ux.js" defer></script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,93 @@
+﻿<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<script>
+(function(){
+  const explicit = (window.SUNSESH_API || '').trim();
+ const currentPort = String(location.port || '');
+ const hasLikelyDevPort = !!currentPort && !['80', '443', '4000'].includes(currentPort);
+ const isLanIp = /^\d{1,3}(?:\.\d{1,3}){3}$/.test(location.hostname);
+ const preferLocalApi = isLanIp || location.hostname === 'localhost' || location.hostname === '127.0.0.1' || hasLikelyDevPort;
+  const origin = (location.origin && location.origin !== 'null') ? location.origin : '';
+ const base = explicit || (preferLocalApi ? (location.protocol + '//' + location.hostname + ':4000') : origin);
+  window.__SUNSESH_API_BASE = String(base || '').replace(/\/$/, '');
+})();
+</script>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vinyl  Sun Session Club</title>
+  <link href="assets/css/site.css?v=20260329-01" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script>tailwind.config={theme:{extend:{colors:{primary:'#006400',secondary:'#00FFAA'},borderRadius:{'button':'8px'}}}}</script>
+<style>body{font-family:'Montserrat',sans-serif}</style>
+</head>
+<body class="bg-black text-white">
+<nav class="ssc-nav bg-black sticky top-0 z-50 border-b border-white/10">
+<div class="container mx-auto px-6 py-4 flex justify-between items-center">
+<a href="music.html" class="text-white hover:text-primary flex items-center space-x-2"><i class="ri-arrow-left-line"></i><span class="text-sm">Volver a Música</span></a>
+<img src="/assets/img/logo.jpg" alt="The Sun Session Club Logo" class="h-10 ml-4 object-contain">
+<div class="flex items-center space-x-3"><button onclick="openCart()" class="bg-white bg-opacity-10 hover:bg-opacity-20 text-white font-medium py-2 px-3 rounded-button shadow-soft flex items-center space-x-2"><i class="ri-shopping-cart-line"></i><span>Carrito</span></button><a href="login.html" class="bg-primary hover:bg-opacity-90 text-black font-bold py-2 px-4 rounded-button whitespace-nowrap">INICIAR SESIÓN</a></div>
+</div>
+</nav>
+<section class="ssc-page-hero">
+<div class="container mx-auto px-6">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<div><img id="vinylImage" class="w-full h-[420px] object-cover rounded-lg" alt=""></div>
+<div>
+<h1 id="vinylTitle" class="text-4xl font-extrabold"></h1>
+<p id="vinylMeta" class="text-white/70 mt-2"></p>
+<div class="mt-4"><span id="vinylEdition" class="badge bg-primary text-black px-3 py-1 rounded-button"></span></div>
+<div class="mt-6"><h3 class="text-xl font-bold">Descripción</h3><p id="vinylDesc" class="text-white/70 mt-2"></p></div>
+<div class="mt-6"><h3 class="text-xl font-bold">Tracklist</h3><ul id="vinylTracklist" class="list-disc list-inside text-white/70 mt-2"></ul></div>
+<div class="mt-6 flex items-center justify-between"><span id="vinylPrice" class="text-3xl font-extrabold"></span><span id="vinylStock" class="text-white/60"></span></div>
+<div class="mt-4 flex space-x-3"><button id="btnAdd" class="bg-primary text-black font-bold px-4 py-2 rounded-button">AGREGAR AL CARRITO</button><a href="sunsessionesp_fixed_v3.html#merch" class="border border-white/20 text-white rounded-button px-4 py-2 hover:border-primary hover:text-primary">Ver Merch</a></div>
+</div>
+</div>
+<div class="mt-10"><h3 class="text-xl font-bold">Productos Relacionados</h3><div id="relatedGrid" class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div></div>
+</div>
+</section>
+<div id="cartModal" class="fixed inset-0 bg-black/50 z-50 hidden">
+<div id="cartContent" class="absolute right-0 top-0 h-full w-full sm:w-[420px] bg-white rounded-l-lg p-6 transform translate-x-full transition-transform">
+<div class="flex justify-between items-center mb-4"><h3 class="text-xl font-bold">Tu Carrito</h3><button onclick="closeCart()" class="text-gray-700 hover:text-black"><i class="ri-close-line text-2xl"></i></button></div>
+<div id="cartItems" class="space-y-3"></div>
+<div class="mt-6 flex justify-between items-center"><span class="font-bold">Total:</span><span id="cartTotal" class="text-xl font-extrabold">$0.00</span></div>
+<div class="mt-6 space-y-3"><a href="sunsessionesp_fixed_v3.html#merch" class="block text-center bg-primary text-black font-bold py-3 rounded-button">Pagar en Tienda</a><button onclick="closeCart()" class="w-full border border-gray-300 text-gray-700 py-3 rounded-button">Seguir navegando</button></div>
+</div>
+</div>
+<script>
+const vinyls=[{id:1,title:"Sunset Sessions EP",artist:"RUBZZ",year:2025,genre:"Melodic Techno",edition:"Limited 180g",price:29.99,stock:12,images:["/assets/hero-rave.png"],tracklist:["A1 - Golden Hour","A2 - Skyline Dreams","B1 - Night Drift","B2 - Neon Waves"],desc:"Exclusive EP capturing the golden-hour energy of our rooftop sessions."},{id:2,title:"Warehouse Rhythms",artist:"MERME",year:2024,genre:"Deep Tech","edition":"Collector Edition",price:34.99,stock:5,images:["/assets/hero-rave.png"],tracklist:["A1 - Steel Pulse","A2 - Echo Chamber","B1 - Subterrain","B2 - Gravity"],desc:"Industrial deep tech vibes straight from our warehouse parties."},{id:3,title:"Tribal Tech Journey",artist:"DRACK",year:2025,genre:"Tech House",edition:"Limited 180g",price:27.99,stock:0,images:["/assets/hero-rave.png"],tracklist:["A1 - Desert Groove","A2 - Ritual Beat","B1 - Night Fire","B2 - Sandstorm"],desc:"A ritualistic journey through tech house rhythms and textures."}]
+const params=new URLSearchParams(location.search);const id=parseInt(params.get('id')||'0',10);const v=vinyls.find(x=>x.id===id)||vinyls[0];document.getElementById('vinylImage').src=v.images[0];document.getElementById('vinylTitle').textContent=v.title;document.getElementById('vinylMeta').textContent=`${v.artist} · ${v.year} · ${v.genre}`;document.getElementById('vinylEdition').textContent=v.edition;document.getElementById('vinylDesc').textContent=v.desc;document.getElementById('vinylTracklist').innerHTML=v.tracklist.map(t=>`<li>${t}</li>`).join('');document.getElementById('vinylPrice').textContent=`$${v.price.toFixed(2)}`;document.getElementById('vinylStock').textContent=v.stock>0?`${v.stock} en stock`:'Agotado';const btn=document.getElementById('btnAdd');if(v.stock<=0){btn.disabled=true;btn.classList.add('opacity-50')}btn.addEventListener('click',()=>addVinylToCart(v.title,v.price));
+let cart=JSON.parse(localStorage.getItem('ssc_cart')||'[]');let currentTotal=cart.reduce((s,i)=>s+(i.price||0),0);function addVinylToCart(name,price){cart.push({item:name,price});currentTotal=cart.reduce((s,i)=>s+(i.price||0),0);localStorage.setItem('ssc_cart',JSON.stringify(cart));updateCart();openCart()}function updateCart(){const items=document.getElementById('cartItems');const total=document.getElementById('cartTotal');items.innerHTML='';cart.forEach((it,idx)=>{const row=document.createElement('div');row.className='flex justify-between items-center p-3 bg-gray-50 rounded';row.innerHTML=`<span>${it.item}</span><div class="flex items-center space-x-4"><span>$${it.price.toFixed(2)}</span><button onclick="removeFromCart(${idx})" class="text-red-500 hover:text-red-700"><i class="ri-delete-bin-line"></i></button></div>`;items.appendChild(row)});total.textContent=`$${currentTotal.toFixed(2)}`}function removeFromCart(i){cart.splice(i,1);currentTotal=cart.reduce((s,it)=>s+(it.price||0),0);localStorage.setItem('ssc_cart',JSON.stringify(cart));updateCart()}function openCart(){const overlay=document.getElementById('cartModal');const content=document.getElementById('cartContent');overlay.classList.remove('hidden');requestAnimationFrame(()=>{content.classList.remove('translate-x-full');content.classList.add('translate-x-0')})}function closeCart(){const overlay=document.getElementById('cartModal');const content=document.getElementById('cartContent');content.classList.add('translate-x-full');content.classList.remove('translate-x-0');setTimeout(()=>overlay.classList.add('hidden'),300)}
+const relatedGrid=document.getElementById('relatedGrid');vinyls.filter(x=>x.id!==v.id).slice(0,3).forEach(r=>{const el=document.createElement('div');el.className='card-hover bg-[#141414] rounded-lg overflow-hidden border border-white/10';el.innerHTML=`<div class="h-44 overflow-hidden"><img src="${r.images[0]}" alt="${r.title}" class="w-full h-full object-cover"></div><div class="p-4"><h4 class="font-bold">${r.title}</h4><p class="text-white/60 text-sm">${r.artist} · ${r.year}</p><div class="mt-3 flex items-center justify-between"><span class="font-extrabold">$${r.price.toFixed(2)}</span><a href="vinyl.html?id=${r.id}" class="text-primary hover:underline">Ver</a></div></div>`;relatedGrid.appendChild(el)});
+</script>
+<script>
+function applySettings(){fetch(window.__SUNSESH_API_BASE + '/api/settings',{headers:{'Cache-Control':'no-cache'},cache:'no-store'}).then(r=>r.json()).then(s=>{const styleId='dynamic-theme';let style=document.getElementById(styleId);if(!style){style=document.createElement('style');style.id=styleId;document.head.appendChild(style)}style.textContent=`:root{--primary:${s.primary_color||'#006400'};--secondary:${s.secondary_color||'#00FFAA'};--bg:${s.background_color||'#0b1e14'};--card:${s.card_background||'#0d1b13'};--text:${s.global_text_color||'#ffffff'};--font:${s.font_family||\"'Montserrat',sans-serif\"}} body{background:var(--bg)!important;color:var(--text)!important;font-family:var(--font)!important}`}).catch(()=>{})}
+async function loadVinylPage(){try{const res=await fetch(window.__SUNSESH_API_BASE + '/api/vinyl',{headers:{'Cache-Control':'no-cache'},cache:'no-store'});const data=await res.json();const list=(Array.isArray(data)?data.filter(x=>((x.status||'ACTIVE').toLowerCase()==='active')):[]);const params=new URLSearchParams(location.search);const q=params.get('id')||'';const current=list.find(x=>String(x.id)===q)||list[0];if(!current)return;document.getElementById('vinylImage').src=current.cover_image||current.images?.[0]||'';document.getElementById('vinylTitle').textContent=current.title||'';const year=current.release_date?new Date(current.release_date).getFullYear():'';document.getElementById('vinylMeta').textContent=`${current.artist||''}${year?(' · '+year):''}`;document.getElementById('vinylEdition').textContent=current.edition||'';document.getElementById('vinylDesc').textContent=current.description||'';document.getElementById('vinylTracklist').innerHTML='';document.getElementById('vinylPrice').textContent=`$${Number(current.price||0).toFixed(2)}`;document.getElementById('vinylStock').textContent=(current.stock>0)?`${current.stock} en stock`:'Agotado';const btn=document.getElementById('btnAdd');btn.disabled=(current.stock<=0);if(btn.disabled)btn.classList.add('opacity-50');btn.onclick=function(){if(current.stock>0){addVinylToCart(current.title,Number(current.price||0))}};const relatedGrid=document.getElementById('relatedGrid');relatedGrid.innerHTML='';list.filter(x=>x.id!==current.id).slice(0,3).forEach(r=>{const el=document.createElement('div');el.className='card-hover bg-[#141414] rounded-lg overflow-hidden border border-white/10';const img=r.cover_image||r.images?.[0]||'';const y=r.release_date?new Date(r.release_date).getFullYear():'';el.innerHTML=`<div class="h-44 overflow-hidden"><img src="${img}" alt="${r.title||''}" class="w-full h-full object-cover"></div><div class="p-4"><h4 class="font-bold">${r.title||''}</h4><p class="text-white/60 text-sm">${r.artist||''}${y?(' · '+y):''}</p><div class="mt-3 flex items-center justify-between"><span class="font-extrabold">$${Number(r.price||0).toFixed(2)}</span><a href="vinyl.html?id=${r.id}" class="text-primary hover:underline">Ver</a></div></div>`;relatedGrid.appendChild(el)})}catch{}}
+window.addEventListener('load',function(){applySettings();loadVinylPage()});
+</script>
+  <script src="assets/js/site.js?v=20260327-3"></script>
+  <script src="assets/js/ssc-ux.js" defer></script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

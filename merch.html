@@ -1,0 +1,1864 @@
+﻿<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<script>
+(function(){
+  const explicit = (window.SUNSESH_API || '').trim();
+ const currentPort = String(location.port || '');
+ const hasLikelyDevPort = !!currentPort && !['80', '443', '4000'].includes(currentPort);
+ const isLanIp = /^\d{1,3}(?:\.\d{1,3}){3}$/.test(location.hostname);
+ const preferLocalApi = isLanIp || location.hostname === 'localhost' || location.hostname === '127.0.0.1' || hasLikelyDevPort;
+  const origin = (location.origin && location.origin !== 'null') ? location.origin : '';
+ const base = explicit || (preferLocalApi ? (location.protocol + '//' + location.hostname + ':4000') : origin);
+  window.__SUNSESH_API_BASE = String(base || '').replace(/\/$/, '');
+})();
+</script>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MERCH - Sun Session Club</title>
+  <link href="assets/css/site.css?v=20260329-01" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;700;800&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<style>
+:root {
+  --bg: #050806;
+  --panel: #0c120f;
+  --muted: #a3b7aa;
+  --line: rgba(0, 255, 170, 0.22);
+  --neon: var(--primary);
+  --neon-soft: rgba(0, 255, 170, 0.2);
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--text);
+  background: var(--bg);
+  font-family: var(--font);
+}
+.noise {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.08;
+  background-image: radial-gradient(#fff 0.55px, transparent 0.55px);
+  background-size: 3px 3px;
+}
+.merch-hero-frame{
+  background:
+    linear-gradient(145deg, rgba(5,10,8,.9), rgba(8,17,12,.92)),
+    url('https://images.unsplash.com/photo-1523398002811-999ca8dec234?auto=format&fit=crop&w=1800&q=80');
+  background-size: cover;
+  background-position: center 35%;
+}
+.hero-title {
+  font-family: 'Syne', sans-serif;
+  letter-spacing: 0.04em;
+  text-shadow: 0 0 40px rgba(57, 255, 143, 0.2);
+}
+.neon-pill {
+  border: 1px solid var(--line);
+  background: rgba(11, 22, 17, 0.7);
+  box-shadow: inset 0 0 18px rgba(57, 255, 143, 0.12);
+}
+.filter-btn {
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(8, 12, 10, 0.85);
+  color: #e9f6ed;
+  transition: all .24s ease;
+}
+.filter-btn:hover,
+.filter-btn.active {
+  border-color: var(--neon);
+  color: #021008;
+  background: linear-gradient(135deg, #57ff9f, #1f9e64);
+  box-shadow: 0 0 28px var(--neon-soft);
+}
+.product-card {
+  background: linear-gradient(180deg, rgba(16, 22, 19, 0.95), rgba(8, 10, 9, 0.95));
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+  transition: transform .35s ease, box-shadow .35s ease, border-color .35s ease;
+  backdrop-filter: blur(6px);
+}
+.product-card::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 20px;
+  pointer-events: none;
+  background: radial-gradient(340px 90px at 50% -20%, rgba(57, 255, 143, 0.22), transparent 70%);
+}
+.product-card:hover {
+  transform: translateY(-6px) scale(1.01);
+  border-color: rgba(57, 255, 143, 0.45);
+  box-shadow: 0 28px 44px rgba(0, 0, 0, 0.45), 0 0 36px rgba(57, 255, 143, 0.18);
+}
+.product-image-wrap { height: 340px; overflow: hidden; background: #090f0c; }
+.product-image { width: 100%; height: 100%; object-fit: cover; transition: transform .45s ease, filter .45s ease; }
+.product-card:hover .product-image { transform: scale(1.08); filter: saturate(1.08); }
+.outline-neon {
+  border: 1px solid rgba(57, 255, 143, 0.6);
+  color: #d9ffe9;
+  background: rgba(7, 12, 10, 0.75);
+  transition: all .22s ease;
+}
+.outline-neon:hover {
+  color: #021008;
+  background: linear-gradient(135deg, #57ff9f, #1f9e64);
+}
+.stock-meter {
+  height: 5px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.11);
+}
+.stock-meter > span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #39ff8f, #168d56);
+}
+.featured-wrap {
+  position: relative;
+  border-radius: 26px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: linear-gradient(135deg, rgba(8, 14, 11, 0.9), rgba(5, 9, 7, 0.9));
+  overflow: hidden;
+}
+.featured-track {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 85%;
+  gap: 18px;
+  overflow: hidden;
+  scroll-behavior: smooth;
+}
+@media (min-width: 768px) {
+  .featured-track { grid-auto-columns: 52%; }
+}
+@media (min-width: 1024px) {
+  .featured-track { grid-auto-columns: 40%; }
+}
+.featured-slide {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  min-height: 340px;
+  background: #090f0c;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 22px 40px rgba(0,0,0,0.4);
+  cursor: pointer;
+}
+.featured-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.02);
+  transition: transform .4s ease;
+}
+.featured-slide:hover img { transform: scale(1.08); }
+.featured-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.7) 70%, rgba(0,0,0,0.9) 100%);
+  display: flex;
+  align-items: flex-end;
+  padding: 20px;
+}
+.featured-tag {
+  border: 1px solid rgba(57, 255, 143, 0.6);
+  background: rgba(7, 12, 10, 0.7);
+  color: #d9ffe9;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .16em;
+}
+.featured-controls button {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+}
+.featured-dots button {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+}
+.featured-dots button.active { background: #39ff8f; border-color: #39ff8f; }
+.swatch {
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.35);
+  cursor: pointer;
+}
+.swatch.active {
+  box-shadow: 0 0 10px rgba(57, 255, 143, 0.6);
+  border-color: #39ff8f;
+}
+.cart-panel {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: flex-end;
+  justify-content: flex-end;
+  background: rgba(0,0,0,0.6);
+  z-index: 50;
+}
+.cart-panel.active { display: flex; }
+.cart-card {
+  width: 100%;
+  max-width: 420px;
+  height: 100%;
+  background: #0a0f0c;
+  border-left: 1px solid rgba(255,255,255,0.1);
+  padding: 24px;
+  color: #fff;
+}
+.checkout-panel {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.7);
+  z-index: 60;
+}
+.checkout-panel.active { display: flex; }
+.checkout-card {
+  width: min(640px, 92vw);
+  background: #0b120f;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 18px;
+  padding: 24px;
+}
+.hidden{display:none!important;}
+.drop-chip {
+  border: 1px solid rgba(57, 255, 143, 0.6);
+  background: rgba(7, 12, 10, 0.78);
+  color: #d6ffe8;
+  border-radius: 999px;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 5px 10px;
+}
+.drop-chip.live {
+  background: rgba(36, 255, 144, 0.2);
+  border-color: rgba(57, 255, 143, 0.95);
+}
+.drop-chip.sold {
+  background: rgba(255, 66, 66, 0.2);
+  border-color: rgba(255, 66, 66, 0.82);
+  color: #ffd6d6;
+}
+.drop-chip.pre {
+  background: rgba(255, 196, 66, 0.16);
+  border-color: rgba(255, 196, 66, 0.8);
+  color: #ffecc2;
+}
+.drop-time {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #bbffe0;
+}
+.stock-critical {
+  color: #ff6b6b !important;
+}
+.stock-critical.fomo-blink {
+  text-shadow: 0 0 16px rgba(255, 83, 83, 0.4);
+}
+.hype-sub {
+  font-family: var(--display);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* ── Animated Badges ── */
+@keyframes badge-pulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(57,255,143,0.4); }
+  50% { box-shadow: 0 0 22px rgba(57,255,143,0.85); }
+}
+@keyframes badge-urgent {
+  0%, 100% { box-shadow: 0 0 8px rgba(255,83,83,0.4); }
+  50% { box-shadow: 0 0 22px rgba(255,83,83,0.85); }
+}
+.badge-new {
+  background: linear-gradient(135deg, #39ff8f, #1f9e64);
+  color: #021008;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  padding: 4px 10px;
+  border-radius: 6px;
+  animation: badge-pulse 2s ease-in-out infinite;
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 3;
+}
+.badge-last {
+  background: linear-gradient(135deg, #ff6b6b, #cc3333);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  padding: 4px 10px;
+  border-radius: 6px;
+  animation: badge-urgent 1.5s ease-in-out infinite;
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 3;
+}
+
+/* ── Second Image Hover ── */
+.product-image-wrap { position: relative; }
+.product-image-alt {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity .45s ease;
+  z-index: 1;
+}
+.product-card:hover .product-image-alt { opacity: 1; }
+
+/* ── Quick View Button ── */
+.quickview-btn {
+  position: absolute;
+  bottom: 14px;
+  right: 14px;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  background: rgba(0,0,0,0.6);
+  border: 1px solid rgba(57,255,143,0.5);
+  color: #d9ffe9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: all .3s ease;
+  z-index: 4;
+  cursor: pointer;
+}
+.product-card:hover .quickview-btn {
+  opacity: 1;
+  transform: translateY(0);
+}
+.quickview-btn:hover {
+  background: linear-gradient(135deg, #57ff9f, #1f9e64);
+  color: #021008;
+}
+
+/* ── Countdown on Card ── */
+.card-countdown {
+  font-family: 'Syne', monospace;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: #ffecc2;
+  text-shadow: 0 0 14px rgba(255,196,66,0.4);
+}
+.card-countdown.live {
+  color: #39ff8f;
+  text-shadow: 0 0 14px rgba(57,255,143,0.4);
+  font-size: 14px;
+}
+
+/* ── Quick View Modal ── */
+.quickview-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.78);
+  backdrop-filter: blur(10px);
+  z-index: 55;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+.quickview-overlay.active { display: flex; }
+.quickview-card {
+  width: min(900px, 94vw);
+  max-height: 90vh;
+  overflow-y: auto;
+  background: #0b120f;
+  border: 1px solid rgba(57,255,143,0.22);
+  border-radius: 22px;
+  display: grid;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 768px) {
+  .quickview-card { grid-template-columns: 1fr 1fr; }
+}
+.quickview-images {
+  position: relative;
+  min-height: 360px;
+  background: #090f0c;
+  overflow: hidden;
+}
+.quickview-images img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.quickview-info {
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.quickview-thumb {
+  width: 56px;
+  height: 56px;
+  border-radius: 10px;
+  object-fit: cover;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: border-color .2s;
+}
+.quickview-thumb.active,
+.quickview-thumb:hover {
+  border-color: #39ff8f;
+}
+
+/* ── Size Guide ── */
+.sizeguide-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.78);
+  backdrop-filter: blur(10px);
+  z-index: 56;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+.sizeguide-overlay.active { display: flex; }
+.sizeguide-card {
+  width: min(620px, 94vw);
+  max-height: 90vh;
+  overflow-y: auto;
+  background: #0b120f;
+  border: 1px solid rgba(57,255,143,0.22);
+  border-radius: 22px;
+  padding: 32px;
+}
+.size-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.size-table th, .size-table td {
+  padding: 10px 14px;
+  text-align: center;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.size-table th {
+  color: #39ff8f;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 11px;
+}
+.size-table tr:hover td {
+  background: rgba(57,255,143,0.06);
+}
+.size-table .size-highlight {
+  background: rgba(57,255,143,0.12);
+  font-weight: 700;
+  color: #39ff8f;
+}
+.silhouette-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 24px 0;
+}
+
+/* ── Drop Story Section ── */
+.drop-story-card {
+  background: linear-gradient(135deg, rgba(8,14,11,0.92), rgba(5,9,7,0.92));
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 22px;
+  padding: 32px;
+  position: relative;
+  overflow: hidden;
+}
+.drop-story-card::before {
+  content: '';
+  position: absolute;
+  top: -40%;
+  right: -15%;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(57,255,143,0.1), transparent 70%);
+  pointer-events: none;
+}
+.drop-story-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+@media (min-width: 768px) {
+  .drop-story-grid { grid-template-columns: auto 1fr; }
+}
+.drop-story-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 16px;
+  object-fit: cover;
+  border: 2px solid rgba(57,255,143,0.3);
+}
+.drop-story-quote {
+  font-style: italic;
+  color: rgba(255,255,255,0.7);
+  border-left: 3px solid rgba(57,255,143,0.5);
+  padding-left: 16px;
+  margin-top: 12px;
+}
+
+/* ── Status Filters ── */
+.status-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.status-btn {
+  border: 1px solid rgba(255,255,255,0.16);
+  background: rgba(8,12,10,0.85);
+  color: #e9f6ed;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all .24s ease;
+}
+.status-btn:hover, .status-btn.active {
+  border-color: var(--neon);
+  color: #021008;
+  background: linear-gradient(135deg, #57ff9f, #1f9e64);
+  box-shadow: 0 0 28px var(--neon-soft);
+}
+.status-btn[data-status="sold"].active {
+  background: linear-gradient(135deg, #ff6b6b, #cc3333);
+  border-color: #ff6b6b;
+  color: #fff;
+  box-shadow: 0 0 24px rgba(255,83,83,0.3);
+}
+.status-btn[data-status="pre"].active {
+  background: linear-gradient(135deg, #ffc842, #e0a800);
+  border-color: #ffc842;
+  color: #1a1000;
+  box-shadow: 0 0 24px rgba(255,196,66,0.3);
+}
+.product-card.sold-overlay {
+  opacity: 0.6;
+  filter: grayscale(0.25);
+}
+.product-card.sold-overlay::before {
+  content: 'AGOTADO';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%) rotate(-12deg);
+  font-family: 'Syne', sans-serif;
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  color: rgba(255,83,83,0.7);
+  text-shadow: 0 0 36px rgba(255,83,83,0.35);
+  z-index: 5;
+  pointer-events: none;
+}
+
+/* ── Fly to Cart Animation ── */
+@keyframes fly-to-cart {
+  0% { opacity: 1; transform: translate(0,0) scale(1); }
+  70% { opacity: 0.6; transform: translate(var(--fly-x), var(--fly-y)) scale(0.25); }
+  100% { opacity: 0; transform: translate(var(--fly-x), var(--fly-y)) scale(0); }
+}
+.fly-item {
+  position: fixed;
+  z-index: 200;
+  pointer-events: none;
+  border-radius: 14px;
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  box-shadow: 0 8px 30px rgba(57,255,143,0.4);
+  animation: fly-to-cart .7s cubic-bezier(0.2,0.8,0.3,1) forwards;
+}
+@keyframes cart-bump {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.35); }
+  100% { transform: scale(1); }
+}
+.cart-bump { animation: cart-bump .4s ease; }
+
+/* ── Size guide link ── */
+.sizeguide-link {
+  font-size: 11px;
+  color: rgba(57,255,143,0.7);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  transition: color .2s;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.sizeguide-link:hover { color: #39ff8f; }
+</style>
+</head>
+<body>
+<div class="noise"></div>
+
+<nav class="ssc-nav sticky top-0 z-40 border-b border-white/10 backdrop-blur-md bg-black/50">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+    <a href="sunsessionesp_fixed_v3.html" class="text-sm text-white/80 hover:text-white flex items-center gap-2">
+      <i class="ri-arrow-left-line"></i> Volver al inicio
+    </a>
+    <div class="flex items-center gap-3">
+      <button id="cartBtn" type="button" class="bg-white bg-opacity-10 hover:bg-opacity-20 text-white font-medium py-2 px-4 !rounded-button whitespace-nowrap flex items-center space-x-2">
+        <i class="ri-shopping-cart-line"></i>
+        <span>Carrito</span>
+        <span id="cartCountMain" class="bg-primary text-black font-bold px-2 rounded-full text-xs">0</span>
+      </button>
+      <a id="adminLink" href="login.html" class="text-xs uppercase tracking-[0.2em] text-white/70 hover:text-white hidden">Admin</a>
+    </div>
+  </div>
+</nav>
+
+<header class="ssc-page-hero max-w-7xl mx-auto px-6 pt-16 pb-10" data-parallax="0.11" data-parallax-mode="bg" style="--ssc-hero-image:url('https://images.unsplash.com/photo-1523398002811-999ca8dec234?auto=format&fit=crop&w=1800&q=80');--ssc-hero-position:center 32%;">
+  <div class="merch-hero-frame rounded-[28px] p-8 md:p-12 border border-white/10 relative overflow-hidden">
+    <div class="absolute -top-24 -right-24 w-72 h-72 rounded-full" style="background:radial-gradient(circle, rgba(57,255,143,.35) 0%, rgba(57,255,143,0) 68%);"></div>
+    <p class="neon-pill inline-flex px-4 py-1 rounded-full text-xs uppercase tracking-[0.2em] hype-sub">Zona de drops underground</p>
+    <h1 class="hero-title text-4xl sm:text-5xl md:text-6xl font-extrabold mt-4 display-font glitch-text" data-text="MERCH STORE">MERCH STORE</h1>
+    <p class="hero-title text-xl md:text-2xl text-white/85 font-bold hype-sub">Sin restock. Sin piedad.</p>
+    <p class="max-w-2xl mt-5 text-white/70 text-lg">Drops limitados exclusivo de artistas y diseñadores en tu ciudad.</p>
+  </div>
+</header>
+
+<main class="max-w-7xl mx-auto px-6 pb-16">
+  <section class="mb-8">
+    <div class="featured-wrap p-4">
+      <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+        <div>
+          <p class="text-xs uppercase tracking-[0.24em] text-white/60">Capa oculta</p>
+          <h3 class="hero-title text-2xl font-extrabold">No todo está hecho para verse.</h3>
+          <p class="text-white/70 text-sm">If you know, you know. Usa un token QR o un código de invitación para desbloquear drops invisibles.</p>
+        </div>
+        <div class="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
+          <input id="secretAccessInput" placeholder="Pega tu token o código de invitación" class="bg-black/40 border border-white/20 rounded px-3 py-2 text-sm min-w-[280px]">
+          <button id="secretAccessBtn" type="button" class="outline-neon px-4 py-2 rounded-lg text-xs uppercase tracking-[0.18em]">Desbloquear</button>
+        </div>
+      </div>
+      <div id="secretAccessState" class="text-xs text-white/60 mt-3"></div>
+    </div>
+  </section>
+  <section class="mb-12">
+    <div class="flex items-center justify-between mb-4">
+      <div>
+        <p class="text-xs uppercase tracking-[0.3em] text-white/60">Merch destacado</p>
+        <h2 class="hero-title text-3xl md:text-4xl font-extrabold">Drops limitados</h2>
+      </div>
+      <div class="featured-controls flex items-center gap-2">
+        <button id="featuredPrev" aria-label="Previous"><i class="ri-arrow-left-line"></i></button>
+        <button id="featuredNext" aria-label="Next"><i class="ri-arrow-right-line"></i></button>
+      </div>
+    </div>
+    <div class="featured-wrap p-4">
+      <div id="featuredTrack" class="featured-track"></div>
+      <div id="featuredDots" class="featured-dots flex gap-2 justify-center mt-4"></div>
+    </div>
+  </section>
+
+  <section id="dropStorySection" class="mb-12 hidden">
+    <div class="flex items-center gap-3 mb-4">
+      <div class="w-8 h-[2px] bg-gradient-to-r from-transparent to-emerald-400"></div>
+      <p class="text-xs uppercase tracking-[0.3em] text-white/60">La Historia del Drop</p>
+    </div>
+    <div id="dropStoryContent" class="drop-story-card"></div>
+  </section>
+
+  <section class="mb-8">
+    <div id="categoryFilters" class="flex flex-wrap gap-3">
+      <button class="filter-btn active px-4 py-2 rounded-full text-sm" data-category="ALL">TODO</button>
+      <button class="filter-btn px-4 py-2 rounded-full text-sm" data-category="HOODIES">HOODIES</button>
+      <button class="filter-btn px-4 py-2 rounded-full text-sm" data-category="T-SHIRTS">T-SHIRTS</button>
+      <button class="filter-btn px-4 py-2 rounded-full text-sm" data-category="HATS">HATS</button>
+      <button class="filter-btn px-4 py-2 rounded-full text-sm" data-category="ACCESSORIES">ACCESORIOS</button>
+      <button class="filter-btn px-4 py-2 rounded-full text-sm" data-category="VINYL MERCH">VINYL MERCH</button>
+    </div>
+    <div class="status-filters mt-4">
+      <button class="status-btn active" data-status="ALL">TODOS</button>
+      <button class="status-btn" data-status="live">DISPONIBLE</button>
+      <button class="status-btn" data-status="pre">PRÓXIMAMENTE</button>
+      <button class="status-btn" data-status="sold">AGOTADO</button>
+    </div>
+  </section>
+
+  <section>
+    <div id="loadingState" class="text-white/70 py-14 text-center">Cargando productos...</div>
+    <div id="emptyState" class="hidden text-white/70 py-14 text-center">No hay productos para esta categoria.</div>
+    <div id="productsGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6"></div>
+  </section>
+</main>
+
+<div id="cartModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden">
+<div id="cartContent" class="fixed top-0 right-0 h-full w-full max-w-md shadow-2xl transform transition-transform duration-300 translate-x-full" style="background:#0a0f0c;border-left:1px solid rgba(57,255,143,0.18);">
+<div class="flex flex-col h-full">
+<div class="flex justify-between items-center p-6" style="border-bottom:1px solid rgba(255,255,255,0.1);">
+<h3 class="text-2xl font-bold text-white">Carrito</h3>
+<button onclick="closeCart()" class="text-white/50 hover:text-white transition-colors">
+<i class="ri-close-line text-2xl"></i>
+</button>
+</div>
+<div class="flex-1 overflow-y-auto p-6 text-white" id="cartItems"></div>
+<div class="p-6" style="border-top:1px solid rgba(255,255,255,0.1);background:rgba(0,0,0,0.3);">
+<div class="flex justify-between items-center mb-4">
+<span class="text-xl font-bold text-white">Total:</span>
+<span class="text-xl font-bold" style="color:#39ff8f;" id="cartTotal">$0.00</span>
+</div>
+<button onclick="showCheckoutForm()" class="w-full font-bold py-3 px-6 !rounded-button transition-all flex items-center justify-center space-x-2" style="background:linear-gradient(135deg,#57ff9f,#1f9e64);color:#021008;box-shadow:0 0 24px rgba(57,255,143,0.3);">
+<i class="ri-shopping-cart-2-line"></i>
+<span>PROCEDER CON LA COMPRA</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+
+<div id="checkoutFormModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-[60] hidden">
+<div class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto" style="background:#0b120f;border:1px solid rgba(57,255,143,0.2);">
+<div class="p-6">
+<div class="flex justify-between items-center mb-6">
+<h3 class="text-2xl font-bold text-white">Completar pedido</h3>
+<button onclick="closeCheckoutForm()" class="text-white/50 hover:text-white transition-colors">
+<i class="ri-close-line text-2xl"></i>
+</button>
+</div>
+<form id="checkoutForm" action="#" method="POST" class="space-y-6">
+<div class="grid grid-cols-2 gap-6">
+<div>
+<label class="block text-white/70 font-medium mb-2">Nombre</label>
+<input id="coName" type="text" required class="w-full px-4 py-3 rounded-lg text-white placeholder-white/30 focus:outline-none" style="background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.15);">
+</div>
+<div>
+<label class="block text-white/70 font-medium mb-2">Apellido</label>
+<input id="coLastName" type="text" required class="w-full px-4 py-3 rounded-lg text-white placeholder-white/30 focus:outline-none" style="background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.15);">
+</div>
+</div>
+<div>
+<label class="block text-white/70 font-medium mb-2">Email</label>
+<input id="coEmail" type="email" required class="w-full px-4 py-3 rounded-lg text-white placeholder-white/30 focus:outline-none" style="background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.15);">
+</div>
+<div>
+<label class="block text-white/70 font-medium mb-2">Teléfono</label>
+<input id="coPhone" type="tel" required class="w-full px-4 py-3 rounded-lg text-white placeholder-white/30 focus:outline-none" style="background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.15);">
+</div>
+<div>
+<label class="block text-white/70 font-medium mb-2">Notas del pedido (opcional)</label>
+<textarea id="coNotes" rows="3" class="w-full px-4 py-3 rounded-lg text-white placeholder-white/30 focus:outline-none" style="background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.15);"></textarea>
+</div>
+<div>
+<label class="block text-white/70 font-medium mb-2">Resumen del pedido</label>
+<div id="checkoutSummary" class="p-4 rounded-lg text-white/80" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);"></div>
+</div>
+<div class="flex justify-between items-center font-bold text-lg text-white">
+<span>Monto Total:</span>
+<span id="checkoutTotal" style="color:#39ff8f;"></span>
+</div>
+<button type="submit" class="w-full font-bold py-3 px-6 !rounded-button transition-all flex items-center justify-center space-x-2" style="background:linear-gradient(135deg,#57ff9f,#1f9e64);color:#021008;box-shadow:0 0 24px rgba(57,255,143,0.3);">
+<i class="ri-secure-payment-line"></i>
+<span>COMPLETAR ORDEN</span>
+</button>
+</form>
+<div id="successPopup" class="fixed inset-0 bg-black/60 z-[70] hidden">
+<div class="fixed top-4 left-1/2 -translate-x-1/2 w-full max-w-md rounded-2xl shadow-2xl overflow-hidden" style="background:#0b120f;border:1px solid rgba(57,255,143,0.35);">
+<div class="h-1 w-full relative" style="background:rgba(57,255,143,0.2);">
+<div id="progressBar" class="absolute top-0 right-0 h-full transition-all duration-[10000ms]" style="width:100%;background:linear-gradient(90deg,#39ff8f,#1f9e64);"></div>
+</div>
+<div class="p-6">
+<div class="flex items-center justify-center mb-4">
+<i class="ri-checkbox-circle-line text-4xl" style="color:#39ff8f;"></i>
+</div>
+<h3 class="text-xl font-bold text-center text-white mb-2">GRACIAS POR TU COMPRA</h3>
+<p class="text-white/60 text-center">Nos pondremos en contacto contigo en breve para completar el proceso de pago.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Quick View Modal -->
+<div id="quickviewModal" class="quickview-overlay" onclick="if(event.target===this)closeQuickView()">
+<div class="quickview-card">
+  <div class="quickview-images">
+    <img id="qvMainImage" src="" alt="">
+  </div>
+  <div class="quickview-info">
+    <button onclick="closeQuickView()" class="self-end text-white/50 hover:text-white"><i class="ri-close-line text-2xl"></i></button>
+    <div>
+      <div id="qvBadge"></div>
+      <h3 id="qvTitle" class="text-2xl font-bold text-white mt-1"></h3>
+      <p id="qvMeta" class="text-white/60 text-sm mt-1"></p>
+    </div>
+    <div id="qvThumbs" class="flex gap-2 flex-wrap"></div>
+    <p id="qvPrice" class="text-3xl font-extrabold" style="font-family:'Syne',sans-serif;color:#39ff8f;"></p>
+    <div id="qvCountdown" class="card-countdown"></div>
+    <div>
+      <div class="flex items-center justify-between mb-2">
+        <p class="text-xs text-white/70 uppercase tracking-wider">Stock</p>
+        <p id="qvStockLabel" class="text-xs"></p>
+      </div>
+      <div class="stock-meter"><span id="qvStockBar" style="width:0%"></span></div>
+    </div>
+    <div class="flex items-center gap-4">
+      <div id="qvSwatches" class="flex gap-2"></div>
+      <select id="qvSizeSelect" class="bg-black/40 border border-white/10 rounded px-3 py-2 text-sm text-white"></select>
+      <span class="sizeguide-link" onclick="openSizeGuide()">Guía de tallas</span>
+    </div>
+    <div id="qvStory" class="text-sm text-white/60 hidden"></div>
+    <button id="qvAddCart" class="outline-neon py-3 rounded-lg text-sm uppercase tracking-[0.14em] font-bold w-full">AGREGAR AL CARRITO</button>
+    <a id="qvFullLink" href="#" class="text-center text-xs text-white/50 hover:text-white uppercase tracking-[0.14em]">Ver página completa →</a>
+  </div>
+</div>
+</div>
+
+<!-- Size Guide Modal -->
+<div id="sizeGuideModal" class="sizeguide-overlay" onclick="if(event.target===this)closeSizeGuide()">
+<div class="sizeguide-card">
+  <div class="flex justify-between items-center mb-6">
+    <h3 class="text-xl font-bold text-white">Guía de Tallas</h3>
+    <button onclick="closeSizeGuide()" class="text-white/50 hover:text-white"><i class="ri-close-line text-2xl"></i></button>
+  </div>
+  <div class="silhouette-wrap">
+    <svg viewBox="0 0 200 280" fill="none" xmlns="http://www.w3.org/2000/svg" style="height:180px;opacity:0.6;">
+      <path d="M100 10 C85 10 75 20 70 35 L55 35 C40 35 30 50 30 65 L30 85 C30 90 35 95 40 95 L60 95 L60 250 C60 260 68 268 78 268 L122 268 C132 268 140 260 140 250 L140 95 L160 95 C165 95 170 90 170 85 L170 65 C170 50 160 35 145 35 L130 35 C125 20 115 10 100 10Z" stroke="#39ff8f" stroke-width="1.5" stroke-opacity="0.5" fill="rgba(57,255,143,0.04)"/>
+      <line x1="30" y1="65" x2="60" y2="65" stroke="#39ff8f" stroke-width="0.8" stroke-dasharray="3 3" opacity="0.4"/>
+      <text x="25" y="62" fill="#39ff8f" font-size="8" text-anchor="end" opacity="0.6">Manga</text>
+      <line x1="60" y1="95" x2="140" y2="95" stroke="#39ff8f" stroke-width="0.8" stroke-dasharray="3 3" opacity="0.4"/>
+      <text x="100" y="108" fill="#39ff8f" font-size="8" text-anchor="middle" opacity="0.6">Pecho</text>
+      <line x1="100" y1="35" x2="100" y2="268" stroke="#39ff8f" stroke-width="0.8" stroke-dasharray="3 3" opacity="0.3"/>
+      <text x="108" y="160" fill="#39ff8f" font-size="8" opacity="0.6">Largo</text>
+    </svg>
+  </div>
+  <p class="text-xs text-white/50 text-center mb-4">Medidas en centímetros (cm). Las medidas pueden variar ±2 cm.</p>
+  <table class="size-table text-white/80">
+    <thead>
+      <tr><th>Talla</th><th>Pecho</th><th>Largo</th><th>Manga</th><th>Hombro</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>S</td><td>96</td><td>68</td><td>20</td><td>42</td></tr>
+      <tr><td>M</td><td>102</td><td>71</td><td>21</td><td>44</td></tr>
+      <tr><td>L</td><td>108</td><td>74</td><td>22</td><td>46</td></tr>
+      <tr><td>XL</td><td>114</td><td>77</td><td>23</td><td>48</td></tr>
+      <tr><td>XXL</td><td>120</td><td>80</td><td>24</td><td>50</td></tr>
+    </tbody>
+  </table>
+  <p class="text-xs text-white/40 text-center mt-4">Hoodies: añade +4 cm pecho / +3 cm largo vs. la tabla.</p>
+</div>
+</div>
+
+<script>
+const API_BASE = window.__SUNSESH_API_BASE || '';
+const API_URL = `${API_BASE}/api/merch/`;
+const ORDERS_URL = `${API_BASE}/api/orders`;
+const AUTH_ME = `${API_BASE}/api/auth/me`;
+const CART_KEY = 'ssc_cart';
+const ROLE_KEY = 'ssc_admin_role';
+const ACCESS_TOKEN_KEY = 'ssc_access_token';
+const INVITE_CODE_KEY = 'ssc_invite_code';
+
+let allProducts = [];
+let activeCategory = 'ALL';
+let activeStatus = 'ALL';
+let featuredIndex = 0;
+let featuredTimer = null;
+let dropHudTimer = null;
+let accessContext = { access: '', invite: '' };
+
+const productsGrid = document.getElementById('productsGrid');
+const loadingState = document.getElementById('loadingState');
+const emptyState = document.getElementById('emptyState');
+const featuredTrack = document.getElementById('featuredTrack');
+const featuredDots = document.getElementById('featuredDots');
+
+function getParam(name) {
+  return new URLSearchParams(window.location.search).get(name) || '';
+}
+
+function buildAccessQuery() {
+  const params = new URLSearchParams();
+  if (accessContext.access) {
+    params.set('access_token', accessContext.access);
+    params.set('access', accessContext.access);
+  }
+  if (accessContext.invite) {
+    params.set('invite_code', accessContext.invite);
+    params.set('invite', accessContext.invite);
+  }
+  return params.toString();
+}
+
+function withAccess(url) {
+  const qs = buildAccessQuery();
+  if (!qs) return url;
+  return url + (url.includes('?') ? '&' : '?') + qs;
+}
+
+function initAccessContext() {
+  const tokenFromUrl = getParam('access') || getParam('access_token');
+  const inviteFromUrl = getParam('invite') || getParam('invite_code');
+  const tokenFromStorage = localStorage.getItem(ACCESS_TOKEN_KEY) || '';
+  const inviteFromStorage = localStorage.getItem(INVITE_CODE_KEY) || '';
+  accessContext = {
+    access: (tokenFromUrl || tokenFromStorage || '').trim(),
+    invite: (inviteFromUrl || inviteFromStorage || '').trim(),
+  };
+  if (accessContext.access) localStorage.setItem(ACCESS_TOKEN_KEY, accessContext.access);
+  if (accessContext.invite) localStorage.setItem(INVITE_CODE_KEY, accessContext.invite);
+  const stateEl = document.getElementById('secretAccessState');
+  if (stateEl) {
+    if (accessContext.access || accessContext.invite) {
+      stateEl.textContent = `Acceso activo: ${accessContext.invite ? 'INVITACIÓN' : 'TOKEN SECRETO'}`;
+    } else {
+      stateEl.textContent = 'La capa visible está activa. Los drops ocultos requieren un código.';
+    }
+  }
+}
+
+function refreshDropHud() {
+  document.querySelectorAll('[data-product]').forEach((card) => {
+    const startRaw = card.getAttribute('data-drop-start') || '';
+    const endRaw = card.getAttribute('data-drop-end') || '';
+    const stock = Number(card.getAttribute('data-drop-stock') || 0);
+    const line = card.querySelector('[data-drop-time]');
+    const chip = card.querySelector('.drop-chip.pre, .drop-chip.live, .drop-chip.sold');
+    if (!line || !chip) return;
+
+    const now = Date.now();
+    const start = startRaw ? new Date(startRaw).getTime() : null;
+    const end = endRaw ? new Date(endRaw).getTime() : null;
+    let state = 'live';
+    if (stock <= 0 || (end && !Number.isNaN(end) && now > end)) state = 'sold';
+    else if (start && !Number.isNaN(start) && now < start) state = 'pre';
+
+    chip.classList.remove('pre', 'live', 'sold');
+    chip.classList.add(state);
+    if (state === 'sold') {
+      chip.textContent = 'AGOTADO';
+      line.textContent = 'SIN RESTOCK';
+      line.classList.remove('fomo-blink');
+    } else if (state === 'pre') {
+      chip.textContent = 'SALE EN';
+      line.textContent = `SALE EN ${formatCountdown((start || now) - now)}`;
+      line.classList.remove('fomo-blink');
+    } else {
+      chip.textContent = 'DISPONIBLE AHORA';
+      line.textContent = 'DISPONIBLE AHORA';
+      line.classList.add('fomo-blink');
+    }
+  });
+}
+
+function parseImages(imagesField) {
+  if (Array.isArray(imagesField)) return imagesField;
+  if (!imagesField) return [];
+  try {
+    const parsed = JSON.parse(imagesField);
+    return Array.isArray(parsed) ? parsed.filter(Boolean) : [];
+  } catch {
+    return String(imagesField).split(',').map(s => s.trim()).filter(Boolean);
+  }
+}
+
+function parseSizes(sizesField) {
+  if (Array.isArray(sizesField)) return sizesField;
+  return String(sizesField || '').split(',').map(s => s.trim()).filter(Boolean);
+}
+
+function normalizeCategory(raw) {
+  const value = String(raw || '').toLowerCase();
+  if (value.includes('hood')) return 'HOODIES';
+  if (value.includes('shirt') || value.includes('tee') || value.includes('playera')) return 'T-SHIRTS';
+  if (value.includes('hat') || value.includes('cap') || value.includes('gorra')) return 'HATS';
+  if (value.includes('vinyl') || value.includes('vinilo')) return 'VINYL MERCH';
+  if (value.includes('access') || value.includes('accesorio')) return 'ACCESSORIES';
+  return 'ACCESSORIES';
+}
+
+function parseDropMeta(description, fallbackId) {
+  const base = {
+    story: '',
+    drop_id: fallbackId || 'DROP 000',
+    collaborator: 'TSSC CORE',
+    drop_start: '',
+    drop_end: '',
+    event_link: '',
+    event_note: 'EN LÍNEA HASTA AGOTARSE',
+    no_restock: true,
+    visibility: 'public',
+    hidden_type: 'none',
+    required_level: 'member',
+    secret_token: '',
+    invite_code: '',
+    hidden_from: '',
+    hidden_until: ''
+  };
+  const raw = String(description || '').trim();
+  if (!raw) return base;
+  try {
+    const parsed = JSON.parse(raw);
+    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+      return {
+        ...base,
+        ...parsed,
+        story: String(parsed.story || parsed.description || '').trim(),
+        drop_id: String(parsed.drop_id || base.drop_id).trim() || base.drop_id,
+        collaborator: String(parsed.collaborator || base.collaborator).trim() || base.collaborator,
+        drop_start: String(parsed.drop_start || '').trim(),
+        drop_end: String(parsed.drop_end || '').trim(),
+        event_link: String(parsed.event_link || '').trim(),
+        event_note: String(parsed.event_note || base.event_note).trim() || base.event_note,
+        no_restock: parsed.no_restock !== false,
+        visibility: String(parsed.visibility || base.visibility).trim().toLowerCase() || base.visibility,
+        hidden_type: String(parsed.hidden_type || base.hidden_type).trim().toLowerCase() || base.hidden_type,
+        required_level: String(parsed.required_level || base.required_level).trim().toLowerCase() || base.required_level,
+        secret_token: String(parsed.secret_token || '').trim(),
+        invite_code: String(parsed.invite_code || '').trim(),
+        hidden_from: String(parsed.hidden_from || '').trim(),
+        hidden_until: String(parsed.hidden_until || '').trim()
+      };
+    }
+  } catch {}
+  return { ...base, story: raw };
+}
+
+function dropState(meta, stock) {
+  const now = Date.now();
+  const s = meta && meta.drop_start ? new Date(meta.drop_start).getTime() : null;
+  const e = meta && meta.drop_end ? new Date(meta.drop_end).getTime() : null;
+  if (Number(stock || 0) <= 0) return 'sold';
+  if (s && !Number.isNaN(s) && now < s) return 'pre';
+  if (e && !Number.isNaN(e) && now > e) return 'sold';
+  return 'live';
+}
+
+function formatCountdown(ms) {
+  const left = Math.max(0, ms);
+  const hh = Math.floor((left % 86400000) / 3600000);
+  const mm = Math.floor((left % 3600000) / 60000);
+  const ss = Math.floor((left % 60000) / 1000);
+  const dd = Math.floor(left / 86400000);
+  return `${String(dd).padStart(2, '0')}:${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}:${String(ss).padStart(2, '0')}`;
+}
+
+function formatMoney(value) {
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(value || 0));
+}
+
+function getStockProgress(stock) {
+  const capped = Math.max(0, Math.min(100, Number(stock || 0)));
+  return capped;
+}
+
+function normalizeProduct(item) {
+  const colors = Array.isArray(item.color_variants) ? item.color_variants : [];
+  const images = parseImages(item.images);
+  const dropId = `DROP ${String(item.id || '').replace(/[^a-z0-9]/gi, '').slice(0, 3).toUpperCase().padEnd(3, '0')}`;
+  const meta = parseDropMeta(item.description, dropId);
+  return {
+    ...item,
+    price: Number(item.price || 0),
+    stock: Number(item.stock || 0),
+    images,
+    sizes: parseSizes(item.sizes),
+    categoryLabel: normalizeCategory(item.category),
+    colors,
+    featured: item.featured === true || String(item.featured || '').toLowerCase() === 'true',
+    new_drop: item.new_drop === true || String(item.new_drop || '').toLowerCase() === 'true',
+    drop: meta
+  };
+}
+
+function getDefaultImage(item) {
+  const colorImage = item.colors && item.colors[0] && item.colors[0].image;
+  return colorImage || item.images[0] || 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=900&q=80';
+}
+
+function productCardTemplate(item) {
+  const accessSuffix = buildAccessQuery();
+  const image = getDefaultImage(item);
+  const altImage = item.images && item.images[1] ? item.images[1] : '';
+  const lowStock = item.stock > 0 && item.stock <= 8;
+  const soldOut = item.stock <= 0;
+  const state = dropState(item.drop, item.stock);
+  const stateLabel = state === 'pre' ? 'SALE EN' : (state === 'sold' ? 'AGOTADO' : 'DISPONIBLE AHORA');
+  const stockLabel = soldOut ? 'AGOTADO' : (lowStock ? `ÚLTIMO DROP: SOLO QUEDAN ${item.stock}` : `SOLO QUEDAN ${item.stock}`);
+  const collab = String(item.drop?.collaborator || 'TSSC CORE');
+  const dropId = String(item.drop?.drop_id || 'DROP 000');
+  const eventNote = String(item.drop?.event_note || 'EN LÍNEA HASTA AGOTARSE');
+  const eventLink = String(item.drop?.event_link || '').trim();
+  const eventCta = eventLink
+    ? `<a href="${eventLink}" class="text-[11px] uppercase tracking-[0.16em] text-emerald-300 hover:text-emerald-200">Evento vinculado</a>`
+    : `<span class="text-[11px] uppercase tracking-[0.16em] text-white/60">${eventNote}</span>`;
+  const swatches = (item.colors || []).map((c, idx) => {
+    const active = idx === 0 ? 'active' : '';
+    const style = `background:${c.color_hex || '#000000'}`;
+    return `<button class="swatch ${active}" data-color-name="${c.color_name || ''}" data-color-hex="${c.color_hex || ''}" data-color-image="${c.image || ''}" style="${style}" aria-label="${c.color_name || 'Color'}"></button>`;
+  }).join('');
+  const sizeOptions = (item.sizes && item.sizes.length ? item.sizes : ['ONE']).map(s => `<option value="${s}">${s}</option>`).join('');
+
+  // Animated badges
+  let badgeHtml = '';
+  if (item.new_drop && state !== 'sold') {
+    badgeHtml = '<span class="badge-new">NEW DROP</span>';
+  } else if (lowStock && state === 'live') {
+    badgeHtml = '<span class="badge-last">ÚLTIMAS UNIDADES</span>';
+  }
+
+  // Countdown display
+  let countdownHtml = '';
+  if (state === 'pre') {
+    const ms = new Date(item.drop?.drop_start).getTime() - Date.now();
+    countdownHtml = `<div class="card-countdown" data-countdown-target="${item.drop?.drop_start}">${formatCountdown(ms)}</div>`;
+  } else if (state === 'live') {
+    countdownHtml = `<div class="card-countdown live">● DISPONIBLE AHORA</div>`;
+  }
+
+  // Second image for hover
+  const altImageHtml = altImage ? `<img class="product-image-alt" src="${altImage}" alt="${item.product_name} alt">` : '';
+
+  const soldClass = state === 'sold' ? ' sold-overlay' : '';
+
+  return `
+    <article class="product-card slide-up${soldClass}" data-product="${item.id}" data-drop-start="${item.drop?.drop_start || ''}" data-drop-end="${item.drop?.drop_end || ''}" data-drop-stock="${item.stock || 0}" data-drop-state="${state}">
+      <div class="product-image-wrap relative">
+        <img class="product-image" src="${image}" alt="${item.product_name}">
+        ${altImageHtml}
+        ${badgeHtml}
+        <span class="absolute top-4 right-4 drop-chip ${state}" style="z-index:3">${stateLabel}</span>
+        <button class="quickview-btn" data-quickview="${item.id}" title="Vista rápida"><i class="ri-eye-line text-lg"></i></button>
+      </div>
+      <div class="p-5 space-y-4">
+        <div>
+          <h3 class="font-bold text-xl leading-tight">${item.product_name}</h3>
+          <p class="text-white/65 text-sm mt-1">${item.categoryLabel} · ${collab}</p>
+          <p class="text-2xl font-extrabold mt-2" style="font-family:'Syne',sans-serif;">${formatMoney(item.price)}</p>
+        </div>
+
+        <div class="space-y-1">
+          ${countdownHtml}
+          <div class="drop-time" data-drop-time>${state === 'pre' ? 'SALE EN 00:00:00:00' : (state === 'sold' ? 'SIN RESTOCK' : 'DISPONIBLE AHORA')}</div>
+          <div>${eventCta}</div>
+        </div>
+
+        <div class="flex items-center justify-between text-xs text-white/70">
+          <div class="flex items-center gap-2">${swatches}</div>
+          <div class="flex items-center gap-2">
+            <select class="size-select bg-black/40 border border-white/10 rounded px-2 py-1 text-xs">${sizeOptions}</select>
+            <span class="sizeguide-link" onclick="openSizeGuide()">Tallas</span>
+          </div>
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between text-xs text-white/70 mb-2">
+            <span>Stock</span>
+            <span class="${lowStock ? 'stock-critical fomo-blink' : ''}">${stockLabel}</span>
+          </div>
+          <div class="stock-meter"><span style="width:${getStockProgress(item.stock)}%"></span></div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <a href="product.html?id=${encodeURIComponent(item.id)}${accessSuffix ? '&'+accessSuffix : ''}" class="outline-neon text-center text-sm py-2 rounded-lg uppercase tracking-[0.12em]">VER PRODUCTO</a>
+          <button data-add-cart="${item.id}" class="outline-neon text-sm py-2 rounded-lg uppercase tracking-[0.12em]" ${(soldOut || state === 'pre') ? 'disabled style="opacity:.4;cursor:not-allowed"' : ''}>${state === 'pre' ? 'PRÓXIMAMENTE' : 'AGREGAR'}</button>
+        </div>
+      </div>
+    </article>
+  `;
+}
+
+function renderFeatured() {
+  const featured = allProducts.filter(p => p.featured || p.new_drop);
+  if (!featuredTrack) return;
+  featuredTrack.innerHTML = '';
+  featuredDots.innerHTML = '';
+  if (!featured.length) return;
+
+  featured.forEach((item, idx) => {
+    const state = dropState(item.drop, item.stock);
+    const tag = state === 'pre' ? 'DROP PRÓXIMO' : (state === 'sold' ? 'AGOTADO' : 'DISPONIBLE AHORA');
+    const slide = document.createElement('div');
+    slide.className = 'featured-slide slide-up';
+    slide.innerHTML = `
+      <img src="${getDefaultImage(item)}" alt="${item.product_name}">
+      <div class="featured-overlay">
+        <div class="space-y-2">
+          <div class="featured-tag">${tag}</div>
+          <div class="text-xl md:text-2xl font-extrabold">${item.product_name}</div>
+          <div class="text-xs uppercase tracking-[0.18em] text-white/75">${item.drop?.drop_id || 'DROP 000'} â€¢ ${item.drop?.collaborator || 'TSSC CORE'}</div>
+          <div class="text-white/80">${formatMoney(item.price)}</div>
+          <button class="outline-neon px-4 py-2 rounded-full text-xs uppercase tracking-[0.18em]">VER PRODUCTO</button>
+        </div>
+      </div>
+    `;
+    slide.addEventListener('click', () => {
+      const suffix = buildAccessQuery();
+      window.location.href = `product.html?id=${encodeURIComponent(item.id)}${suffix ? '&'+suffix : ''}`;
+    });
+    featuredTrack.appendChild(slide);
+
+    const dot = document.createElement('button');
+    dot.className = idx === 0 ? 'active' : '';
+    dot.addEventListener('click', () => goToFeatured(idx));
+    featuredDots.appendChild(dot);
+  });
+  featuredIndex = 0;
+  startFeaturedTimer();
+  if (window.sscRefreshReveals) window.sscRefreshReveals();
+}
+
+function goToFeatured(index) {
+  const slides = featuredTrack.children;
+  if (!slides.length) return;
+  const max = slides.length - 1;
+  featuredIndex = index < 0 ? max : index > max ? 0 : index;
+  const slide = slides[featuredIndex];
+  const gap = 18;
+  const scrollLeft = slide.offsetLeft - gap;
+  featuredTrack.scrollTo({ left: scrollLeft, behavior: 'smooth' });
+  [...featuredDots.children].forEach((dot, i) => dot.classList.toggle('active', i === featuredIndex));
+}
+
+function startFeaturedTimer() {
+  if (featuredTimer) clearInterval(featuredTimer);
+  featuredTimer = setInterval(() => goToFeatured(featuredIndex + 1), 3600);
+}
+
+/* ── Quick View ── */
+function openQuickView(productId) {
+  const item = allProducts.find(p => p.id === productId);
+  if (!item) return;
+  const modal = document.getElementById('quickviewModal');
+  const mainImg = document.getElementById('qvMainImage');
+  const title = document.getElementById('qvTitle');
+  const meta = document.getElementById('qvMeta');
+  const price = document.getElementById('qvPrice');
+  const countdown = document.getElementById('qvCountdown');
+  const stockLabel = document.getElementById('qvStockLabel');
+  const stockBar = document.getElementById('qvStockBar');
+  const swatches = document.getElementById('qvSwatches');
+  const sizeSelect = document.getElementById('qvSizeSelect');
+  const addBtn = document.getElementById('qvAddCart');
+  const fullLink = document.getElementById('qvFullLink');
+  const thumbsWrap = document.getElementById('qvThumbs');
+  const badge = document.getElementById('qvBadge');
+  const storyEl = document.getElementById('qvStory');
+  if (!modal) return;
+
+  const image = getDefaultImage(item);
+  mainImg.src = image;
+  title.textContent = item.product_name;
+  meta.textContent = `${item.categoryLabel} · ${item.drop?.collaborator || 'TSSC CORE'} · ${item.drop?.drop_id || 'DROP 000'}`;
+  price.textContent = formatMoney(item.price);
+
+  const state = dropState(item.drop, item.stock);
+  if (state === 'pre') {
+    const ms = new Date(item.drop?.drop_start).getTime() - Date.now();
+    countdown.className = 'card-countdown';
+    countdown.textContent = `SALE EN ${formatCountdown(ms)}`;
+  } else if (state === 'live') {
+    countdown.className = 'card-countdown live';
+    countdown.textContent = '● DISPONIBLE AHORA';
+  } else {
+    countdown.className = 'card-countdown';
+    countdown.textContent = 'AGOTADO — SIN RESTOCK';
+    countdown.style.color = '#ff6b6b';
+  }
+
+  const lowStock = item.stock > 0 && item.stock <= 8;
+  stockLabel.textContent = item.stock <= 0 ? 'AGOTADO' : `QUEDAN ${item.stock}`;
+  stockLabel.className = lowStock ? 'text-xs stock-critical fomo-blink' : 'text-xs text-white/70';
+  stockBar.style.width = getStockProgress(item.stock) + '%';
+
+  // Badge
+  if (item.new_drop && state !== 'sold') {
+    badge.innerHTML = '<span class="badge-new" style="position:static">NEW DROP</span>';
+  } else if (lowStock && state === 'live') {
+    badge.innerHTML = '<span class="badge-last" style="position:static">ÚLTIMAS UNIDADES</span>';
+  } else {
+    badge.innerHTML = '';
+  }
+
+  // Thumbnails
+  thumbsWrap.innerHTML = '';
+  const allImgs = item.images.length ? item.images : [image];
+  allImgs.forEach((img, i) => {
+    const thumb = document.createElement('img');
+    thumb.className = 'quickview-thumb' + (i === 0 ? ' active' : '');
+    thumb.src = img;
+    thumb.alt = `${item.product_name} ${i+1}`;
+    thumb.addEventListener('click', () => {
+      mainImg.src = img;
+      thumbsWrap.querySelectorAll('.quickview-thumb').forEach(t => t.classList.remove('active'));
+      thumb.classList.add('active');
+    });
+    thumbsWrap.appendChild(thumb);
+  });
+
+  // Swatches
+  swatches.innerHTML = (item.colors || []).map((c, idx) =>
+    `<button class="swatch ${idx===0?'active':''}" data-color-image="${c.image||''}" style="background:${c.color_hex||'#000'}" aria-label="${c.color_name||'Color'}"></button>`
+  ).join('');
+  swatches.querySelectorAll('.swatch').forEach(s => {
+    s.addEventListener('click', () => {
+      swatches.querySelectorAll('.swatch').forEach(x => x.classList.remove('active'));
+      s.classList.add('active');
+      if (s.dataset.colorImage) mainImg.src = s.dataset.colorImage;
+    });
+  });
+
+  // Sizes
+  const sizes = item.sizes && item.sizes.length ? item.sizes : ['ONE'];
+  sizeSelect.innerHTML = sizes.map(s => `<option value="${s}">${s}</option>`).join('');
+
+  // Story
+  if (item.drop?.story) {
+    storyEl.textContent = item.drop.story;
+    storyEl.classList.remove('hidden');
+  } else {
+    storyEl.classList.add('hidden');
+  }
+
+  // Add to cart button
+  const soldOut = item.stock <= 0;
+  const blocked = soldOut || state === 'pre';
+  addBtn.disabled = blocked;
+  addBtn.style.opacity = blocked ? '0.4' : '';
+  addBtn.style.cursor = blocked ? 'not-allowed' : '';
+  addBtn.textContent = soldOut ? 'AGOTADO' : (state === 'pre' ? 'PRÓXIMAMENTE' : 'AGREGAR AL CARRITO');
+  addBtn.onclick = () => {
+    const size = sizeSelect.value;
+    const activeColor = swatches.querySelector('.swatch.active');
+    const color = activeColor ? activeColor.getAttribute('aria-label') : '';
+    addToCart(item.id, { size, color });
+    closeQuickView();
+  };
+
+  // Full link
+  const suffix = buildAccessQuery();
+  fullLink.href = `product.html?id=${encodeURIComponent(item.id)}${suffix ? '&'+suffix : ''}`;
+
+  modal.classList.add('active');
+}
+
+function closeQuickView() {
+  const modal = document.getElementById('quickviewModal');
+  if (modal) modal.classList.remove('active');
+}
+
+/* ── Size Guide ── */
+function openSizeGuide() {
+  const modal = document.getElementById('sizeGuideModal');
+  if (modal) modal.classList.add('active');
+}
+
+function closeSizeGuide() {
+  const modal = document.getElementById('sizeGuideModal');
+  if (modal) modal.classList.remove('active');
+}
+
+/* ── Fly to Cart Animation ── */
+function flyToCart(imgSrc, startEl) {
+  const cartIcon = document.getElementById('cartBtn');
+  if (!cartIcon || !startEl) return;
+  const startRect = startEl.getBoundingClientRect();
+  const endRect = cartIcon.getBoundingClientRect();
+
+  const flyEl = document.createElement('img');
+  flyEl.className = 'fly-item';
+  flyEl.src = imgSrc;
+  flyEl.style.left = startRect.left + 'px';
+  flyEl.style.top = startRect.top + 'px';
+  flyEl.style.setProperty('--fly-x', (endRect.left - startRect.left) + 'px');
+  flyEl.style.setProperty('--fly-y', (endRect.top - startRect.top) + 'px');
+  document.body.appendChild(flyEl);
+
+  flyEl.addEventListener('animationend', () => {
+    flyEl.remove();
+    cartIcon.classList.add('cart-bump');
+    setTimeout(() => cartIcon.classList.remove('cart-bump'), 400);
+  });
+}
+
+/* ── Drop Story Render ── */
+function renderDropStory() {
+  const section = document.getElementById('dropStorySection');
+  const content = document.getElementById('dropStoryContent');
+  if (!section || !content) return;
+
+  const storyProduct = allProducts.find(p => p.drop?.story && (p.featured || p.new_drop));
+  if (!storyProduct) {
+    section.classList.add('hidden');
+    return;
+  }
+
+  const drop = storyProduct.drop;
+  const img = getDefaultImage(storyProduct);
+  content.innerHTML = `
+    <div class="drop-story-grid">
+      <div class="flex flex-col items-center gap-3">
+        <img class="drop-story-avatar" src="${img}" alt="${storyProduct.product_name}">
+        <span class="drop-chip ${dropState(drop, storyProduct.stock)}" style="white-space:nowrap">${drop.drop_id || 'DROP 000'}</span>
+      </div>
+      <div>
+        <p class="text-xs uppercase tracking-[0.2em] text-white/50 mb-1">${drop.collaborator || 'TSSC CORE'}</p>
+        <h4 class="text-xl font-bold text-white mb-2">${storyProduct.product_name}</h4>
+        <div class="drop-story-quote">${drop.story}</div>
+        <div class="flex flex-wrap gap-3 mt-4">
+          <span class="text-xs text-white/50 uppercase tracking-wider">${drop.event_note || 'EN LÍNEA HASTA AGOTARSE'}</span>
+          ${drop.event_link ? `<a href="${drop.event_link}" class="text-xs uppercase tracking-wider text-emerald-400 hover:text-emerald-300">Ver evento →</a>` : ''}
+        </div>
+      </div>
+    </div>
+  `;
+  section.classList.remove('hidden');
+}
+
+/* ── Countdown Ticker for Cards ── */
+function tickCardCountdowns() {
+  document.querySelectorAll('[data-countdown-target]').forEach(el => {
+    const target = new Date(el.getAttribute('data-countdown-target')).getTime();
+    const ms = target - Date.now();
+    if (ms <= 0) {
+      el.textContent = '● DISPONIBLE AHORA';
+      el.className = 'card-countdown live';
+      el.removeAttribute('data-countdown-target');
+    } else {
+      el.textContent = formatCountdown(ms);
+    }
+  });
+}
+
+function renderProducts() {
+  let filtered = allProducts.filter(item => activeCategory === 'ALL' ? true : item.categoryLabel === activeCategory);
+
+  // Apply status filter
+  if (activeStatus !== 'ALL') {
+    filtered = filtered.filter(item => dropState(item.drop, item.stock) === activeStatus);
+  }
+
+  loadingState.classList.add('hidden');
+  emptyState.classList.toggle('hidden', filtered.length > 0);
+  productsGrid.innerHTML = filtered.map(productCardTemplate).join('');
+
+  document.querySelectorAll('.product-card').forEach(card => {
+    const swatches = card.querySelectorAll('.swatch');
+    const img = card.querySelector('.product-image');
+    if (img) card.dataset.currentImage = img.getAttribute('src') || '';
+    if (swatches.length) {
+      const first = swatches[0];
+      card.dataset.selectedColor = first.dataset.colorName || '';
+      swatches.forEach(swatch => {
+        swatch.addEventListener('click', () => {
+          swatches.forEach(s => s.classList.remove('active'));
+          swatch.classList.add('active');
+          card.dataset.selectedColor = swatch.dataset.colorName || '';
+          const swatchImg = swatch.dataset.colorImage || '';
+          if (swatchImg && img && card.dataset.currentImage !== swatchImg) {
+            img.classList.add('ssc-image-swapping');
+            window.setTimeout(() => {
+              img.src = swatchImg;
+              card.dataset.currentImage = swatchImg;
+            }, 120);
+            window.setTimeout(() => {
+              img.classList.remove('ssc-image-swapping');
+            }, 320);
+          }
+        });
+      });
+    }
+  });
+
+  // Bind add-to-cart with fly animation
+  document.querySelectorAll('[data-add-cart]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const card = btn.closest('.product-card');
+      const sizeSelect = card ? card.querySelector('.size-select') : null;
+      const size = sizeSelect ? sizeSelect.value : '';
+      const color = card ? card.dataset.selectedColor || '' : '';
+      // Trigger fly animation
+      const imgEl = card ? card.querySelector('.product-image') : null;
+      if (imgEl) flyToCart(imgEl.src, imgEl);
+      addToCart(btn.dataset.addCart, { size, color });
+    });
+  });
+
+  // Bind quick-view buttons
+  document.querySelectorAll('[data-quickview]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      openQuickView(btn.dataset.quickview);
+    });
+  });
+
+  refreshDropHud();
+  if (dropHudTimer) clearInterval(dropHudTimer);
+  dropHudTimer = setInterval(() => { refreshDropHud(); tickCardCountdowns(); }, 1000);
+  if (window.sscRefreshReveals) window.sscRefreshReveals();
+}
+
+function readCart() {
+  try {
+    return JSON.parse(localStorage.getItem(CART_KEY) || '[]');
+  } catch {
+    return [];
+  }
+}
+
+function saveCart(cart) {
+  localStorage.setItem(CART_KEY, JSON.stringify(cart));
+}
+
+function addToCart(productId, opts = {}) {
+  const product = allProducts.find(p => p.id === productId);
+  if (!product || product.stock <= 0) return;
+  const state = dropState(product.drop, product.stock);
+  if (state === 'pre') return;
+
+  const color = opts.color || '';
+  const size = opts.size || '';
+  const sku = `${product.id}::${color || 'default'}::${size || 'ONE'}`;
+
+  const cart = readCart();
+  const idx = cart.findIndex(i => i.sku === sku);
+  if (idx >= 0) {
+    cart[idx].qty += 1;
+  } else {
+    cart.push({ sku, id: product.id, title: product.product_name, price: product.price, qty: 1, color, size });
+  }
+  saveCart(cart);
+  renderCart();
+  openCart();
+}
+
+function renderCart() {
+  const cart = readCart();
+  const items = document.getElementById('cartItems');
+  const totalEl = document.getElementById('cartTotal');
+  const countEl = document.getElementById('cartCountMain');
+  if (!items || !totalEl) return;
+  items.innerHTML = '';
+  let total = 0;
+  let totalItems = 0;
+  cart.forEach((it, idx) => {
+    total += (it.price || 0) * (it.qty || 1);
+    totalItems += it.qty || 0;
+    const row = document.createElement('div');
+    row.className = 'flex justify-between items-center p-4 rounded';
+    row.style.cssText = 'background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);';
+    const meta = [it.color ? `Color: ${it.color}` : '', it.size ? `Talla: ${it.size}` : '', `Qty: ${it.qty}`].filter(Boolean).join(' - ');
+    row.innerHTML = `
+      <div>
+        <div class="font-semibold text-white">${it.title}</div>
+        <div class="text-xs" style="color:rgba(255,255,255,0.5)">${meta}</div>
+      </div>
+      <div class="flex items-center space-x-4">
+        <span class="text-white font-semibold">$${((it.price || 0) * (it.qty || 1)).toFixed(2)}</span>
+        <button data-remove="${idx}" class="text-red-500 hover:text-red-700"><i class="ri-delete-bin-line"></i></button>
+      </div>
+    `;
+    items.appendChild(row);
+  });
+  totalEl.textContent = formatMoney(total);
+  if (countEl) countEl.textContent = totalItems;
+  items.querySelectorAll('[data-remove]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const index = Number(btn.dataset.remove);
+      const next = readCart();
+      next.splice(index, 1);
+      saveCart(next);
+      renderCart();
+    });
+  });
+}
+
+function openCart() {
+  const overlay = document.getElementById('cartModal');
+  const content = document.getElementById('cartContent');
+  if (!overlay || !content) return;
+  overlay.classList.remove('hidden');
+  requestAnimationFrame(() => {
+    content.classList.remove('translate-x-full');
+    content.classList.add('translate-x-0');
+  });
+}
+
+function closeCart() {
+  const overlay = document.getElementById('cartModal');
+  const content = document.getElementById('cartContent');
+  if (!overlay || !content) return;
+  content.classList.add('translate-x-full');
+  content.classList.remove('translate-x-0');
+  setTimeout(() => {
+    overlay.classList.add('hidden');
+  }, 300);
+}
+
+function showCheckoutForm() {
+  const modal = document.getElementById('checkoutFormModal');
+  const summary = document.getElementById('checkoutSummary');
+  const total = document.getElementById('checkoutTotal');
+  const cart = readCart();
+  if (!modal || !summary || !total || !cart.length) return;
+  const summaryHTML = cart.map(item => `
+    <div class="flex justify-between items-center py-2">
+      <span>${item.title} ${item.color ? `(${item.color})` : ''} ${item.size ? `- ${item.size}` : ''} x${item.qty || 1}</span>
+      <span>$${((item.price || 0) * (item.qty || 1)).toFixed(2)}</span>
+    </div>
+  `).join('');
+  summary.innerHTML = summaryHTML;
+  total.textContent = formatMoney(cart.reduce((sum, it) => sum + (it.price || 0) * (it.qty || 1), 0));
+  modal.classList.remove('hidden');
+}
+
+function closeCheckoutForm() {
+  const modal = document.getElementById('checkoutFormModal');
+  if (modal) modal.classList.add('hidden');
+}
+
+function showSuccessPopup() {
+  const popup = document.getElementById('successPopup');
+  const progressBar = document.getElementById('progressBar');
+  if (!popup || !progressBar) return;
+  popup.classList.remove('hidden');
+  progressBar.style.width = '100%';
+  requestAnimationFrame(() => {
+    progressBar.style.width = '0%';
+  });
+  setTimeout(() => {
+    closeSuccessPopup();
+  }, 10000);
+}
+
+function closeSuccessPopup() {
+  const popup = document.getElementById('successPopup');
+  if (popup) popup.classList.add('hidden');
+}
+
+async function submitOrder(evt) {
+  evt.preventDefault();
+  const cart = readCart();
+  if (!cart.length) return;
+  const payload = {
+    name: document.getElementById('coName').value.trim(),
+    last_name: document.getElementById('coLastName').value.trim(),
+    phone: document.getElementById('coPhone').value.trim(),
+    email: document.getElementById('coEmail').value.trim(),
+    notes: document.getElementById('coNotes').value.trim(),
+    products: cart,
+  };
+  try {
+    const res = await fetch(ORDERS_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new Error('order_failed');
+    localStorage.removeItem(CART_KEY);
+    renderCart();
+    closeCheckoutForm();
+    closeCart();
+    showSuccessPopup();
+  } catch {
+    const errorMessage = document.createElement('div');
+    errorMessage.className = 'fixed top-4 right-4 bg-red-100 text-red-700 px-6 py-4 rounded-lg shadow-lg z-50';
+    errorMessage.innerHTML = `
+      <div class="flex items-center space-x-2">
+        <i class="ri-error-warning-line text-xl"></i>
+        <span>No se pudo enviar el pedido. Intenta de nuevo.</span>
+      </div>
+    `;
+    document.body.appendChild(errorMessage);
+    setTimeout(() => {
+      errorMessage.remove();
+    }, 5000);
+  }
+}
+
+async function loadProducts() {
+  if (loadingState) loadingState.classList.remove('hidden');
+  try {
+    const res = await fetch(withAccess(API_URL), { credentials: 'include', headers: { 'Cache-Control': 'no-cache' }, cache: 'no-store' });
+    if (!res.ok) throw new Error('fetch_failed');
+    const data = await res.json();
+    allProducts = Array.isArray(data)
+      ? data
+          .filter(item => String(item.status || 'ACTIVE').toUpperCase() === 'ACTIVE')
+          .map(normalizeProduct)
+      : [];
+    renderFeatured();
+    renderProducts();
+    renderDropStory();
+  } catch {
+    if (loadingState) loadingState.textContent = 'No se pudieron cargar productos desde el servidor.';
+  }
+}
+
+function bindFilters() {
+  document.querySelectorAll('[data-category]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('[data-category]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeCategory = btn.dataset.category;
+      renderProducts();
+    });
+  });
+  document.querySelectorAll('[data-status]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('[data-status]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeStatus = btn.dataset.status;
+      renderProducts();
+    });
+  });
+}
+
+function bindFeaturedControls() {
+  const prev = document.getElementById('featuredPrev');
+  const next = document.getElementById('featuredNext');
+  if (prev) prev.addEventListener('click', () => goToFeatured(featuredIndex - 1));
+  if (next) next.addEventListener('click', () => goToFeatured(featuredIndex + 1));
+}
+
+function bindCart() {
+  const cartBtn = document.getElementById('cartBtn');
+  if (cartBtn) cartBtn.addEventListener('click', openCart);
+  const form = document.getElementById('checkoutForm');
+  if (form) form.addEventListener('submit', submitOrder);
+  const cartModal = document.getElementById('cartModal');
+  if (cartModal) cartModal.addEventListener('click', function(e) { if (e.target === this) closeCart(); });
+  const checkoutModal = document.getElementById('checkoutFormModal');
+  if (checkoutModal) checkoutModal.addEventListener('click', function(e) { if (e.target === this) closeCheckoutForm(); });
+  const successPopup = document.getElementById('successPopup');
+  if (successPopup) successPopup.addEventListener('click', function(e) { if (e.target === this) closeSuccessPopup(); });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      closeQuickView();
+      closeSizeGuide();
+      closeCheckoutForm();
+      closeSuccessPopup();
+      closeCart();
+    }
+  });
+}
+
+function bindSecretAccess() {
+  const input = document.getElementById('secretAccessInput');
+  const btn = document.getElementById('secretAccessBtn');
+  if (input) {
+    input.value = accessContext.invite || accessContext.access || '';
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        if (btn) btn.click();
+      }
+    });
+  }
+  if (!btn) return;
+  btn.addEventListener('click', () => {
+    const raw = String((input && input.value) || '').trim();
+    if (!raw) {
+      localStorage.removeItem(ACCESS_TOKEN_KEY);
+      localStorage.removeItem(INVITE_CODE_KEY);
+      accessContext = { access: '', invite: '' };
+      initAccessContext();
+      loadProducts();
+      return;
+    }
+    if (/^INV-/i.test(raw)) {
+      accessContext = { access: '', invite: raw };
+      localStorage.removeItem(ACCESS_TOKEN_KEY);
+      localStorage.setItem(INVITE_CODE_KEY, raw);
+    } else {
+      accessContext = { access: raw, invite: '' };
+      localStorage.setItem(ACCESS_TOKEN_KEY, raw);
+      localStorage.removeItem(INVITE_CODE_KEY);
+    }
+    initAccessContext();
+    loadProducts();
+  });
+}
+async function applyAdminLink() {
+  const link = document.getElementById('adminLink');
+  if (!link) return;
+  link.classList.add('hidden');
+  try {
+    const res = await fetch(AUTH_ME, { credentials: 'include' });
+    if (!res.ok) return;
+    const data = await res.json();
+    const role = String(data && data.user && data.user.role || '').toUpperCase();
+    if (role === 'ADMIN') {
+      link.classList.remove('hidden');
+    }
+  } catch {}
+}
+
+initAccessContext();
+bindFilters();
+bindFeaturedControls();
+bindCart();
+bindSecretAccess();
+loadProducts();
+renderCart();
+applyAdminLink();
+setInterval(loadProducts, 30000);
+window.addEventListener('focus', loadProducts);
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) loadProducts();
+});
+</script>
+  <script src="assets/js/site.js?v=20260327-3"></script>
+  <script src="assets/js/ssc-ux.js" defer></script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

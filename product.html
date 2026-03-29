@@ -1,0 +1,964 @@
+﻿<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<script>
+(function(){
+  const explicit = (window.SUNSESH_API || '').trim();
+ const currentPort = String(location.port || '');
+ const hasLikelyDevPort = !!currentPort && !['80', '443', '4000'].includes(currentPort);
+ const isLanIp = /^\d{1,3}(?:\.\d{1,3}){3}$/.test(location.hostname);
+ const preferLocalApi = isLanIp || location.hostname === 'localhost' || location.hostname === '127.0.0.1' || hasLikelyDevPort;
+  const origin = (location.origin && location.origin !== 'null') ? location.origin : '';
+ const base = explicit || (preferLocalApi ? (location.protocol + '//' + location.hostname + ':4000') : origin);
+  window.__SUNSESH_API_BASE = String(base || '').replace(/\/$/, '');
+})();
+</script>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Producto  Sun Session Club</title>
+  <link href="assets/css/site.css?v=20260329-01" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;700;800&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<style>
+:root {
+  --bg: #050806;
+  --panel: #0a110d;
+  --line: rgba(0, 255, 170, 0.35);
+  --neon: var(--primary);
+}
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font);
+  color: var(--text);
+  background: var(--bg);
+}
+.panel {
+  background: linear-gradient(180deg, rgba(11, 17, 14, 0.95), rgba(7, 10, 8, 0.95));
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 24px;
+}
+.main-image {
+  width: 100%;
+  height: 620px;
+  object-fit: cover;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #070d09;
+}
+.thumb {
+  width: 86px;
+  height: 86px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  overflow: hidden;
+  cursor: pointer;
+  transition: all .2s ease;
+}
+.thumb.active,
+.thumb:hover {
+  border-color: var(--neon);
+  box-shadow: 0 0 20px rgba(59, 255, 145, 0.24);
+}
+.size-btn {
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(7, 12, 9, 0.7);
+  color: #f3fff8;
+}
+.size-btn.active,
+.size-btn:hover {
+  border-color: var(--neon);
+  background: linear-gradient(130deg, #56ffa0, #1e935d);
+  color: #031009;
+}
+.cta {
+  border: 1px solid var(--line);
+  background: linear-gradient(130deg, #56ffa0, #1e935d);
+  color: #031009;
+  font-weight: 800;
+  letter-spacing: .08em;
+}
+.cta:hover { filter: brightness(1.05); }
+.outline-neon {
+  border: 1px solid rgba(59, 255, 145, 0.6);
+  color: #e6fff1;
+  background: rgba(7, 12, 9, 0.7);
+}
+.outline-neon:hover { background: rgba(18, 32, 24, 0.9); }
+.swatch {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.35);
+  cursor: pointer;
+}
+.swatch.active {
+  box-shadow: 0 0 10px rgba(59, 255, 145, 0.6);
+  border-color: #3bff91;
+}
+.drop-chip {
+  border: 1px solid rgba(57, 255, 143, 0.6);
+  background: rgba(7, 12, 10, 0.78);
+  color: #d6ffe8;
+  border-radius: 999px;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 5px 10px;
+}
+.drop-chip.live {
+  background: rgba(36, 255, 144, 0.2);
+  border-color: rgba(57, 255, 143, 0.95);
+}
+.drop-chip.sold {
+  background: rgba(255, 66, 66, 0.2);
+  border-color: rgba(255, 66, 66, 0.82);
+  color: #ffd6d6;
+}
+.drop-chip.pre {
+  background: rgba(255, 196, 66, 0.16);
+  border-color: rgba(255, 196, 66, 0.8);
+  color: #ffecc2;
+}
+.drop-time {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #bbffe0;
+}
+.stock-critical {
+  color: #ff6b6b;
+  text-shadow: 0 0 14px rgba(255, 80, 80, 0.36);
+}
+.cart-panel {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: flex-end;
+  justify-content: flex-end;
+  background: rgba(0,0,0,0.6);
+  z-index: 50;
+}
+.cart-panel.active { display: flex; }
+.cart-card {
+  width: 100%;
+  max-width: 420px;
+  height: 100%;
+  background: #0a0f0c;
+  border-left: 1px solid rgba(255,255,255,0.1);
+  padding: 24px;
+  color: #fff;
+}
+.checkout-panel {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.7);
+  z-index: 60;
+}
+.checkout-panel.active { display: flex; }
+.checkout-card {
+  width: min(640px, 92vw);
+  background: #0b120f;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 18px;
+  padding: 24px;
+}
+.hidden{display:none!important;}
+</style>
+</head>
+<body>
+<nav class="ssc-nav border-b border-white/10 backdrop-blur-md bg-black/45 sticky top-0 z-40">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+<a id="backToMerch" href="merch.html" class="text-sm text-white/80 hover:text-white flex items-center gap-2"><i class="ri-arrow-left-line"></i> Volver a Merch</a>
+    <div class="flex items-center gap-3">
+      <button id="cartBtn" type="button" class="bg-white bg-opacity-10 hover:bg-opacity-20 text-white font-medium py-2 px-4 !rounded-button whitespace-nowrap flex items-center space-x-2">
+        <i class="ri-shopping-cart-line"></i>
+        <span>Carrito</span>
+        <span id="cartCountMain" class="bg-primary text-black font-bold px-2 rounded-full text-xs">0</span>
+      </button>
+      <a id="adminLink" href="login.html" class="text-xs uppercase tracking-[0.2em] text-white/70 hidden">Admin</a>
+    </div>
+  </div>
+</nav>
+
+<main class="max-w-7xl mx-auto px-6 py-10">
+  <div id="loading" class="text-center text-white/70 py-12">Cargando producto...</div>
+  <div id="notFound" class="hidden text-center text-white/70 py-12">Producto no encontrado.</div>
+
+  <div id="productLayout" class="hidden panel p-6 md:p-8 grid grid-cols-1 lg:grid-cols-2 gap-10">
+    <section>
+      <img id="mainImage" class="main-image" src="" alt="Producto">
+      <div id="gallery" class="mt-4 flex flex-wrap gap-3"></div>
+    </section>
+
+    <section class="space-y-6">
+      <div>
+        <p id="category" class="text-xs uppercase tracking-[0.18em] text-emerald-300/90"></p>
+        <h1 id="name" class="text-3xl md:text-4xl font-extrabold" style="font-family:'Syne',sans-serif;"></h1>
+        <div class="mt-3 flex flex-wrap items-center gap-2">
+          <span id="dropId" class="drop-chip">DROP 000</span>
+          <span id="dropState" class="drop-chip pre">SALE EN</span>
+        </div>
+        <p id="collab" class="text-xs uppercase tracking-[0.16em] text-white/70 mt-2">TSSC CORE</p>
+        <p id="price" class="text-3xl font-black mt-3"></p>
+      </div>
+
+      <div class="panel p-4 space-y-2">
+        <div id="dropTimer" class="drop-time">SALE EN 00:00:00:00</div>
+        <a id="dropEventLink" href="#" class="text-[11px] uppercase tracking-[0.14em] text-emerald-300 hover:text-emerald-200 hidden">Evento vinculado</a>
+        <div id="dropEventNote" class="text-[11px] uppercase tracking-[0.14em] text-white/60">EN LÍNEA HASTA AGOTARSE</div>
+      </div>
+
+      <p id="description" class="text-white/75 leading-relaxed"></p>
+
+      <div>
+        <p class="text-sm text-white/70 mb-3">TALLA</p>
+        <div id="sizes" class="flex flex-wrap gap-2"></div>
+      </div>
+
+      <div>
+        <p class="text-sm text-white/70 mb-3">COLOR</p>
+        <div id="colors" class="flex flex-wrap gap-2"></div>
+      </div>
+
+      <div>
+        <p class="text-sm text-white/70 mb-3">CANTIDAD</p>
+        <div class="inline-flex items-center border border-white/20 rounded-xl overflow-hidden">
+          <button id="minusQty" class="px-4 py-2 bg-black/30 hover:bg-black/50">-</button>
+          <span id="qtyValue" class="px-5 py-2 min-w-[58px] text-center">1</span>
+          <button id="plusQty" class="px-4 py-2 bg-black/30 hover:bg-black/50">+</button>
+        </div>
+      </div>
+
+      <div class="space-y-3">
+        <div class="text-sm text-white/70">Stock disponible: <span id="stock" class="text-white"></span> <span id="stockSignal" class="text-xs uppercase tracking-[0.14em] text-white/60"></span></div>
+        <button id="addToCart" class="cta w-full py-4 rounded-xl uppercase">AGREGAR AL CARRITO</button>
+      </div>
+    </section>
+  </div>
+</main>
+
+<div id="cartModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+<div id="cartContent" class="fixed top-0 right-0 h-full w-full max-w-md shadow-2xl transform transition-transform duration-300 translate-x-full" style="background:#0a0f0c;border-left:1px solid rgba(57,255,143,0.18);">
+<div class="flex flex-col h-full">
+<div class="flex justify-between items-center p-6" style="border-bottom:1px solid rgba(255,255,255,0.08);">
+<h3 class="text-2xl font-bold" style="color:#fff;">Carrito</h3>
+<button onclick="closeCart()" style="color:rgba(255,255,255,0.5);">
+<i class="ri-close-line text-2xl"></i>
+</button>
+</div>
+<div class="flex-1 overflow-y-auto p-6" id="cartItems"></div>
+<div class="p-6" style="border-top:1px solid rgba(255,255,255,0.08);background:#0b120f;">
+<div class="flex justify-between items-center mb-4">
+<span class="text-xl font-bold" style="color:#fff;">Total:</span>
+<span class="text-xl font-bold" style="color:#00FFAA;" id="cartTotal">$0.00</span>
+</div>
+<button onclick="showCheckoutForm()" class="w-full font-bold py-3 px-6 !rounded-button flex items-center justify-center space-x-2" style="background:linear-gradient(135deg,#00FFAA,#39ff8f);color:#000;">
+<i class="ri-shopping-cart-2-line"></i>
+<span>PROCEDER CON LA COMPRA</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+
+<div id="checkoutFormModal" class="fixed inset-0 bg-black bg-opacity-50 z-[60] hidden">
+<div class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-xl w-full max-w-2xl">
+<div class="p-6">
+<div class="flex justify-between items-center mb-6">
+<h3 class="text-2xl font-bold">Checkout Information</h3>
+<button onclick="closeCheckoutForm()" class="text-gray-500 hover:text-gray-700">
+<i class="ri-close-line text-2xl"></i>
+</button>
+</div>
+<form id="checkoutForm" action="#" method="POST" class="space-y-6">
+<div class="grid grid-cols-2 gap-6">
+<div>
+<label class="block text-gray-700 font-medium mb-2">Nombre</label>
+<input id="coName" type="text" required class="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:border-primary">
+</div>
+<div>
+<label class="block text-gray-700 font-medium mb-2">Apellido</label>
+<input id="coLastName" type="text" required class="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:border-primary">
+</div>
+</div>
+<div>
+<label class="block text-gray-700 font-medium mb-2">Email</label>
+<input id="coEmail" type="email" required class="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:border-primary">
+</div>
+<div>
+<label class="block text-gray-700 font-medium mb-2">Telefono</label>
+<input id="coPhone" type="tel" required class="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:border-primary">
+</div>
+<div>
+<label class="block text-gray-700 font-medium mb-2">Notas del pedido (opcional)</label>
+<textarea id="coNotes" rows="3" class="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:border-primary"></textarea>
+</div>
+<div>
+<label class="block text-gray-700 font-medium mb-2">Resumen del pedido</label>
+<div id="checkoutSummary" class="bg-gray-50 p-4 rounded"></div>
+</div>
+<div class="flex justify-between items-center font-bold text-lg">
+<span>Monto Total:</span>
+<span id="checkoutTotal" class="text-primary"></span>
+</div>
+<button type="submit" class="w-full bg-primary text-black font-bold py-3 px-6 !rounded-button hover:bg-opacity-90 transition-all flex items-center justify-center space-x-2">
+<i class="ri-secure-payment-line"></i>
+<span>COMPLETAR ORDEN</span>
+</button>
+</form>
+<div id="successPopup" class="fixed inset-0 bg-black/50 z-[70] hidden">
+<div class="fixed top-4 left-1/2 -translate-x-1/2 w-full max-w-md bg-white rounded-lg shadow-xl overflow-hidden">
+<div class="h-1 bg-primary w-full relative">
+<div id="progressBar" class="absolute top-0 right-0 h-full bg-black transition-all duration-[10000ms]" style="width: 100%"></div>
+</div>
+<div class="p-6">
+<div class="flex items-center justify-center mb-4">
+<i class="ri-checkbox-circle-line text-primary text-4xl"></i>
+</div>
+<h3 class="text-xl font-bold text-center mb-2">GRACIAS POR SU COMPRA</h3>
+<p class="text-gray-600 text-center">Nos pondremos en contacto contigo en breve para completar el proceso de pago.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<script>
+const API_BASE = window.__SUNSESH_API_BASE || '';
+const MERCH_API = `${API_BASE}/api/merch`;
+const ORDERS_URL = `${API_BASE}/api/orders`;
+const AUTH_ME = `${API_BASE}/api/auth/me`;
+const CART_KEY = 'ssc_cart';
+const DEFAULT_IMG = 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=900&q=80';
+const ROLE_KEY = 'ssc_admin_role';
+const ACCESS_TOKEN_KEY = 'ssc_access_token';
+const INVITE_CODE_KEY = 'ssc_invite_code';
+
+let product = null;
+let selectedSize = null;
+let selectedColor = null;
+let qty = 1;
+let dropTimerHandle = null;
+let accessContext = { access: '', invite: '' };
+
+function getIdFromQuery() {
+  return new URLSearchParams(location.search).get('id');
+}
+
+function getParam(name) {
+  return new URLSearchParams(window.location.search).get(name) || '';
+}
+
+function initAccessContext() {
+  const tokenFromUrl = getParam('access') || getParam('access_token');
+  const inviteFromUrl = getParam('invite') || getParam('invite_code');
+  const tokenFromStorage = localStorage.getItem(ACCESS_TOKEN_KEY) || '';
+  const inviteFromStorage = localStorage.getItem(INVITE_CODE_KEY) || '';
+  accessContext = {
+    access: (tokenFromUrl || tokenFromStorage || '').trim(),
+    invite: (inviteFromUrl || inviteFromStorage || '').trim(),
+  };
+  if (accessContext.access) localStorage.setItem(ACCESS_TOKEN_KEY, accessContext.access);
+  if (accessContext.invite) localStorage.setItem(INVITE_CODE_KEY, accessContext.invite);
+}
+
+function buildAccessQuery() {
+  const params = new URLSearchParams();
+  if (accessContext.access) {
+    params.set('access_token', accessContext.access);
+    params.set('access', accessContext.access);
+  }
+  if (accessContext.invite) {
+    params.set('invite_code', accessContext.invite);
+    params.set('invite', accessContext.invite);
+  }
+  return params.toString();
+}
+
+function withAccess(url) {
+  const qs = buildAccessQuery();
+  if (!qs) return url;
+  return url + (url.includes('?') ? '&' : '?') + qs;
+}
+
+function formatMoney(value) {
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(value || 0));
+}
+
+function parseImages(imagesField) {
+  if (Array.isArray(imagesField)) return imagesField;
+  if (!imagesField) return [];
+  try {
+    const parsed = JSON.parse(imagesField);
+    return Array.isArray(parsed) ? parsed.filter(Boolean) : [];
+  } catch {
+    return String(imagesField).split(',').map(s => s.trim()).filter(Boolean);
+  }
+}
+
+function parseSizes(sizesField) {
+  if (Array.isArray(sizesField)) return sizesField;
+  const parsed = String(sizesField || '').split(',').map(s => s.trim()).filter(Boolean);
+  return parsed.length ? parsed : ['S', 'M', 'L', 'XL'];
+}
+
+function normalizeCategory(raw) {
+  const value = String(raw || '').toLowerCase();
+  if (value.includes('hood')) return 'HOODIES';
+  if (value.includes('shirt') || value.includes('tee') || value.includes('playera')) return 'T-SHIRTS';
+  if (value.includes('hat') || value.includes('cap') || value.includes('gorra')) return 'HATS';
+  if (value.includes('vinyl') || value.includes('vinilo')) return 'VINYL MERCH';
+  if (value.includes('access') || value.includes('accesorio')) return 'ACCESSORIES';
+  return 'ACCESSORIES';
+}
+
+function parseDropMeta(description, fallbackId) {
+  const base = {
+    story: '',
+    drop_id: fallbackId || 'DROP 000',
+    collaborator: 'TSSC CORE',
+    drop_start: '',
+    drop_end: '',
+    event_link: '',
+    event_note: 'EN LÍNEA HASTA AGOTARSE',
+    no_restock: true,
+    visibility: 'public',
+    hidden_type: 'none',
+    required_level: 'member',
+    secret_token: '',
+    invite_code: '',
+    hidden_from: '',
+    hidden_until: ''
+  };
+  const raw = String(description || '').trim();
+  if (!raw) return base;
+  try {
+    const parsed = JSON.parse(raw);
+    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+      return {
+        ...base,
+        ...parsed,
+        story: String(parsed.story || parsed.description || '').trim(),
+        drop_id: String(parsed.drop_id || base.drop_id).trim() || base.drop_id,
+        collaborator: String(parsed.collaborator || base.collaborator).trim() || base.collaborator,
+        drop_start: String(parsed.drop_start || '').trim(),
+        drop_end: String(parsed.drop_end || '').trim(),
+        event_link: String(parsed.event_link || '').trim(),
+        event_note: String(parsed.event_note || base.event_note).trim() || base.event_note,
+        no_restock: parsed.no_restock !== false,
+        visibility: String(parsed.visibility || base.visibility).trim().toLowerCase() || base.visibility,
+        hidden_type: String(parsed.hidden_type || base.hidden_type).trim().toLowerCase() || base.hidden_type,
+        required_level: String(parsed.required_level || base.required_level).trim().toLowerCase() || base.required_level,
+        secret_token: String(parsed.secret_token || '').trim(),
+        invite_code: String(parsed.invite_code || '').trim(),
+        hidden_from: String(parsed.hidden_from || '').trim(),
+        hidden_until: String(parsed.hidden_until || '').trim()
+      };
+    }
+  } catch {}
+  return { ...base, story: raw };
+}
+
+function dropState(meta, stock) {
+  const now = Date.now();
+  const s = meta && meta.drop_start ? new Date(meta.drop_start).getTime() : null;
+  const e = meta && meta.drop_end ? new Date(meta.drop_end).getTime() : null;
+  if (Number(stock || 0) <= 0) return 'sold';
+  if (s && !Number.isNaN(s) && now < s) return 'pre';
+  if (e && !Number.isNaN(e) && now > e) return 'sold';
+  return 'live';
+}
+
+function formatCountdown(ms) {
+  const left = Math.max(0, ms);
+  const dd = Math.floor(left / 86400000);
+  const hh = Math.floor((left % 86400000) / 3600000);
+  const mm = Math.floor((left % 3600000) / 60000);
+  const ss = Math.floor((left % 60000) / 1000);
+  return `${String(dd).padStart(2, '0')}:${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}:${String(ss).padStart(2, '0')}`;
+}
+
+function readCart() {
+  try {
+    return JSON.parse(localStorage.getItem(CART_KEY) || '[]');
+  } catch {
+    return [];
+  }
+}
+
+function saveCart(cart) {
+  localStorage.setItem(CART_KEY, JSON.stringify(cart));
+}
+
+function updateQty(delta) {
+  qty = Math.max(1, Math.min(Number(product?.stock || 1), qty + delta));
+  document.getElementById('qtyValue').textContent = qty;
+}
+
+function renderSizes(sizes) {
+  const wrap = document.getElementById('sizes');
+  wrap.innerHTML = '';
+  selectedSize = sizes[0] || null;
+
+  sizes.forEach(size => {
+    const btn = document.createElement('button');
+    btn.className = 'size-btn px-4 py-2 rounded-lg text-sm font-semibold';
+    btn.textContent = size;
+    if (size === selectedSize) btn.classList.add('active');
+    btn.addEventListener('click', () => {
+      selectedSize = size;
+      [...wrap.querySelectorAll('button')].forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+    wrap.appendChild(btn);
+  });
+}
+
+function renderColors(colors) {
+  const wrap = document.getElementById('colors');
+  wrap.innerHTML = '';
+  if (!colors || !colors.length) {
+    selectedColor = null;
+    return;
+  }
+  selectedColor = colors[0];
+  colors.forEach((color, idx) => {
+    const btn = document.createElement('button');
+    btn.className = `swatch ${idx === 0 ? 'active' : ''}`;
+    btn.style.background = color.color_hex || '#000000';
+    btn.title = color.color_name || '';
+    btn.addEventListener('click', () => {
+      selectedColor = color;
+      wrap.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+      btn.classList.add('active');
+      if (color.image) {
+        document.getElementById('mainImage').src = color.image;
+      }
+    });
+    wrap.appendChild(btn);
+  });
+  if (colors[0].image) {
+    document.getElementById('mainImage').src = colors[0].image;
+  }
+}
+
+function renderDropHud() {
+  if (!product) return;
+  const meta = product.drop || {};
+  const state = dropState(meta, product.stock);
+  const stateEl = document.getElementById('dropState');
+  const timerEl = document.getElementById('dropTimer');
+  const eventLinkEl = document.getElementById('dropEventLink');
+  const eventNoteEl = document.getElementById('dropEventNote');
+  if (stateEl) {
+    stateEl.classList.remove('pre', 'live', 'sold');
+    stateEl.classList.add(state);
+    stateEl.textContent = state === 'pre' ? 'SALE EN' : (state === 'sold' ? 'AGOTADO' : 'DISPONIBLE AHORA');
+  }
+  if (timerEl) {
+    if (state === 'sold') {
+      timerEl.textContent = 'SIN RESTOCK';
+      timerEl.classList.remove('fomo-blink');
+    } else if (state === 'pre') {
+      const startMs = meta.drop_start ? new Date(meta.drop_start).getTime() : Date.now();
+      timerEl.textContent = `SALE EN ${formatCountdown(startMs - Date.now())}`;
+      timerEl.classList.remove('fomo-blink');
+    } else {
+      timerEl.textContent = 'DISPONIBLE AHORA';
+      timerEl.classList.add('fomo-blink');
+    }
+  }
+  if (eventNoteEl) {
+    eventNoteEl.textContent = String(meta.event_note || 'EN LÍNEA HASTA AGOTARSE');
+  }
+  if (eventLinkEl) {
+    const href = String(meta.event_link || '').trim();
+    if (href) {
+      eventLinkEl.href = href;
+      eventLinkEl.classList.remove('hidden');
+    } else {
+      eventLinkEl.classList.add('hidden');
+      eventLinkEl.removeAttribute('href');
+    }
+  }
+}
+
+function renderGallery(images) {
+  const gallery = document.getElementById('gallery');
+  gallery.innerHTML = '';
+  const mainImage = document.getElementById('mainImage');
+
+  const list = images.length ? images : [DEFAULT_IMG];
+  mainImage.src = list[0];
+
+  list.forEach((src, index) => {
+    const item = document.createElement('button');
+    item.className = `thumb ${index === 0 ? 'active' : ''}`;
+    item.innerHTML = `<img src="${src}" alt="thumb" class="w-full h-full object-cover">`;
+    item.addEventListener('click', () => {
+      mainImage.src = src;
+      [...gallery.querySelectorAll('.thumb')].forEach(t => t.classList.remove('active'));
+      item.classList.add('active');
+    });
+    gallery.appendChild(item);
+  });
+}
+
+function renderProduct(data) {
+  const baseImages = parseImages(data.images);
+  const sizes = parseSizes(data.sizes);
+  const colors = Array.isArray(data.color_variants) ? data.color_variants : [];
+  const colorImages = colors.map(c => c.image).filter(Boolean);
+  const images = Array.from(new Set([...colorImages, ...baseImages]));
+  const dropId = `DROP ${String(data.id || '').replace(/[^a-z0-9]/gi, '').slice(0, 3).toUpperCase().padEnd(3, '0')}`;
+  const drop = parseDropMeta(data.description, dropId);
+  product = {
+    ...data,
+    price: Number(data.price || 0),
+    stock: Number(data.stock || 0),
+    images,
+    sizes,
+    colors,
+    categoryLabel: normalizeCategory(data.category),
+    drop
+  };
+
+  document.getElementById('loading').classList.add('hidden');
+  document.getElementById('productLayout').classList.remove('hidden');
+
+  document.getElementById('name').textContent = product.product_name;
+  document.getElementById('price').textContent = formatMoney(product.price);
+  document.getElementById('description').textContent = product.drop.story || 'Pieza de Merch edición limitada de Sun Session.';
+  document.getElementById('stock').textContent = String(product.stock);
+  document.getElementById('category').textContent = product.categoryLabel;
+  const dropIdEl = document.getElementById('dropId');
+  if (dropIdEl) dropIdEl.textContent = product.drop.drop_id || dropId;
+  const collabEl = document.getElementById('collab');
+  if (collabEl) collabEl.textContent = product.drop.collaborator || 'TSSC CORE';
+  const stockSignalEl = document.getElementById('stockSignal');
+  if (stockSignalEl) {
+    if (product.stock <= 0) {
+      stockSignalEl.textContent = 'AGOTADO';
+      stockSignalEl.className = 'text-xs uppercase tracking-[0.14em] stock-critical';
+    } else if (product.stock <= 8) {
+      stockSignalEl.textContent = `ÚLTIMO DROP • SOLO QUEDAN ${product.stock}`;
+      stockSignalEl.className = 'text-xs uppercase tracking-[0.14em] stock-critical fomo-blink';
+    } else {
+      stockSignalEl.textContent = 'DROP LIMITADO';
+      stockSignalEl.className = 'text-xs uppercase tracking-[0.14em] text-white/60';
+    }
+  }
+
+  renderGallery(images);
+  renderSizes(sizes);
+  renderColors(colors);
+  renderDropHud();
+  if (dropTimerHandle) clearInterval(dropTimerHandle);
+  dropTimerHandle = setInterval(renderDropHud, 1000);
+
+  qty = 1;
+  document.getElementById('qtyValue').textContent = qty;
+
+  const addBtn = document.getElementById('addToCart');
+  if (product.stock <= 0) {
+    addBtn.disabled = true;
+    addBtn.style.opacity = '.4';
+    addBtn.textContent = 'AGOTADO';
+  } else {
+    addBtn.disabled = false;
+    addBtn.style.opacity = '1';
+    addBtn.textContent = 'AGREGAR AL CARRITO';
+  }
+}
+
+function addCurrentToCart() {
+  if (!product || product.stock <= 0) return;
+
+  const cart = readCart();
+  const colorName = selectedColor ? (selectedColor.color_name || '') : '';
+  const sku = `${product.id}::${colorName || 'default'}::${selectedSize || 'ONE'}`;
+  const idx = cart.findIndex(i => i.sku === sku);
+
+  if (idx >= 0) {
+    cart[idx].qty += qty;
+  } else {
+    cart.push({
+      sku,
+      id: product.id,
+      title: product.product_name,
+      color: colorName,
+      size: selectedSize,
+      price: product.price,
+      qty
+    });
+  }
+
+  saveCart(cart);
+  renderCart();
+  openCart();
+}
+
+async function fetchProductById(id) {
+  const res = await fetch(withAccess(`${MERCH_API}/${encodeURIComponent(id)}`), { credentials: 'include', headers: { 'Cache-Control': 'no-cache' }, cache: 'no-store' });
+  if (res.ok) return res.json();
+
+  const listRes = await fetch(withAccess(`${MERCH_API}/get.php`), { credentials: 'include', headers: { 'Cache-Control': 'no-cache' }, cache: 'no-store' });
+  const list = await listRes.json();
+  if (!Array.isArray(list)) return null;
+  return list.find(item => item.id === id) || null;
+}
+
+function renderCart() {
+  const cart = readCart();
+  const items = document.getElementById('cartItems');
+  const totalEl = document.getElementById('cartTotal');
+  const countEl = document.getElementById('cartCountMain');
+  if (!items || !totalEl) return;
+  items.innerHTML = '';
+  let total = 0;
+  let totalItems = 0;
+  cart.forEach((it, idx) => {
+    total += (it.price || 0) * (it.qty || 1);
+    totalItems += it.qty || 0;
+    const row = document.createElement('div');
+    row.className = 'flex justify-between items-center p-4 rounded';
+    row.style.cssText = 'background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);margin-bottom:8px;';
+    const meta = [it.color ? `Color: ${it.color}` : '', it.size ? `Talla: ${it.size}` : '', `Qty: ${it.qty}`].filter(Boolean).join(' - ');
+    row.innerHTML = `
+      <div>
+        <div class="font-semibold" style="color:#fff;">${it.title}</div>
+        <div class="text-xs" style="color:rgba(255,255,255,0.5);">${meta}</div>
+      </div>
+      <div class="flex items-center space-x-4">
+        <span class="font-semibold" style="color:#00FFAA;">$${((it.price || 0) * (it.qty || 1)).toFixed(2)}</span>
+        <button data-remove="${idx}" class="text-red-500 hover:text-red-700"><i class="ri-delete-bin-line"></i></button>
+      </div>
+    `;
+    items.appendChild(row);
+  });
+  totalEl.textContent = formatMoney(total);
+  if (countEl) countEl.textContent = totalItems;
+  items.querySelectorAll('[data-remove]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const index = Number(btn.dataset.remove);
+      const next = readCart();
+      next.splice(index, 1);
+      saveCart(next);
+      renderCart();
+    });
+  });
+}
+
+function openCart() {
+  const overlay = document.getElementById('cartModal');
+  const content = document.getElementById('cartContent');
+  if (!overlay || !content) return;
+  overlay.classList.remove('hidden');
+  requestAnimationFrame(() => {
+    content.classList.remove('translate-x-full');
+    content.classList.add('translate-x-0');
+  });
+}
+
+function closeCart() {
+  const overlay = document.getElementById('cartModal');
+  const content = document.getElementById('cartContent');
+  if (!overlay || !content) return;
+  content.classList.add('translate-x-full');
+  content.classList.remove('translate-x-0');
+  setTimeout(() => {
+    overlay.classList.add('hidden');
+  }, 300);
+}
+
+function showCheckoutForm() {
+  const modal = document.getElementById('checkoutFormModal');
+  const summary = document.getElementById('checkoutSummary');
+  const total = document.getElementById('checkoutTotal');
+  const cart = readCart();
+  if (!modal || !summary || !total || !cart.length) return;
+  const summaryHTML = cart.map(item => `
+    <div class="flex justify-between items-center py-2">
+      <span>${item.title} ${item.color ? `(${item.color})` : ''} ${item.size ? `- ${item.size}` : ''} x${item.qty || 1}</span>
+      <span>$${((item.price || 0) * (item.qty || 1)).toFixed(2)}</span>
+    </div>
+  `).join('');
+  summary.innerHTML = summaryHTML;
+  total.textContent = formatMoney(cart.reduce((sum, it) => sum + (it.price || 0) * (it.qty || 1), 0));
+  modal.classList.remove('hidden');
+}
+
+function closeCheckoutForm() {
+  const modal = document.getElementById('checkoutFormModal');
+  if (modal) modal.classList.add('hidden');
+}
+
+function showSuccessPopup() {
+  const popup = document.getElementById('successPopup');
+  const progressBar = document.getElementById('progressBar');
+  if (!popup || !progressBar) return;
+  popup.classList.remove('hidden');
+  progressBar.style.width = '100%';
+  requestAnimationFrame(() => {
+    progressBar.style.width = '0%';
+  });
+  setTimeout(() => {
+    closeSuccessPopup();
+  }, 10000);
+}
+
+function closeSuccessPopup() {
+  const popup = document.getElementById('successPopup');
+  if (popup) popup.classList.add('hidden');
+}
+
+async function init() {
+  const id = getIdFromQuery();
+  if (!id) {
+    const loading = document.getElementById('loading');
+    const notFound = document.getElementById('notFound');
+    if (loading) loading.classList.add('hidden');
+    if (notFound) notFound.classList.remove('hidden');
+    return;
+  }
+
+  try {
+    const data = await fetchProductById(id);
+    if (!data) {
+      const loading = document.getElementById('loading');
+      const notFound = document.getElementById('notFound');
+      if (loading) loading.classList.add('hidden');
+      if (notFound) notFound.classList.remove('hidden');
+      return;
+    }
+    renderProduct(data);
+  } catch {
+    const loading = document.getElementById('loading');
+    const notFound = document.getElementById('notFound');
+    if (loading) loading.classList.add('hidden');
+    if (notFound) notFound.classList.remove('hidden');
+  }
+}
+
+const minusQtyBtn = document.getElementById('minusQty');
+if (minusQtyBtn) minusQtyBtn.addEventListener('click', () => updateQty(-1));
+const plusQtyBtn = document.getElementById('plusQty');
+if (plusQtyBtn) plusQtyBtn.addEventListener('click', () => updateQty(1));
+const addToCartBtn = document.getElementById('addToCart');
+if (addToCartBtn) addToCartBtn.addEventListener('click', addCurrentToCart);
+
+async function submitOrder(evt) {
+  evt.preventDefault();
+  const cart = readCart();
+  if (!cart.length) return;
+  const payload = {
+    name: document.getElementById('coName').value.trim(),
+    last_name: document.getElementById('coLastName').value.trim(),
+    phone: document.getElementById('coPhone').value.trim(),
+    email: document.getElementById('coEmail').value.trim(),
+    notes: document.getElementById('coNotes').value.trim(),
+    products: cart,
+  };
+  try {
+    const res = await fetch(ORDERS_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new Error('order_failed');
+    localStorage.removeItem(CART_KEY);
+    renderCart();
+    closeCheckoutForm();
+    closeCart();
+    showSuccessPopup();
+  } catch {
+    const errorMessage = document.createElement('div');
+    errorMessage.className = 'fixed top-4 right-4 bg-red-100 text-red-700 px-6 py-4 rounded-lg shadow-lg z-50';
+    errorMessage.innerHTML = `
+      <div class="flex items-center space-x-2">
+        <i class="ri-error-warning-line text-xl"></i>
+        <span>No se pudo enviar el pedido. Intenta de nuevo.</span>
+      </div>
+    `;
+    document.body.appendChild(errorMessage);
+    setTimeout(() => {
+      errorMessage.remove();
+    }, 5000);
+  }
+}
+document.getElementById('cartBtn').addEventListener('click', openCart);
+const cartBtn = document.getElementById('cartBtn');
+if (cartBtn) cartBtn.addEventListener('click', openCart);
+const form = document.getElementById('checkoutForm');
+if (form) form.addEventListener('submit', submitOrder);
+const cartModal = document.getElementById('cartModal');
+if (cartModal) cartModal.addEventListener('click', function(e) { if (e.target === this) closeCart(); });
+const checkoutModal = document.getElementById('checkoutFormModal');
+if (checkoutModal) checkoutModal.addEventListener('click', function(e) { if (e.target === this) closeCheckoutForm(); });
+const successPopup = document.getElementById('successPopup');
+if (successPopup) successPopup.addEventListener('click', function(e) { if (e.target === this) closeSuccessPopup(); });
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    closeCheckoutForm();
+    closeSuccessPopup();
+    closeCart();
+  }
+});
+async function applyAdminLink() {
+  const link = document.getElementById('adminLink');
+  if (!link) return;
+  link.classList.add('hidden');
+  try {
+    const res = await fetch(AUTH_ME, { credentials: 'include' });
+    if (!res.ok) return;
+    const data = await res.json();
+    const role = String(data && data.user && data.user.role || '').toUpperCase();
+    if (role === 'ADMIN') {
+      link.classList.remove('hidden');
+    }
+  } catch {}
+}
+
+initAccessContext();
+const backLink = document.getElementById('backToMerch');
+if (backLink) {
+  const qs = buildAccessQuery();
+  backLink.href = qs ? `merch.html?${qs}` : 'merch.html';
+}
+init();
+renderCart();
+applyAdminLink();
+</script>
+  <script src="assets/js/site.js?v=20260327-3"></script>
+  <script src="assets/js/ssc-ux.js" defer></script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,348 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// enums removidos para compatibilidad con SQLite en desarrollo
+
+model User {
+  id           String      @id @default(uuid())
+  name         String
+  email        String      @unique
+  phone        String?
+  role         String      @default("INQUILINO")
+  vipStatus    Boolean     @default(false)
+  eliteStatus  Boolean     @default(false)
+  status       String      @default("ACTIVE")
+  purchaseCount Int        @default(0)
+  eventParticipation Int   @default(0)
+  lastLogin    DateTime?
+  passwordHash String
+  photoUrl     String?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  deletedAt    DateTime?
+
+  propertiesOwned  Property[] @relation("owner")
+  propertiesRented Property[] @relation("tenant")
+  activityLogs     ActivityLog[]
+  analyticsEvents  AnalyticsEvent[]
+}
+
+model Property {
+  id          String         @id @default(uuid())
+  title       String
+  description String?
+  status      String         @default("DISPONIBLE")
+  address     String?
+
+  ownerId String?
+  owner   User?   @relation("owner", fields: [ownerId], references: [id])
+
+  tenantId String?
+  tenant   User?   @relation("tenant", fields: [tenantId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+}
+
+model ActivityLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  action    String
+  module    String
+  ip        String?
+  createdAt DateTime @default(now())
+}
+
+model AnalyticsEvent {
+  id        String   @id @default(uuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  event     String
+  page      String?
+  meta      String?
+  ip        String?
+  createdAt DateTime @default(now())
+
+  @@index([event])
+  @@index([createdAt])
+}
+
+model Event {
+  id          String      @id @default(uuid())
+  title       String
+  artists     String?
+  location    String?
+  venue       String?
+  date        DateTime?
+  time        String?
+  image       String?
+  price       Float       @default(0)
+  genre       String?
+  description String?
+  ticketLink  String?
+  socialLink  String?
+  isFree      Boolean     @default(false)
+  ticket_limit Int?
+  status      String      @default("ACTIVE")
+  featured    Boolean     @default(false)
+  sort_order  Int         @default(0)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  deletedAt   DateTime?
+
+  ticketOrders TicketOrder[]
+  tickets      TicketItem[]
+}
+
+model Settings {
+  id                   String   @id @default("site")
+  primary_color        String?  @default("#006400")
+  secondary_color      String?  @default("#00FFAA")
+  background_color     String?  @default("#0b1e14")
+  gradient_start       String?  @default("rgba(0,100,0,0.25)")
+  gradient_end         String?  @default("#0f271a")
+  button_style         String?  @default("rounded")
+  font_family          String?  @default("'Montserrat',sans-serif")
+  site_logo             String?
+  hero_section_background_image String?
+  about_background_image String?
+  gallery_background_image String?
+  story_break_image      String?
+  story_banner_image     String?
+  about_gallery_images   String?
+  order_notification_email String?
+  card_background      String?  @default("#0d1b13")
+  global_text_color    String?  @default("#ffffff")
+  friends_json         String?
+  bank_name            String?
+  bank_account_holder  String?
+  bank_clabe           String?
+  bank_card            String?
+  updatedAt            DateTime @updatedAt
+  createdAt            DateTime @default(now())
+}
+
+model Artist {
+  id            String       @id @default(uuid())
+  name          String
+  genre         String?
+  bio           String?
+  profile_image String?
+  social_links  String?
+  featured      Boolean      @default(false)
+  status        String       @default("ACTIVE")
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  deletedAt     DateTime?
+
+  genres        ArtistGenre[]
+}
+
+model Music {
+  id               String       @id @default(uuid())
+  title            String
+  artist_id        String?
+  cover_image      String?
+  audio_file_url   String?
+  platform_links   String?
+  price            Float        @default(0)
+  release_date     DateTime?
+  status           String       @default("ACTIVE")
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  deletedAt        DateTime?
+}
+
+model GalleryItem {
+  id           String       @id @default(uuid())
+  image_url    String
+  category     String?
+  event_related String?
+  uploaded_at  DateTime     @default(now())
+  status       String       @default("ACTIVE")
+}
+
+model GalleryEvent {
+  id           String        @id @default(uuid())
+  title        String
+  description  String?
+  location     String?
+  event_date   DateTime?
+  category     String?
+  cover_image  String?
+  photographer String?
+  tags         String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  images       GalleryImage[]
+  videos       GalleryVideo[]
+}
+
+model GalleryImage {
+  id         String       @id @default(uuid())
+  event_id   String
+  image_path String
+  is_cover   Boolean      @default(false)
+  sort_order Int          @default(0)
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+
+  event      GalleryEvent @relation(fields: [event_id], references: [id], onDelete: Cascade)
+}
+
+model GalleryVideo {
+  id         String       @id @default(uuid())
+  event_id   String
+  video_url  String
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+
+  event      GalleryEvent @relation(fields: [event_id], references: [id], onDelete: Cascade)
+}
+
+model MerchProduct {
+  id          String       @id @default(uuid())
+  product_name String
+  description String?
+  images      String?
+  price       Float        @default(0)
+  sizes       String?
+  stock       Int          @default(0)
+  category    String?
+  featured    Boolean      @default(false)
+  new_drop    Boolean      @default(false)
+  index_featured Boolean   @default(false)
+  status      String       @default("ACTIVE")
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  deletedAt   DateTime?
+
+  color_variants ProductColor[]
+}
+
+model ProductColor {
+  id         String       @id @default(uuid())
+  product_id String
+  product    MerchProduct @relation(fields: [product_id], references: [id])
+  color_name String
+  color_hex  String
+  image      String?
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+}
+
+model Order {
+  id          String   @id @default(uuid())
+  name        String
+  last_name   String
+  phone       String
+  email       String
+  notes       String?
+  products    String
+  total_items Int      @default(0)
+  date        DateTime @default(now())
+  status      String   @default("new_order")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model VinylRelease {
+  id           String       @id @default(uuid())
+  title        String
+  artist       String?
+  cover_image  String?
+  description  String?
+  price        Float        @default(0)
+  release_date DateTime?
+  stock        Int          @default(0)
+  status       String       @default("ACTIVE")
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  deletedAt    DateTime?
+}
+
+model VideoSet {
+  id             String   @id @default(uuid())
+  title          String
+  artist         String?
+  date           DateTime?
+  location       String?
+  thumbnail      String?
+  youtubeLink    String?
+  soundcloudLink String?
+  genre          String?
+  featured       Boolean  @default(false)
+  status         String   @default("ACTIVE")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  deletedAt      DateTime?
+}
+
+model TicketOrder {
+  id            String     @id @default(uuid())
+  eventId       String
+  full_name     String
+  email         String
+  phone         String
+  qty           Int
+  status        String     @default("pending")
+  payment_proof String?
+  notes         String?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  event         Event      @relation(fields: [eventId], references: [id])
+  tickets       TicketItem[]
+
+  @@index([eventId])
+  @@index([status])
+}
+
+model TicketItem {
+  id             String   @id @default(uuid())
+  orderId        String
+  eventId        String
+  ticket_code    String   @unique
+  qr_payload     String
+  ticket_image   String?
+  status         String   @default("valid")
+  usedAt         DateTime?
+  createdAt      DateTime @default(now())
+
+  order          TicketOrder @relation(fields: [orderId], references: [id])
+  event          Event       @relation(fields: [eventId], references: [id])
+
+  @@index([eventId])
+  @@index([orderId])
+}
+
+model Genre {
+  id        String       @id @default(uuid())
+  name      String
+  category  String?      @default("Electronic")
+  status    String       @default("active")
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  artists   ArtistGenre[]
+}
+
+model ArtistGenre {
+  id        String   @id @default(uuid())
+  artistId  String
+  genreId   String
+
+  artist    Artist   @relation(fields: [artistId], references: [id])
+  genre     Genre    @relation(fields: [genreId], references: [id])
+
+  @@unique([artistId, genreId])
+}

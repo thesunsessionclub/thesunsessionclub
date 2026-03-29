@@ -1,0 +1,624 @@
+﻿<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi Cuenta | The Sun Session</title>
+  <link href="assets/css/site.css?v=20260329-01" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+  <style>
+    body{
+      margin:0;
+      font-family:'Montserrat',sans-serif;
+      background:
+        radial-gradient(1200px 600px at 80% -10%, rgba(0,255,170,.18), transparent 60%),
+        radial-gradient(1000px 500px at 15% 110%, rgba(0,120,70,.22), transparent 62%),
+        #040a08;
+      color:#f7fbfa;
+      min-height:100vh;
+    }
+    .wrap{
+      max-width:1120px;
+      margin:0 auto;
+      padding:26px 16px 70px;
+    }
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      margin-bottom:20px;
+    }
+    .topbar a{
+      color:#9de7d0;
+      text-decoration:none;
+      font-weight:600;
+    }
+    .title{
+      margin:0 0 2px;
+      font-size:clamp(1.4rem,2.6vw,2.15rem);
+      font-weight:800;
+      letter-spacing:.01em;
+    }
+    .subtitle{
+      margin:0;
+      color:rgba(230,246,242,.72);
+      font-size:.95rem;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns: 1.05fr 1.45fr;
+      gap:16px;
+    }
+    @media (max-width: 960px){
+      .grid{ grid-template-columns: 1fr; }
+    }
+    .card{
+      background:linear-gradient(180deg, rgba(12,17,24,.9), rgba(8,13,18,.95));
+      border:1px solid rgba(255,255,255,.1);
+      border-radius:16px;
+      padding:16px;
+      box-shadow:0 16px 40px rgba(0,0,0,.35);
+    }
+    .profile-head{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin-bottom:14px;
+    }
+    .avatar{
+      width:58px;
+      height:58px;
+      border-radius:999px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:800;
+      font-size:1.25rem;
+      color:#032218;
+      background:linear-gradient(135deg,#00b43f,#00ffaa);
+    }
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      font-size:.76rem;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:#dffef5;
+      background:rgba(0,255,170,.14);
+      border:1px solid rgba(0,255,170,.36);
+      border-radius:999px;
+      padding:6px 10px;
+    }
+    .kv{
+      margin:10px 0 0;
+      display:grid;
+      gap:8px;
+    }
+    .kv .row{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      font-size:.9rem;
+      color:#c5d4d1;
+      border-bottom:1px dashed rgba(255,255,255,.08);
+      padding-bottom:8px;
+    }
+    .kv .row strong{ color:#f7fbfa; font-weight:600; }
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:10px;
+      margin-top:14px;
+    }
+    @media (max-width: 860px){
+      .stats{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+    }
+    .stat{
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:12px;
+      background:rgba(255,255,255,.03);
+      padding:10px;
+    }
+    .stat .k{
+      font-size:.75rem;
+      text-transform:uppercase;
+      letter-spacing:.1em;
+      color:#9daeb2;
+      margin-bottom:4px;
+    }
+    .stat .v{
+      font-size:1.15rem;
+      font-weight:800;
+    }
+    .section-title{
+      margin:0 0 10px;
+      font-size:1rem;
+      font-weight:800;
+      letter-spacing:.02em;
+    }
+    .perks{
+      margin:0;
+      padding-left:18px;
+      display:grid;
+      gap:8px;
+      color:#d8e3e0;
+      font-size:.92rem;
+    }
+    .orders{
+      display:grid;
+      gap:10px;
+      margin-top:10px;
+    }
+    .order{
+      border:1px solid rgba(255,255,255,.09);
+      background:rgba(255,255,255,.02);
+      border-radius:12px;
+      padding:12px;
+    }
+    .order-top{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:8px;
+    }
+    .order-id{
+      font-size:.78rem;
+      color:#9db1b6;
+      letter-spacing:.06em;
+    }
+    .order-status{
+      font-size:.75rem;
+      font-weight:700;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      border-radius:999px;
+      border:1px solid rgba(0,255,170,.28);
+      color:#d9fff2;
+      background:rgba(0,255,170,.1);
+      padding:5px 8px;
+    }
+    .order-items{
+      margin:0;
+      padding-left:18px;
+      color:#d6e1de;
+      display:grid;
+      gap:4px;
+      font-size:.88rem;
+    }
+    .empty{
+      color:#9fb2b6;
+      border:1px dashed rgba(255,255,255,.2);
+      border-radius:12px;
+      padding:14px;
+      background:rgba(255,255,255,.02);
+    }
+    .form{
+      display:grid;
+      gap:10px;
+      margin-top:10px;
+    }
+    .field{
+      display:grid;
+      gap:6px;
+    }
+    .field label{
+      color:#a8b7ba;
+      font-size:.84rem;
+      font-weight:600;
+    }
+    .field input{
+      height:42px;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,.16);
+      background:rgba(255,255,255,.04);
+      color:#fff;
+      padding:0 12px;
+      outline:none;
+    }
+    .field input:focus{
+      border-color:#00ffaa;
+      box-shadow:0 0 0 2px rgba(0,255,170,.2);
+    }
+    .btn{
+      height:42px;
+      border:none;
+      border-radius:10px;
+      font-weight:800;
+      letter-spacing:.01em;
+      cursor:pointer;
+    }
+    .btn-main{
+      background:#00ffaa;
+      color:#03130e;
+    }
+    .btn-ghost{
+      background:transparent;
+      color:#d9fff1;
+      border:1px solid rgba(0,255,170,.42);
+    }
+    .inline-actions{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .status{
+      margin-top:8px;
+      font-size:.9rem;
+      min-height:20px;
+    }
+    .status.ok{ color:#9cffdd; }
+    .status.err{ color:#ff9f9f; }
+    .auth-box{
+      max-width:560px;
+      margin:120px auto 0;
+      text-align:center;
+    }
+  </style>
+  <script>
+  (function(){
+    const explicit = (window.SUNSESH_API || '').trim();
+ const currentPort = String(location.port || '');
+ const hasLikelyDevPort = !!currentPort && !['80', '443', '4000'].includes(currentPort);
+ const isLanIp = /^\d{1,3}(?:\.\d{1,3}){3}$/.test(location.hostname);
+ const preferLocalApi = isLanIp || location.hostname === 'localhost' || location.hostname === '127.0.0.1' || hasLikelyDevPort;
+    const origin = (location.origin && location.origin !== 'null') ? location.origin : '';
+ const base = explicit || (preferLocalApi ? (location.protocol + '//' + location.hostname + ':4000') : origin);
+    window.__SUNSESH_API_BASE = String(base || '').replace(/\/$/, '');
+  })();
+  </script>
+</head>
+<body>
+  <main class="wrap" id="appRoot">
+    <header class="topbar">
+      <div>
+        <h1 class="title">Mi cuenta</h1>
+        <p class="subtitle">Tu actividad, membresía y compras en un solo lugar.</p>
+      </div>
+      <div class="inline-actions">
+        <a href="sunsessionesp_fixed_v3.html">Volver al inicio</a>
+        <button id="logoutBtn" class="btn btn-ghost" type="button">Cerrar sesión</button>
+      </div>
+    </header>
+
+    <div class="grid" id="accountGrid" hidden>
+      <section class="card">
+        <div class="profile-head">
+          <div class="avatar" id="avatar">US</div>
+          <div>
+            <div id="nameText" style="font-size:1.15rem;font-weight:800;"></div>
+            <div id="emailText" style="color:#a8b7ba;font-size:.9rem;"></div>
+          </div>
+        </div>
+        <span class="chip" id="roleChip">Public</span>
+        <div class="kv">
+          <div class="row"><span>Tipo de miembro</span><strong id="memberType">Public</strong></div>
+          <div class="row"><span>Estado VIP</span><strong id="vipState">No</strong></div>
+          <div class="row"><span>Ultimo acceso</span><strong id="lastLogin">-</strong></div>
+        </div>
+        <div class="stats">
+          <div class="stat"><div class="k">Pedidos</div><div class="v" id="stOrders">0</div></div>
+          <div class="stat"><div class="k">Artículos</div><div class="v" id="stItems">0</div></div>
+          <div class="stat"><div class="k">Completados</div><div class="v" id="stDone">0</div></div>
+          <div class="stat"><div class="k">Total</div><div class="v" id="stTotal">$0</div></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2 class="section-title">Beneficios de tu nivel</h2>
+        <ul class="perks" id="perksList"></ul>
+        <div id="inviteNote" class="empty" style="margin-top:12px;" hidden>
+          Tu nivel permite invitar miembros. Proximamente se habilitara el modulo de invitaciones.
+        </div>
+      </section>
+
+      <section class="card" style="grid-column:1/-1;">
+        <h2 class="section-title">Historial de compras</h2>
+        <div id="ordersWrap" class="orders"></div>
+      </section>
+
+      <section class="card" style="grid-column:1/-1;">
+        <h2 class="section-title">Seguridad</h2>
+        <form id="passwordForm" class="form">
+          <div class="field">
+            <label for="currentPassword">Contraseña actual</label>
+            <input id="currentPassword" type="password" required>
+          </div>
+          <div class="field">
+            <label for="nextPassword">Nueva contraseña</label>
+            <input id="nextPassword" type="password" minlength="6" required>
+          </div>
+          <div class="field">
+            <label for="confirmPassword">Confirmar nueva contraseña</label>
+            <input id="confirmPassword" type="password" minlength="6" required>
+          </div>
+          <div class="inline-actions">
+            <button class="btn btn-main" type="submit">Actualizar contraseña</button>
+          </div>
+          <div id="passwordStatus" class="status"></div>
+        </form>
+      </section>
+    </div>
+
+    <section class="card auth-box" id="guestBox" hidden>
+      <h2 class="section-title">Necesitas iniciar sesión</h2>
+      <p style="color:#b8c7c4;">Entra con tu cuenta para ver tu historial y gestionar tu membresía.</p>
+      <div class="inline-actions" style="justify-content:center;margin-top:10px;">
+        <a class="btn btn-main" href="login.html" style="display:inline-flex;align-items:center;justify-content:center;padding:0 14px;text-decoration:none;">Ir a login</a>
+        <a class="btn btn-ghost" href="sunsessionesp_fixed_v3.html" style="display:inline-flex;align-items:center;justify-content:center;padding:0 14px;text-decoration:none;">Volver al inicio</a>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    (function(){
+      const API = window.__SUNSESH_API_BASE || '';
+
+      const els = {
+        grid: document.getElementById('accountGrid'),
+        guest: document.getElementById('guestBox'),
+        avatar: document.getElementById('avatar'),
+        name: document.getElementById('nameText'),
+        email: document.getElementById('emailText'),
+        roleChip: document.getElementById('roleChip'),
+        memberType: document.getElementById('memberType'),
+        vipState: document.getElementById('vipState'),
+        lastLogin: document.getElementById('lastLogin'),
+        perks: document.getElementById('perksList'),
+        inviteNote: document.getElementById('inviteNote'),
+        stOrders: document.getElementById('stOrders'),
+        stItems: document.getElementById('stItems'),
+        stDone: document.getElementById('stDone'),
+        stTotal: document.getElementById('stTotal'),
+        orders: document.getElementById('ordersWrap'),
+        pwdForm: document.getElementById('passwordForm'),
+        pwdStatus: document.getElementById('passwordStatus'),
+        logoutBtn: document.getElementById('logoutBtn'),
+      };
+
+      function initials(text){
+        const raw = String(text || '').trim();
+        if (!raw) return 'US';
+        const parts = raw.split(/\s+/).filter(Boolean).slice(0,2);
+        if (!parts.length) return 'US';
+        return parts.map((p) => p.charAt(0)).join('').toUpperCase();
+      }
+
+      function fmtDate(value){
+        if (!value) return '-';
+        try { return new Date(value).toLocaleString('es-MX'); } catch { return '-'; }
+      }
+
+      function fmtMoney(num){
+        return new Intl.NumberFormat('es-MX', { style:'currency', currency:'MXN', maximumFractionDigits:2 }).format(Number(num || 0));
+      }
+
+      function roleLabel(role){
+        const map = {
+          USER: 'Public',
+          MEMBER: 'Member',
+          ELITE: 'Elite',
+          DIAMOND: 'Diamond',
+          ADMIN: 'Admin',
+        };
+        return map[String(role || 'USER').toUpperCase()] || 'Public';
+      }
+
+      function perksFor(role){
+        const r = String(role || '').toUpperCase();
+        if (r === 'ELITE' || r === 'DIAMOND' || r === 'ADMIN') {
+          return [
+            'Acceso anticipado a drops y eventos especiales.',
+            'Contenido premium y lanzamientos prioritarios.',
+            'Atencion prioritaria en soporte de pedidos.',
+            'Mas oportunidades para experiencias exclusivas.',
+          ];
+        }
+        if (r === 'MEMBER') {
+          return [
+            'Acceso a drops exclusivos para miembros.',
+            'Alertas anticipadas de eventos destacados.',
+            'Mejor visibilidad de contenido premium.',
+          ];
+        }
+        return [
+          'Acceso general a contenido y tienda publica.',
+          'Puedes subir de nivel al participar en eventos y compras.',
+          'Recibe notificaciones de nuevos lanzamientos.',
+        ];
+      }
+
+      function statusLabel(raw){
+        const s = String(raw || '').toLowerCase();
+        const map = {
+          new_order: 'Nueva',
+          pending: 'Pendiente',
+          payment_review: 'Pago en revision',
+          accepted: 'Aceptada',
+          confirmed: 'Confirmada',
+          shipped: 'Enviada',
+          completed: 'Completada',
+        };
+        return map[s] || s || 'Sin estado';
+      }
+
+      function renderOrders(rows){
+        els.orders.innerHTML = '';
+        if (!Array.isArray(rows) || !rows.length) {
+          els.orders.innerHTML = '<div class="empty">Aun no tienes compras registradas.</div>';
+          return;
+        }
+        rows.forEach((order) => {
+          const items = Array.isArray(order.products) ? order.products : [];
+          const lines = items.length
+            ? items.map((item) => {
+                const name = String(item.title || 'Producto');
+                const qty = Number(item.qty || 0);
+                const color = String(item.color || 'N/A');
+                const size = String(item.size || 'N/A');
+                return `<li>${name} x${qty} - ${color} - ${size}</li>`;
+              }).join('')
+            : '<li>Sin productos</li>';
+          const card = document.createElement('article');
+          card.className = 'order';
+          card.innerHTML = `
+            <div class="order-top">
+              <div>
+                <div style="font-weight:700;">${fmtDate(order.createdAt || order.date)}</div>
+                <div class="order-id">ORDEN ${String(order.id || '').slice(0,8).toUpperCase()}</div>
+              </div>
+              <span class="order-status">${statusLabel(order.status)}</span>
+            </div>
+            <ul class="order-items">${lines}</ul>
+          `;
+          els.orders.appendChild(card);
+        });
+      }
+
+      function computeStats(rows){
+        const list = Array.isArray(rows) ? rows : [];
+        let items = 0;
+        let done = 0;
+        let total = 0;
+        list.forEach((order) => {
+          const status = String(order.status || '').toLowerCase();
+          if (status === 'completed' || status === 'shipped') done += 1;
+          const products = Array.isArray(order.products) ? order.products : [];
+          products.forEach((p) => {
+            const qty = Number(p.qty || 0);
+            const price = Number(p.price || 0);
+            items += qty;
+            total += (qty * price);
+          });
+        });
+        els.stOrders.textContent = String(list.length);
+        els.stItems.textContent = String(items);
+        els.stDone.textContent = String(done);
+        els.stTotal.textContent = fmtMoney(total);
+      }
+
+      async function apiGet(path){
+        const res = await fetch(API + path, { credentials:'include', headers:{ 'Cache-Control':'no-cache' }, cache:'no-store' });
+        if (!res.ok) throw new Error('HTTP_' + res.status);
+        return res.json();
+      }
+
+      async function loadAccount(){
+        try{
+          const me = await apiGet('/api/auth/me');
+          const user = me && me.user ? me.user : null;
+          if (!user) throw new Error('NO_USER');
+
+          els.grid.hidden = false;
+          els.guest.hidden = true;
+
+          const fullName = String(user.name || user.email || 'Usuario');
+          const role = String(user.role || 'USER').toUpperCase();
+          const label = roleLabel(role);
+          els.avatar.textContent = initials(fullName);
+          els.name.textContent = fullName;
+          els.email.textContent = String(user.email || '');
+          els.roleChip.textContent = label + (user.vip_status ? ' VIP' : '');
+          els.memberType.textContent = label;
+          els.vipState.textContent = user.vip_status ? 'Si' : 'No';
+          els.lastLogin.textContent = fmtDate(user.last_login);
+          els.perks.innerHTML = perksFor(role).map((x) => `<li>${x}</li>`).join('');
+          els.inviteNote.hidden = !user.can_invite;
+
+          let myOrders = [];
+          try{
+            myOrders = await apiGet('/api/orders/mine');
+          }catch{
+            myOrders = [];
+          }
+          renderOrders(myOrders);
+          computeStats(myOrders);
+        }catch{
+          els.grid.hidden = true;
+          els.guest.hidden = false;
+        }
+      }
+
+      async function logoutNow(){
+        try{
+          await fetch(API + '/api/auth/logout', { method:'POST', credentials:'include' });
+        }catch{}
+        try{
+          localStorage.removeItem('ssc_user_session');
+          localStorage.removeItem('ssc_admin_role');
+          localStorage.removeItem('ssc_admin_user');
+        }catch{}
+        window.location.href = 'login.html';
+      }
+
+      async function changePassword(ev){
+        ev.preventDefault();
+        els.pwdStatus.className = 'status';
+        els.pwdStatus.textContent = '';
+        const current = String(document.getElementById('currentPassword').value || '');
+        const next = String(document.getElementById('nextPassword').value || '');
+        const confirm = String(document.getElementById('confirmPassword').value || '');
+
+        if (!current || !next || !confirm) {
+          els.pwdStatus.className = 'status err';
+          els.pwdStatus.textContent = 'Completa todos los campos.';
+          return;
+        }
+        if (next.length < 6) {
+          els.pwdStatus.className = 'status err';
+          els.pwdStatus.textContent = 'La nueva contraseña debe tener mínimo 6 caracteres.';
+          return;
+        }
+        if (next !== confirm) {
+          els.pwdStatus.className = 'status err';
+          els.pwdStatus.textContent = 'La confirmacion no coincide.';
+          return;
+        }
+
+        try{
+          const res = await fetch(API + '/api/auth/change-password', {
+            method:'POST',
+            credentials:'include',
+            headers:{ 'Content-Type':'application/json' },
+            body: JSON.stringify({ current_password: current, new_password: next }),
+          });
+          if (!res.ok) {
+            const txt = await res.text().catch(() => '');
+            els.pwdStatus.className = 'status err';
+            els.pwdStatus.textContent = txt || 'No se pudo actualizar la contraseña.';
+            return;
+          }
+          els.pwdStatus.className = 'status ok';
+          els.pwdStatus.textContent = 'Contraseña actualizada correctamente.';
+          document.getElementById('currentPassword').value = '';
+          document.getElementById('nextPassword').value = '';
+          document.getElementById('confirmPassword').value = '';
+        }catch{
+          els.pwdStatus.className = 'status err';
+          els.pwdStatus.textContent = 'Error de conexión al actualizar contraseña.';
+        }
+      }
+
+      if (els.logoutBtn) els.logoutBtn.addEventListener('click', logoutNow);
+      if (els.pwdForm) els.pwdForm.addEventListener('submit', changePassword);
+      loadAccount();
+    })();
+  </script>
+  <script src="assets/js/site.js?v=20260327-3"></script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+

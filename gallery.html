@@ -1,0 +1,327 @@
+﻿<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<script>
+(function(){
+  const explicit = (window.SUNSESH_API || '').trim();
+ const currentPort = String(location.port || '');
+ const hasLikelyDevPort = !!currentPort && !['80', '443', '4000'].includes(currentPort);
+ const isLanIp = /^\d{1,3}(?:\.\d{1,3}){3}$/.test(location.hostname);
+ const preferLocalApi = isLanIp || location.hostname === 'localhost' || location.hostname === '127.0.0.1' || hasLikelyDevPort;
+  const origin = (location.origin && location.origin !== 'null') ? location.origin : '';
+ const base = explicit || (preferLocalApi ? (location.protocol + '//' + location.hostname + ':4000') : origin);
+  window.__SUNSESH_API_BASE = String(base || '').replace(/\/$/, '');
+})();
+</script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Galería de Eventos  Sun Session Club</title>
+  <link href="assets/css/site.css?v=20260329-01" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { primary: '#00FFAA', accent: '#0b1e14' },
+          borderRadius: { button: '10px' }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Montserrat', sans-serif; }
+    .glass { background: rgba(14, 18, 16, 0.7); border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(12px); }
+    .glow:hover { box-shadow: 0 12px 30px rgba(0,255,170,0.25); transform: translateY(-4px); }
+    .masonry { column-count: 3; column-gap: 16px; }
+    .masonry-item { break-inside: avoid; margin-bottom: 16px; }
+    .gallery-hero{
+      --ssc-hero-image: url('https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?auto=format&fit=crop&w=1800&q=80');
+      --ssc-hero-position: center 34%;
+    }
+    #lightbox { transition: opacity .28s ease; }
+    #lightbox:not(.is-open) { pointer-events: none; }
+    #lbImg { transition: transform .35s ease, opacity .25s ease; }
+    @media (max-width: 1024px){ .masonry { column-count: 2; } }
+    @media (max-width: 640px){ .masonry { column-count: 1; } }
+  </style>
+</head>
+<body class="bg-black text-white">
+  <nav class="ssc-nav sticky top-0 z-40 bg-black/90 border-b border-white/10">
+    <div class="container mx-auto px-6 py-4 flex items-center justify-between">
+      <a href="sunsessionesp_fixed_v3.html" class="flex items-center gap-2 text-sm text-white/70 hover:text-primary">
+        <i class="ri-arrow-left-line"></i><span>Volver al inicio</span>
+      </a>
+      <div class="text-lg font-bold tracking-widest">GALERÍA</div>
+      <a href="sunsessionesp_fixed_v3.html#merch" class="px-4 py-2 bg-primary text-black rounded-button font-bold">MERCH</a>
+    </div>
+  </nav>
+
+  <header class="ssc-page-hero gallery-hero relative overflow-hidden" data-parallax="0.12" data-parallax-mode="bg">
+    <div class="absolute inset-0 bg-gradient-to-b from-[#0b1e14] via-black to-black opacity-90"></div>
+    <div class="container mx-auto px-6 py-16 relative">
+<h1 class="text-4xl md:text-6xl font-extrabold">MOMENTOS</h1>
+      <p class="mt-4 text-white/70 max-w-2xl">Prueba de lo que pasó. Prueba de quién estuvo ahí. Así se ve el movimiento cuadro por cuadro.</p>
+    </div>
+  </header>
+
+  <section id="galleryList" class="py-10">
+    <div class="container mx-auto px-6 space-y-6">
+      <div class="glass p-4 rounded-xl grid grid-cols-1 md:grid-cols-4 gap-3">
+        <input id="filterSearch" class="bg-black/40 border border-white/10 rounded-button px-3 py-2" placeholder="Buscar evento...">
+        <select id="filterYear" class="bg-black/40 border border-white/10 rounded-button px-3 py-2">
+          <option value="">Todos los años</option>
+        </select>
+        <select id="filterCategory" class="bg-black/40 border border-white/10 rounded-button px-3 py-2">
+          <option value="">Todas las categorías</option>
+        </select>
+        <select id="filterSort" class="bg-black/40 border border-white/10 rounded-button px-3 py-2">
+          <option value="latest">Más recientes</option>
+          <option value="oldest">Más antiguas</option>
+        </select>
+      </div>
+      <div id="eventsGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"></div>
+    </div>
+  </section>
+
+  <section id="galleryDetail" class="hidden py-10">
+    <div class="container mx-auto px-6 space-y-6">
+      <button id="backToGallery" class="text-primary text-sm flex items-center gap-2">
+        <i class="ri-arrow-left-line"></i> Volver a la galería
+      </button>
+      <div class="glass p-6 rounded-2xl space-y-4">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h2 id="eventTitle" class="text-3xl font-extrabold"></h2>
+            <div class="text-white/70 mt-2">
+              <span id="eventDate"></span>  <span id="eventLocation"></span>
+            </div>
+          </div>
+          <div class="text-white/70 text-sm" id="eventCategory"></div>
+        </div>
+        <p id="eventDescription" class="text-white/70"></p>
+        <div id="eventPhotographer" class="text-xs text-white/60"></div>
+      </div>
+
+      <div id="eventVideos" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
+
+      <div class="glass p-4 rounded-2xl">
+        <div class="masonry" id="masonryGrid"></div>
+      </div>
+    </div>
+  </section>
+
+  <div id="lightbox" class="ssc-modal-backdrop fixed inset-0 hidden z-50">
+    <div class="absolute top-6 right-6 flex items-center gap-3">
+      <button id="lbZoom" class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center"><i class="ri-zoom-in-line"></i></button>
+      <button id="lbFull" class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center"><i class="ri-fullscreen-line"></i></button>
+      <button id="lbClose" class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center"><i class="ri-close-line"></i></button>
+    </div>
+    <button id="lbPrev" class="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center"><i class="ri-arrow-left-s-line text-2xl"></i></button>
+    <button id="lbNext" class="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center"><i class="ri-arrow-right-s-line text-2xl"></i></button>
+    <div class="ssc-modal-panel h-full w-full flex flex-col items-center justify-center gap-4 px-6">
+      <img id="lbImg" class="max-h-[70vh] object-contain rounded-xl shadow-2xl" alt="">
+      <div id="lbCounter" class="text-white/70 text-sm"></div>
+    </div>
+  </div>
+
+  <script>
+const API_BASE = window.__SUNSESH_API_BASE || '';
+    const API_BASE_GALLERY = `${API_BASE}/api/gallery`;
+    const eventsGrid = document.getElementById('eventsGrid');
+    const listSection = document.getElementById('galleryList');
+    const detailSection = document.getElementById('galleryDetail');
+    const filterSearch = document.getElementById('filterSearch');
+    const filterYear = document.getElementById('filterYear');
+    const filterCategory = document.getElementById('filterCategory');
+    const filterSort = document.getElementById('filterSort');
+
+    let events = [];
+    let detailImages = [];
+    let lbIndex = 0;
+    let lbHideTimer = 0;
+
+    async function fetchEvents(){
+      const res = await fetch(`${API_BASE_GALLERY}/events`, { cache: 'no-store' });
+      if(!res.ok) return;
+      const data = await res.json();
+      if(Array.isArray(data)) events = data;
+      buildFilters();
+      renderEvents();
+    }
+
+    function buildFilters(){
+      const years = [...new Set(events.map(e => String(e.event_date||'').slice(0,4)).filter(Boolean))].sort((a,b)=>b.localeCompare(a));
+      const cats = [...new Set(events.map(e => e.category).filter(Boolean))].sort();
+      if(filterYear.options.length <= 1){
+        years.forEach(y => { const o=document.createElement('option'); o.value=y; o.textContent=y; filterYear.appendChild(o); });
+      }
+      if(filterCategory.options.length <= 1){
+        cats.forEach(c => { const o=document.createElement('option'); o.value=c; o.textContent=c; filterCategory.appendChild(o); });
+      }
+    }
+
+    function renderEvents(){
+      const q = (filterSearch.value||'').toLowerCase().trim();
+      const y = filterYear.value;
+      const c = (filterCategory.value||'').toLowerCase();
+      let list = events.filter(e=>{
+        const title=(e.title||'').toLowerCase();
+        const loc=(e.location||'').toLowerCase();
+        const year=String(e.event_date||'').slice(0,4);
+        const cat=(e.category||'').toLowerCase();
+        return (!q || title.includes(q) || loc.includes(q)) &&
+               (!y || year===y) &&
+               (!c || cat===c);
+      });
+      list.sort((a,b)=> filterSort.value==='latest'
+        ? new Date(b.event_date)-new Date(a.event_date)
+        : new Date(a.event_date)-new Date(b.event_date)
+      );
+      eventsGrid.innerHTML='';
+      list.forEach(e=>{
+        const card = document.createElement('div');
+        card.className = 'glass rounded-2xl overflow-hidden glow transition';
+        card.innerHTML = `
+          <div class="h-56 overflow-hidden bg-black/40">
+            <img src="${e.cover_thumb||e.cover_image||''}" class="w-full h-full object-cover" loading="lazy">
+          </div>
+          <div class="p-5 space-y-2">
+            <div class="font-bold text-xl">${e.title||''}</div>
+            <div class="text-white/60 text-sm">${e.event_date||''}${e.location?(' · '+e.location):''}</div>
+            <div class="text-white/70 text-xs">Fotos: ${e.photo_count||0} ${e.category?(' '+e.category):''}</div>
+            <button class="mt-2 px-4 py-2 bg-primary text-black rounded-button font-bold">Ver Galería</button>
+          </div>
+        `;
+        card.querySelector('button').onclick=()=>{ location.href = `gallery.html?id=${e.id}`; };
+        eventsGrid.appendChild(card);
+      });
+      if(!list.length){
+        eventsGrid.innerHTML = '<div class="text-white/60 text-center col-span-full">No hay eventos para mostrar.</div>';
+      }
+      if (window.sscRefreshReveals) window.sscRefreshReveals();
+    }
+
+    async function loadEventDetail(id){
+      const res = await fetch(`${API_BASE_GALLERY}/events/${id}`, { cache:'no-store' });
+      if(!res.ok) return;
+      const data = await res.json();
+      const event = data.event || {};
+      detailImages = (data.images || []).filter((img, idx, arr) => {
+        const p = img?.image_path || img?.thumb_path || '';
+        return p && arr.findIndex((it) => ((it?.image_path || it?.thumb_path || '') === p)) === idx;
+      });
+      document.getElementById('eventTitle').textContent = event.title || '';
+      document.getElementById('eventDate').textContent = event.event_date || '';
+      document.getElementById('eventLocation').textContent = event.location || '';
+      document.getElementById('eventCategory').textContent = event.category || '';
+      document.getElementById('eventDescription').textContent = event.description || '';
+      document.getElementById('eventPhotographer').textContent = event.photographer ? `Fotógrafo: ${event.photographer}` : '';
+
+      const videoWrap = document.getElementById('eventVideos');
+      videoWrap.innerHTML = '';
+      (data.videos||[]).forEach(v=>{
+        const url = v.video_url;
+        const card = document.createElement('div');
+        card.className = 'glass rounded-xl overflow-hidden';
+        card.innerHTML = `<div class="aspect-video bg-black/60"><iframe class="w-full h-full" src="${embedVideo(url)}" frameborder="0" allowfullscreen></iframe></div>`;
+        videoWrap.appendChild(card);
+      });
+
+      const masonry = document.getElementById('masonryGrid');
+      masonry.innerHTML = '';
+      detailImages.forEach((img, idx)=>{
+        const tile = document.createElement('div');
+        tile.className = 'masonry-item';
+        tile.innerHTML = `<img src="${img.thumb_path||img.image_path}" data-index="${idx}" class="w-full rounded-xl cursor-pointer hover:opacity-90 transition" loading="lazy">`;
+        tile.querySelector('img').onclick=()=>openLightbox(idx);
+        masonry.appendChild(tile);
+      });
+      if (window.sscRefreshReveals) window.sscRefreshReveals();
+    }
+
+    function embedVideo(url){
+      if(!url) return '';
+      if(url.includes('youtube.com') || url.includes('youtu.be')){
+        const id = url.includes('youtu.be') ? url.split('/').pop() : new URL(url).searchParams.get('v');
+        return `https://www.youtube.com/embed/${id}`;
+      }
+      if(url.includes('vimeo.com')){
+        const id = url.split('/').pop();
+        return `https://player.vimeo.com/video/${id}`;
+      }
+      return url;
+    }
+
+    const lb = document.getElementById('lightbox');
+    const lbImg = document.getElementById('lbImg');
+    const lbCounter = document.getElementById('lbCounter');
+    let zoomed = false;
+
+    function openLightbox(index){
+      if (!detailImages.length) return;
+      clearTimeout(lbHideTimer);
+      lbIndex = index;
+      lb.classList.remove('hidden');
+      requestAnimationFrame(() => lb.classList.add('is-open'));
+      updateLightbox();
+    }
+    function updateLightbox(){
+      const item = detailImages[lbIndex];
+      if (!item) return;
+      lbImg.classList.add('ssc-image-swapping');
+      lbImg.src = item.image_path || item.thumb_path;
+      lbCounter.textContent = `${lbIndex+1} / ${detailImages.length}`;
+      window.setTimeout(() => lbImg.classList.remove('ssc-image-swapping'), 220);
+    }
+    function closeLightbox(){
+      lb.classList.remove('is-open');
+      zoomed = false;
+      lbImg.style.transform = 'scale(1)';
+      lbHideTimer = window.setTimeout(() => lb.classList.add('hidden'), 220);
+    }
+    document.getElementById('lbClose').onclick=closeLightbox;
+    document.getElementById('lbPrev').onclick=()=>{ lbIndex=(lbIndex-1+detailImages.length)%detailImages.length; updateLightbox(); };
+    document.getElementById('lbNext').onclick=()=>{ lbIndex=(lbIndex+1)%detailImages.length; updateLightbox(); };
+    document.getElementById('lbZoom').onclick=()=>{ zoomed=!zoomed; lbImg.style.transform=zoomed?'scale(1.4)':'scale(1)'; };
+    document.getElementById('lbFull').onclick=()=>{ if(lb.requestFullscreen) lb.requestFullscreen(); };
+    lb.addEventListener('click',(e)=>{ if(e.target===lb) closeLightbox(); });
+
+    document.getElementById('backToGallery').onclick=()=>{ location.href = 'gallery.html'; };
+
+    [filterSearch, filterYear, filterCategory, filterSort].forEach(el=>{
+      el.addEventListener('input', renderEvents);
+      el.addEventListener('change', renderEvents);
+    });
+
+    const eventId = new URLSearchParams(location.search).get('id');
+    if(eventId){
+      listSection.classList.add('hidden');
+      detailSection.classList.remove('hidden');
+      loadEventDetail(eventId);
+    } else {
+      fetchEvents();
+    }
+  </script>
+  <script src="assets/js/site.js?v=20260327-3"></script>
+  <script src="assets/js/ssc-ux.js" defer></script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

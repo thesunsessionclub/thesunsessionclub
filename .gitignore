@@ -1,0 +1,49 @@
+# Dependencies
+node_modules/
+
+# Environment / secrets
+.env
+.env.*
+
+# Database
+*.db
+*.db-journal
+
+# Uploads (user content)
+server/uploads/tickets/
+server/uploads/payments/
+server/uploads/gallery/
+server/uploads/contact/
+
+# Logs
+*.log
+logs/
+
+# Temp / debug files
+tmp-*
+bad_tokens.txt
+
+# Binaries
+cloudflared.exe
+
+# IDE / editor
+.vs/
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+
+# AI tools
+.claude/
+.codex/
+
+# Build output
+dist/
+dist-ssr/
+
+# OS
+Thumbs.db
