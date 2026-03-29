@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<script>
+(function(){
+  const explicit = (window.SUNSESH_API || '').trim();
+  const currentPort = String(location.port || '');
+  const hasLikelyDevPort = !!currentPort && !['80', '443', '4000'].includes(currentPort);
+  const isLanIp = /^\d{1,3}(?:\.\d{1,3}){3}$/.test(location.hostname);
+  const preferLocalApi = isLanIp || location.hostname === 'localhost' || location.hostname === '127.0.0.1' || hasLikelyDevPort;
+  const origin = (location.origin && location.origin !== 'null') ? location.origin : '';
+  const base = explicit || (preferLocalApi ? (location.protocol + '//' + location.hostname + ':4000') : origin);
+  window.__SUNSESH_API_BASE = String(base || '').replace(/\/$/, '');
+})();
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#060d08">
+<title>Tu Ticket | Sun Session Club</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{
+  height:100%;
+  font-family:'Montserrat',system-ui,-apple-system,sans-serif;
+  background:#060d08;
+  color:#fff;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* Loading state */
+.loading-screen{
+  position:fixed;inset:0;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  background:#060d08;z-index:100;
+  transition:opacity 0.5s ease;
+}
+.loading-screen.hide{opacity:0;pointer-events:none}
+.loading-spinner{
+  width:40px;height:40px;
+  border:3px solid rgba(0,255,170,0.15);
+  border-top-color:#00FFAA;
+  border-radius:50%;
+  animation:spin 0.8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-brand{
+  margin-top:20px;
+  font-size:12px;letter-spacing:6px;
+  color:rgba(255,255,255,0.3);
+  text-transform:uppercase;
+}
+
+/* Ticket view (full screen, 9:16) */
+.ticket-container{
+  min-height:100vh;
+  min-height:100dvh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:16px;
+  padding-top:env(safe-area-inset-top,16px);
+  padding-bottom:env(safe-area-inset-bottom,16px);
+}
+.ticket-image-wrap{
+  position:relative;
+  width:100%;
+  max-width:420px;
+  border-radius:24px;
+  overflow:hidden;
+  box-shadow:0 25px 80px rgba(0,0,0,0.6),0 0 60px rgba(0,255,170,0.05);
+  animation:fadeInUp 0.6s ease-out;
+}
+@keyframes fadeInUp{
+  from{opacity:0;transform:translateY(30px) scale(0.97)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+.ticket-image-wrap img{
+  width:100%;
+  height:auto;
+  display:block;
+}
+
+/* Status overlay */
+.status-overlay{
+  position:absolute;top:0;left:0;right:0;
+  padding:12px 16px;
+  text-align:center;
+  font-size:11px;font-weight:700;
+  letter-spacing:3px;text-transform:uppercase;
+  z-index:2;
+}
+.status-overlay.valid{background:rgba(0,255,170,0.15);color:#00FFAA}
+.status-overlay.used{background:rgba(255,92,92,0.2);color:#ff5c5c}
+.status-overlay.invalid{background:rgba(100,100,100,0.2);color:#999}
+
+/* Used stamp */
+.used-stamp{
+  position:absolute;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%) rotate(-15deg);
+  font-size:48px;font-weight:900;
+  color:rgba(255,92,92,0.5);
+  letter-spacing:8px;
+  text-transform:uppercase;
+  pointer-events:none;
+  text-shadow:0 0 40px rgba(255,92,92,0.3);
+}
+
+/* Actions */
+.ticket-actions{
+  margin-top:20px;
+  display:flex;gap:12px;
+  width:100%;max-width:420px;
+}
+.ticket-actions a,.ticket-actions button{
+  flex:1;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  padding:14px;
+  border-radius:14px;
+  font-size:13px;font-weight:600;
+  text-decoration:none;
+  cursor:pointer;border:none;
+  transition:all 0.2s;
+}
+.btn-primary{background:#00FFAA;color:#000}
+.btn-primary:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.btn-secondary{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.7)}
+.btn-secondary:hover{background:rgba(255,255,255,0.12)}
+
+/* Event info below ticket */
+.event-info{
+  margin-top:24px;
+  text-align:center;
+  max-width:420px;
+  width:100%;
+}
+.event-title{font-size:20px;font-weight:800;margin-bottom:4px}
+.event-detail{font-size:13px;color:rgba(255,255,255,0.4);margin-top:4px}
+.event-status{
+  display:inline-block;
+  padding:4px 12px;
+  border-radius:20px;
+  font-size:10px;font-weight:700;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  margin-top:12px;
+}
+.event-status.valid{background:rgba(0,255,170,0.1);color:#00FFAA;border:1px solid rgba(0,255,170,0.2)}
+.event-status.used{background:rgba(255,92,92,0.1);color:#ff5c5c;border:1px solid rgba(255,92,92,0.2)}
+.event-status.invalid{background:rgba(100,100,100,0.1);color:#888;border:1px solid rgba(100,100,100,0.2)}
+
+/* Footer */
+.ticket-footer{
+  margin-top:32px;
+  text-align:center;
+  padding-bottom:20px;
+}
+.ticket-footer p{font-size:11px;color:rgba(255,255,255,0.15);letter-spacing:3px}
+
+/* Error state */
+.error-screen{
+  min-height:100vh;min-height:100dvh;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:32px;text-align:center;
+}
+.error-icon{font-size:64px;margin-bottom:16px;opacity:0.3}
+.error-title{font-size:24px;font-weight:800;margin-bottom:8px}
+.error-msg{font-size:14px;color:rgba(255,255,255,0.4);max-width:300px;line-height:1.6}
+.error-link{
+  display:inline-block;margin-top:24px;
+  padding:12px 28px;border-radius:12px;
+  background:#00FFAA;color:#000;
+  font-weight:700;font-size:13px;
+  text-decoration:none;
+}
+</style>
+</head>
+<body>
+
+<!-- Loading -->
+<div id="loadingScreen" class="loading-screen">
+  <div class="loading-spinner"></div>
+  <div class="loading-brand">Sun Session Club</div>
+</div>
+
+<!-- Content (filled by JS) -->
+<div id="content"></div>
+
+<script>
+const API = window.__SUNSESH_API_BASE;
+const params = new URLSearchParams(window.location.search);
+const code = (params.get('code') || '').trim().toUpperCase();
+
+function hideLoading() {
+  const el = document.getElementById('loadingScreen');
+  if (el) { el.classList.add('hide'); setTimeout(() => el.remove(), 500); }
+}
+
+function showError(title, msg) {
+  hideLoading();
+  document.getElementById('content').innerHTML = `
+    <div class="error-screen">
+      <div class="error-icon">\ud83c\udfab</div>
+      <div class="error-title">${title}</div>
+      <div class="error-msg">${msg}</div>
+      <a href="/" class="error-link">Ir al inicio</a>
+    </div>`;
+}
+
+function formatDate(d) {
+  if (!d) return '';
+  return new Date(d).toLocaleDateString('es-MX', {
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+  });
+}
+
+async function loadTicket() {
+  if (!code) {
+    showError('Ticket no especificado', 'No se proporcion\u00f3 un c\u00f3digo de ticket v\u00e1lido.');
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API}/api/tickets/validate/${encodeURIComponent(code)}`);
+    const data = await res.json();
+
+    if (!res.ok && res.status === 404) {
+      showError('Ticket no encontrado', 'El c\u00f3digo ingresado no corresponde a ning\u00fan ticket.');
+      return;
+    }
+
+    hideLoading();
+
+    const status = data.status || 'invalid';
+    const event = data.event || {};
+    const attendee = data.attendee || '';
+    const ticketImage = data.ticket_image ? `${API}${data.ticket_image}` : '';
+    const eventDate = formatDate(event.date);
+    const statusLabel = status === 'valid' ? 'V\u00e1lido' : status === 'used' ? 'Utilizado' : 'Inv\u00e1lido';
+
+    let html = '<div class="ticket-container">';
+
+    // Ticket image
+    if (ticketImage) {
+      html += `
+      <div class="ticket-image-wrap">
+        <div class="status-overlay ${status}">${statusLabel}</div>
+        <img src="${ticketImage}" alt="Ticket ${code}" loading="eager">
+        ${status === 'used' ? '<div class="used-stamp">Usado</div>' : ''}
+      </div>`;
+
+      // Action buttons
+      if (status === 'valid') {
+        html += `
+        <div class="ticket-actions">
+          <a href="${ticketImage}" download="ticket_${code}.png" class="btn-primary">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+            Guardar
+          </a>
+          <button onclick="shareTicket()" class="btn-secondary">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98"/></svg>
+            Compartir
+          </button>
+        </div>`;
+      }
+    }
+
+    // Event info
+    html += `
+    <div class="event-info">
+      ${event.title ? `<div class="event-title">${event.title}</div>` : ''}
+      ${event.artists ? `<div class="event-detail">${event.artists}</div>` : ''}
+      ${eventDate ? `<div class="event-detail">\ud83d\udcc5 ${eventDate}</div>` : ''}
+      ${event.time ? `<div class="event-detail">\ud83d\udd54 ${event.time}</div>` : ''}
+      ${event.location || event.venue ? `<div class="event-detail">\ud83d\udccd ${event.location || event.venue}</div>` : ''}
+      <div class="event-status ${status}">${statusLabel}</div>
+      ${status === 'used' && data.usedAt ? `<div class="event-detail">Utilizado: ${new Date(data.usedAt).toLocaleString('es-MX')}</div>` : ''}
+    </div>`;
+
+    html += `
+    <div class="ticket-footer">
+      <p>THE SUN SESSION CLUB</p>
+    </div>
+    </div>`;
+
+    document.getElementById('content').innerHTML = html;
+
+    // Set page title
+    if (event.title) document.title = `${event.title} - Ticket | Sun Session Club`;
+
+  } catch (err) {
+    showError('Error de conexi\u00f3n', 'No se pudo verificar el ticket. Revisa tu conexi\u00f3n a internet.');
+  }
+}
+
+// Share functionality
+function shareTicket() {
+  const url = window.location.href;
+  if (navigator.share) {
+    navigator.share({
+      title: 'Mi Ticket - Sun Session Club',
+      text: 'Mira mi ticket para el evento!',
+      url: url,
+    }).catch(() => {});
+  } else {
+    navigator.clipboard.writeText(url).then(() => {
+      const btn = document.querySelector('.btn-secondary');
+      if (btn) {
+        const orig = btn.innerHTML;
+        btn.innerHTML = '\u2713 Copiado';
+        setTimeout(() => { btn.innerHTML = orig; }, 2000);
+      }
+    }).catch(() => {});
+  }
+}
+
+// Initialize
+loadTicket();
+</script>
+</body>
+</html>

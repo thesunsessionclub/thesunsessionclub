@@ -1,18 +1,24 @@
-﻿import { prisma } from '../prisma.js';
+import { prisma } from '../prisma.js';
 import { validationResult } from 'express-validator';
-import QRCode from 'qrcode';
 import crypto from 'crypto';
 import fs from 'fs/promises';
 import path from 'path';
 import { sendOrderNotification } from '../services/mailer.js';
 import { sendTicketWhatsApp } from '../services/whatsapp.js';
+import { generateAndSaveTicket } from '../services/ticketGenerator.js';
+import {
+  buildTicketConfirmationEmail,
+  buildRequestReceivedEmail,
+  buildPaymentReminderEmail,
+} from '../services/ticketMailer.js';
 
 const UPLOADS_DIR = path.resolve(process.cwd(), 'uploads');
 const PAYMENTS_DIR = path.join(UPLOADS_DIR, 'payments');
-const TICKETS_DIR = path.join(UPLOADS_DIR, 'tickets');
 
 const ORDER_ACTIVE_STATUSES = ['pending', 'paid', 'confirmed'];
 const TICKET_VALID_STATUSES = ['valid', 'used'];
+
+/* ── helpers ──────────────────────────────────────────── */
 
 function cleanString(value) {
   return String(value || '').trim();
@@ -62,6 +68,8 @@ function pickHost(req) {
   return `${proto}://${host}`;
 }
 
+/* ── availability ─────────────────────────────────────── */
+
 async function getEventAvailability(eventId) {
   const event = await prisma.event.findUnique({ where: { id: eventId } });
   if (!event) return null;
@@ -75,13 +83,7 @@ async function getEventAvailability(eventId) {
   });
   const limit = event.ticket_limit;
   const remaining = limit == null ? null : Math.max(0, limit - reserved);
-  return {
-    event_id: eventId,
-    limit,
-    reserved,
-    sold,
-    remaining,
-  };
+  return { event_id: eventId, limit, reserved, sold, remaining };
 }
 
 async function getAvailabilityForEvents(eventIds) {
@@ -110,53 +112,7 @@ async function getAvailabilityForEvents(eventIds) {
   });
 }
 
-function buildTicketSvg({ event, order, ticketCode, qrDataUrl }) {
-  const title = cleanString(event.title);
-  const date = event.date ? new Date(event.date).toLocaleDateString('es-MX') : '';
-  const time = cleanString(event.time);
-  const location = cleanString(event.location || event.venue);
-  const name = cleanString(order.full_name);
-  const svg = `
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="600" viewBox="0 0 1200 600">
-  <defs>
-    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
-      <stop offset="0%" stop-color="#050607"/>
-      <stop offset="100%" stop-color="#0f271a"/>
-    </linearGradient>
-  </defs>
-  <rect width="1200" height="600" rx="28" fill="url(#bg)"/>
-  <rect x="40" y="40" width="1120" height="520" rx="22" fill="#0d1b13" stroke="#00FFAA" stroke-opacity="0.35" stroke-width="2"/>
-  <text x="90" y="130" font-family="Montserrat, Arial" font-size="36" fill="#00FFAA" font-weight="700">SUN SESSION CLUB</text>
-  <text x="90" y="190" font-family="Montserrat, Arial" font-size="28" fill="#ffffff" font-weight="700">${title}</text>
-  <text x="90" y="240" font-family="Montserrat, Arial" font-size="18" fill="#cbd5e1">Fecha: ${date}</text>
-  <text x="90" y="270" font-family="Montserrat, Arial" font-size="18" fill="#cbd5e1">Hora: ${time}</text>
-  <text x="90" y="300" font-family="Montserrat, Arial" font-size="18" fill="#cbd5e1">Lugar: ${location}</text>
-  <text x="90" y="360" font-family="Montserrat, Arial" font-size="20" fill="#ffffff">Titular: ${name}</text>
-  <text x="90" y="400" font-family="Montserrat, Arial" font-size="16" fill="#94a3b8">CÃ³digo: ${ticketCode}</text>
-  <rect x="830" y="150" width="280" height="280" rx="18" fill="#0b0b0f" stroke="#00FFAA" stroke-opacity="0.4" stroke-width="2"/>
-  <image href="${qrDataUrl}" x="855" y="175" width="230" height="230" />
-  <text x="830" y="470" font-family="Montserrat, Arial" font-size="14" fill="#94a3b8">Escanea en la entrada</text>
-</svg>`;
-  return svg.trim();
-}
-
-async function generateTicketAssets({ event, order, ticket }) {
-  const qrPayload = {
-    ticketId: ticket.id,
-    eventId: event.id,
-    orderId: order.id,
-    code: ticket.ticket_code,
-    name: order.full_name,
-    email: order.email,
-  };
-  const qrDataUrl = await QRCode.toDataURL(JSON.stringify(qrPayload), { width: 360, margin: 1 });
-  await ensureDir(TICKETS_DIR);
-  const filename = `ticket_${ticket.ticket_code}.svg`;
-  const filePath = path.join(TICKETS_DIR, filename);
-  const svg = buildTicketSvg({ event, order, ticketCode: ticket.ticket_code, qrDataUrl });
-  await fs.writeFile(filePath, svg, 'utf8');
-  return { qrPayload: JSON.stringify(qrPayload), ticketImage: `/uploads/tickets/${filename}` };
-}
+/* ── controllers ──────────────────────────────────────── */
 
 export const getSummary = async (req, res) => {
   try {
@@ -181,7 +137,7 @@ export const getSummary = async (req, res) => {
 
 export const createRequest = async (req, res) => {
   const errors = validationResult(req);
-  if (!errors.isEmpty()) return res.status(400).json({ message: 'ValidaciÃ³n fallida', errors: errors.array() });
+  if (!errors.isEmpty()) return res.status(400).json({ message: 'Validación fallida', errors: errors.array() });
   const { event_id, full_name, email, phone, qty, payment_proof } = req.body || {};
   const eventId = cleanString(event_id);
   const qtyNum = Number(qty || 0);
@@ -206,12 +162,15 @@ export const createRequest = async (req, res) => {
     if (proofUrl) {
       await prisma.ticketOrder.update({ where: { id: order.id }, data: { payment_proof: proofUrl } });
     }
+
+    // Professional branded email
+    const emailContent = buildRequestReceivedEmail({ event, order });
     const mailSent = await safeNotify('request-email', () =>
       sendOrderNotification({
         to: order.email,
-        subject: `Solicitud de boletos recibida - ${event.title}`,
-        text: `Gracias. Tu solicitud estÃ¡ pendiente de verificaciÃ³n. Evento: ${event.title}. Cantidad: ${order.qty}.`,
-        html: `<p>Gracias. Tu solicitud estÃ¡ pendiente de verificaciÃ³n.</p><p><strong>Evento:</strong> ${event.title}</p><p><strong>Boletos:</strong> ${order.qty}</p>`,
+        subject: emailContent.subject,
+        text: emailContent.text,
+        html: emailContent.html,
       })
     );
     const whatsappSent = await safeNotify('request-whatsapp', () => sendTicketWhatsApp({ type: 'request', order, event }));
@@ -241,7 +200,7 @@ export const listOrders = async (req, res) => {
 
 export const updateOrder = async (req, res) => {
   const errors = validationResult(req);
-  if (!errors.isEmpty()) return res.status(400).json({ message: 'ValidaciÃ³n fallida', errors: errors.array() });
+  if (!errors.isEmpty()) return res.status(400).json({ message: 'Validación fallida', errors: errors.array() });
   const { id } = req.params;
   const { status, notes } = req.body || {};
   try {
@@ -258,21 +217,33 @@ export const updateOrder = async (req, res) => {
   }
 };
 
+/**
+ * Approve order: generate premium PNG tickets, send branded email
+ */
 export const approveOrder = async (req, res) => {
   const { id } = req.params;
   try {
     const order = await prisma.ticketOrder.findUnique({ where: { id }, include: { event: true } });
     if (!order) return res.status(404).json({ message: 'Solicitud no encontrada' });
     const event = order.event;
+
+    // Check availability (excluding this order)
     const otherReservedAgg = await prisma.ticketOrder.aggregate({
       _sum: { qty: true },
       where: { eventId: order.eventId, status: { in: ORDER_ACTIVE_STATUSES }, NOT: { id: order.id } },
     });
     const reservedExcluding = Number(otherReservedAgg._sum.qty || 0);
     if (event.ticket_limit != null && reservedExcluding + order.qty > event.ticket_limit) {
-      return res.status(409).json({ message: 'No hay suficientes boletos disponibles', remaining: Math.max(0, event.ticket_limit - reservedExcluding) });
+      return res.status(409).json({
+        message: 'No hay suficientes boletos disponibles',
+        remaining: Math.max(0, event.ticket_limit - reservedExcluding),
+      });
     }
+
+    const host = pickHost(req);
     const createdTickets = [];
+
+    // Generate each ticket with premium PNG image
     for (let i = 0; i < order.qty; i++) {
       const ticketCode = crypto.randomBytes(5).toString('hex').toUpperCase();
       const ticket = await prisma.ticketItem.create({
@@ -284,17 +255,31 @@ export const approveOrder = async (req, res) => {
           status: 'valid',
         },
       });
-      const assets = await generateTicketAssets({ event, order, ticket });
+
+      // Generate premium 1080x1920 PNG ticket
+      const assets = await generateAndSaveTicket({
+        event,
+        order,
+        ticket,
+        ticketNumber: i + 1,
+        totalTickets: order.qty,
+        baseUrl: host,
+      });
+
       const updated = await prisma.ticketItem.update({
         where: { id: ticket.id },
         data: { qr_payload: assets.qrPayload, ticket_image: assets.ticketImage },
       });
       createdTickets.push(updated);
     }
+
+    // Update order status
     const updatedOrder = await prisma.ticketOrder.update({
       where: { id },
       data: { status: 'confirmed' },
     });
+
+    // Update user participation counter
     const userEmail = String(order.email || '').trim().toLowerCase();
     if (userEmail) {
       const buyer = await prisma.user.findFirst({ where: { email: userEmail, deletedAt: null } });
@@ -305,16 +290,20 @@ export const approveOrder = async (req, res) => {
         });
       }
     }
-    const host = pickHost(req);
-    const ticketLinks = createdTickets
-      .map((t) => `${host}${t.ticket_image}`)
-      .join('<br/>');
+
+    // Send professional branded email with ticket links
+    const emailContent = buildTicketConfirmationEmail({
+      event,
+      order,
+      tickets: createdTickets,
+      baseUrl: host,
+    });
     const mailSent = await safeNotify('approve-email', () =>
       sendOrderNotification({
         to: order.email,
-        subject: `Boletos confirmados - ${event.title}`,
-        text: `Tus boletos estÃ¡n confirmados. Descarga aquÃ­: ${ticketLinks}`,
-        html: `<p>Â¡Pago confirmado!</p><p>Evento: <strong>${event.title}</strong></p><p>Descarga tus boletos:</p><p>${ticketLinks}</p>`,
+        subject: emailContent.subject,
+        text: emailContent.text,
+        html: emailContent.html,
       })
     );
     const whatsappSent = await safeNotify('approve-whatsapp', () =>
@@ -326,8 +315,10 @@ export const approveOrder = async (req, res) => {
         links: createdTickets.map((t) => `${host}${t.ticket_image}`).join(' '),
       })
     );
+
     res.json({ order: updatedOrder, tickets: createdTickets, mail_sent: mailSent, whatsapp_sent: whatsappSent });
   } catch (err) {
+    console.error('[tickets] approveOrder error:', err);
     res.status(500).json({ message: 'No se pudo aprobar solicitud', details: err?.message });
   }
 };
@@ -354,12 +345,14 @@ export const remindOrder = async (req, res) => {
     });
     if (!order) return res.status(404).json({ message: 'Solicitud no encontrada' });
     const event = order.event;
+
+    const emailContent = buildPaymentReminderEmail({ event, order });
     const mailSent = await safeNotify('remind-email', () =>
       sendOrderNotification({
         to: order.email,
-        subject: `Recordatorio de pago - ${event.title}`,
-        text: `Hola ${order.full_name}. Aun esperamos la verificacion de tu pago para el evento ${event.title}. Cantidad: ${order.qty}.`,
-        html: `<p>Hola ${order.full_name},</p><p>Aun esperamos la verificacion de tu pago para el evento <strong>${event.title}</strong>.</p><p><strong>Boletos:</strong> ${order.qty}</p>`,
+        subject: emailContent.subject,
+        text: emailContent.text,
+        html: emailContent.html,
       })
     );
     const whatsappSent = await safeNotify('remind-whatsapp', () => sendTicketWhatsApp({ type: 'remind', order, event }));
@@ -379,35 +372,140 @@ export const listTickets = async (req, res) => {
   }
 };
 
+/**
+ * Scan / check-in a ticket (admin tool at events)
+ * Accepts: { code } or { ticket_id } or raw QR JSON payload
+ */
 export const scanTicket = async (req, res) => {
   const { code, ticket_id } = req.body || {};
   let ticketCode = cleanString(code);
   let ticketId = cleanString(ticket_id);
-  if (!ticketId && ticketCode && ticketCode.trim().startsWith('{')) {
-    try {
-      const parsed = JSON.parse(ticketCode);
-      if (parsed && parsed.ticketId) ticketId = cleanString(parsed.ticketId);
-      if (!ticketId && parsed && parsed.code) ticketCode = cleanString(parsed.code);
-    } catch {}
+
+  // Parse QR payload (JSON or validation URL)
+  if (!ticketId && ticketCode) {
+    const trimmed = ticketCode.trim();
+
+    // JSON payload from QR
+    if (trimmed.startsWith('{')) {
+      try {
+        const parsed = JSON.parse(trimmed);
+        if (parsed && parsed.ticketId) ticketId = cleanString(parsed.ticketId);
+        if (!ticketId && parsed && parsed.code) ticketCode = cleanString(parsed.code);
+      } catch {}
+    }
+
+    // URL payload from QR (e.g. https://domain/validate-ticket/A3B7C9D1E2)
+    if (!ticketId && trimmed.includes('/validate-ticket/')) {
+      const match = trimmed.match(/\/validate-ticket\/([A-Fa-f0-9]+)/);
+      if (match) ticketCode = match[1].toUpperCase();
+    }
   }
+
   try {
     const ticket = await prisma.ticketItem.findFirst({
       where: {
-        OR: [{ ticket_code: ticketCode }, { id: ticketId }],
+        OR: [
+          ...(ticketCode ? [{ ticket_code: ticketCode }] : []),
+          ...(ticketId ? [{ id: ticketId }] : []),
+        ],
       },
       include: { order: true, event: true },
     });
-    if (!ticket) return res.status(404).json({ message: 'Ticket no encontrado' });
-    if (ticket.status === 'used') {
-      return res.status(409).json({ message: 'Ticket ya utilizado', ticket });
+
+    if (!ticket) {
+      return res.status(404).json({ status: 'invalid', message: 'Ticket no encontrado' });
     }
+
+    if (ticket.status === 'invalid') {
+      return res.status(410).json({ status: 'invalid', message: 'Ticket invalidado', ticket });
+    }
+
+    if (ticket.status === 'used') {
+      return res.status(409).json({
+        status: 'used',
+        message: 'Ticket ya utilizado',
+        usedAt: ticket.usedAt,
+        ticket,
+      });
+    }
+
+    // Mark as used
     const updated = await prisma.ticketItem.update({
       where: { id: ticket.id },
       data: { status: 'used', usedAt: new Date() },
     });
-    res.json({ message: 'Ticket vÃ¡lido', ticket: { ...updated, order: ticket.order, event: ticket.event } });
+
+    res.json({
+      status: 'valid',
+      message: 'Ticket válido - Acceso permitido',
+      ticket: { ...updated, order: ticket.order, event: ticket.event },
+    });
   } catch (err) {
     res.status(500).json({ message: 'No se pudo validar ticket', details: err?.message });
   }
 };
 
+/**
+ * Public validation endpoint - check ticket status without consuming it
+ * Used by QR code scan from any phone camera
+ * GET /api/tickets/validate/:code
+ */
+export const validateTicket = async (req, res) => {
+  const code = cleanString(req.params.code).toUpperCase();
+  if (!code) return res.status(400).json({ status: 'invalid', message: 'Código requerido' });
+
+  try {
+    const ticket = await prisma.ticketItem.findFirst({
+      where: { ticket_code: code },
+      include: {
+        order: { select: { full_name: true, email: true, qty: true } },
+        event: { select: { id: true, title: true, date: true, time: true, location: true, venue: true, image: true, artists: true } },
+      },
+    });
+
+    if (!ticket) {
+      return res.status(404).json({ status: 'invalid', message: 'Ticket no encontrado' });
+    }
+
+    const response = {
+      status: ticket.status,
+      ticket_code: ticket.ticket_code,
+      event: ticket.event,
+      attendee: ticket.order?.full_name || '',
+      ticket_image: ticket.ticket_image,
+    };
+
+    if (ticket.status === 'used') {
+      response.usedAt = ticket.usedAt;
+      response.message = 'Este ticket ya fue utilizado';
+    } else if (ticket.status === 'invalid') {
+      response.message = 'Este ticket ha sido invalidado';
+    } else {
+      response.message = 'Ticket válido';
+    }
+
+    res.json(response);
+  } catch (err) {
+    res.status(500).json({ message: 'Error al validar ticket', details: err?.message });
+  }
+};
+
+/**
+ * Admin: Invalidate a ticket (revoke access)
+ * POST /api/tickets/:ticketId/invalidate
+ */
+export const invalidateTicket = async (req, res) => {
+  const { ticketId } = req.params;
+  try {
+    const ticket = await prisma.ticketItem.findUnique({ where: { id: ticketId } });
+    if (!ticket) return res.status(404).json({ message: 'Ticket no encontrado' });
+
+    const updated = await prisma.ticketItem.update({
+      where: { id: ticketId },
+      data: { status: 'invalid' },
+    });
+    res.json({ message: 'Ticket invalidado', ticket: updated });
+  } catch (err) {
+    res.status(500).json({ message: 'No se pudo invalidar ticket', details: err?.message });
+  }
+};

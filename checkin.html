@@ -1,22 +1,22 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
 <script>
 (function(){
   const explicit = (window.SUNSESH_API || '').trim();
- const currentPort = String(location.port || '');
- const hasLikelyDevPort = !!currentPort && !['80', '443', '4000'].includes(currentPort);
- const isLanIp = /^\d{1,3}(?:\.\d{1,3}){3}$/.test(location.hostname);
- const preferLocalApi = isLanIp || location.hostname === 'localhost' || location.hostname === '127.0.0.1' || hasLikelyDevPort;
+  const currentPort = String(location.port || '');
+  const hasLikelyDevPort = !!currentPort && !['80', '443', '4000'].includes(currentPort);
+  const isLanIp = /^\d{1,3}(?:\.\d{1,3}){3}$/.test(location.hostname);
+  const preferLocalApi = isLanIp || location.hostname === 'localhost' || location.hostname === '127.0.0.1' || hasLikelyDevPort;
   const origin = (location.origin && location.origin !== 'null') ? location.origin : '';
- const base = explicit || (preferLocalApi ? (location.protocol + '//' + location.hostname + ':4000') : origin);
+  const base = explicit || (preferLocalApi ? (location.protocol + '//' + location.hostname + ':4000') : origin);
   window.__SUNSESH_API_BASE = String(base || '').replace(/\/$/, '');
 })();
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Check-in Tickets</title>
-<link href="assets/css/site.css?v=20260329-01" rel="stylesheet">
+<title>Check-in | Sun Session Club</title>
+<link href="assets/css/site.css?v=20260329-02" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com/3.4.16"></script>
 <script>tailwind.config={darkMode:'class',theme:{extend:{colors:{primary:'#006400',secondary:'#00FFAA'},borderRadius:{'button':'8px'}}}};</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,150 +26,343 @@
 <style>
 body{font-family:'Montserrat',sans-serif;background:#0b1e14;color:#ffffff}
 .card{background:#0d1b13;border:1px solid rgba(0,100,0,0.2)}
-.badge-ok{background:#00FFAA;color:#000}
-.badge-bad{background:#ff5c5c;color:#000}
+.scan-area{position:relative;border-radius:16px;overflow:hidden}
+.scan-area video{border-radius:16px}
+
+/* Status badges */
+.status-valid{background:#00FFAA;color:#000;animation:pulse-valid 0.6s ease}
+.status-used{background:#ff5c5c;color:#000;animation:shake 0.4s ease}
+.status-invalid{background:#666;color:#fff}
+
+/* Result card animations */
+@keyframes pulse-valid{
+  0%{transform:scale(0.95);opacity:0.5}
+  50%{transform:scale(1.03)}
+  100%{transform:scale(1);opacity:1}
+}
+@keyframes shake{
+  0%,100%{transform:translateX(0)}
+  25%{transform:translateX(-8px)}
+  75%{transform:translateX(8px)}
+}
+@keyframes slideUp{
+  from{opacity:0;transform:translateY(20px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.result-card{animation:slideUp 0.3s ease-out}
+
+/* Scan counter */
+.counter{font-variant-numeric:tabular-nums}
+
+/* Cooldown overlay */
+.cooldown-overlay{
+  position:absolute;inset:0;
+  background:rgba(0,255,170,0.1);
+  display:flex;align-items:center;justify-content:center;
+  border-radius:16px;pointer-events:none;
+  opacity:0;transition:opacity 0.3s;
+}
+.cooldown-overlay.active{opacity:1}
 </style>
 </head>
 <body data-no-anim class="min-h-screen">
-<div class="max-w-3xl mx-auto px-6 py-10">
-  <h1 class="text-3xl font-extrabold mb-2">Check-in de Tickets</h1>
-  <p class="text-white/70 mb-6">Escanea el QR o ingresa el codigo del ticket para validar la entrada.</p>
+<div class="max-w-2xl mx-auto px-4 py-6">
 
-  <div class="card rounded-2xl p-6 mb-6">
-    <div id="reader" class="w-full"></div>
-    <div class="mt-4 flex items-center gap-3">
-      <button id="startScan" class="bg-secondary text-black font-bold px-4 py-2 rounded-button">Iniciar camara</button>
-      <button id="stopScan" class="bg-white/10 px-4 py-2 rounded-button">Detener</button>
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1 class="text-2xl font-extrabold tracking-tight">Check-in</h1>
+      <p class="text-white/50 text-sm mt-1">Escanea el QR del ticket para validar entrada</p>
+    </div>
+    <div class="text-right">
+      <div class="text-xs text-white/40 uppercase tracking-wider">Escaneados</div>
+      <div id="scanCount" class="text-3xl font-extrabold text-secondary counter">0</div>
     </div>
   </div>
 
-  <div class="card rounded-2xl p-6 space-y-4">
-    <div class="text-white/70">Validacion manual</div>
-    <div class="flex flex-col md:flex-row gap-3">
-      <input id="manualCode" placeholder="Codigo del ticket o ID" class="flex-1 bg-muted border border-white/10 rounded px-3 py-2">
-      <button id="manualBtn" class="bg-secondary text-black font-bold px-4 py-2 rounded-button">Validar</button>
+  <!-- Scanner Card -->
+  <div class="card rounded-2xl p-4 mb-4">
+    <div class="scan-area">
+      <div id="reader" class="w-full" style="min-height:280px;background:#050a07;border-radius:16px;"></div>
+      <div id="cooldown" class="cooldown-overlay">
+        <svg class="w-12 h-12 text-secondary" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+        </svg>
+      </div>
     </div>
-    <div id="result" class="text-sm"></div>
+    <div class="mt-3 flex items-center gap-2">
+      <button id="startScan" class="flex-1 bg-secondary text-black font-bold px-4 py-3 rounded-xl text-sm transition-all hover:brightness-110 active:scale-[0.98]">
+        Iniciar camara
+      </button>
+      <button id="stopScan" class="bg-white/10 text-white/70 px-4 py-3 rounded-xl text-sm transition-all hover:bg-white/15">
+        Detener
+      </button>
+    </div>
   </div>
+
+  <!-- Manual Input -->
+  <div class="card rounded-2xl p-4 mb-4">
+    <div class="text-xs text-white/40 uppercase tracking-wider mb-2">Validacion manual</div>
+    <div class="flex gap-2">
+      <input id="manualCode" placeholder="Codigo del ticket"
+             class="flex-1 bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/30 focus:border-secondary/50 focus:outline-none transition-colors">
+      <button id="manualBtn" class="bg-secondary text-black font-bold px-5 py-3 rounded-xl text-sm transition-all hover:brightness-110 active:scale-[0.98]">
+        Validar
+      </button>
+    </div>
+  </div>
+
+  <!-- Result Display -->
+  <div id="result" class="space-y-3"></div>
+
+  <!-- Scan History -->
+  <div id="historySection" class="mt-6 hidden">
+    <div class="flex items-center justify-between mb-3">
+      <h2 class="text-sm font-bold text-white/50 uppercase tracking-wider">Historial reciente</h2>
+      <button id="clearHistory" class="text-xs text-white/30 hover:text-white/50 transition-colors">Limpiar</button>
+    </div>
+    <div id="history" class="space-y-2"></div>
+  </div>
+
 </div>
 
 <script>
 let scanner = null;
 let scanning = false;
+let scanCooldown = false;
+let scanCountNum = 0;
 const resultEl = document.getElementById('result');
+const historyEl = document.getElementById('history');
+const historySection = document.getElementById('historySection');
+const scanCountEl = document.getElementById('scanCount');
+const cooldownEl = document.getElementById('cooldown');
 
-function setResult(message, ok){
-  if(!resultEl) return;
-  resultEl.innerHTML = '';
-  const badge = document.createElement('span');
-  badge.className = (ok?'badge-ok':'badge-bad') + ' inline-block px-2 py-1 rounded-full text-xs font-bold mr-2';
-  badge.textContent = ok ? 'VALIDO' : 'INVALIDO';
-  resultEl.appendChild(badge);
-  const text = document.createElement('span');
-  text.textContent = message || '';
-  resultEl.appendChild(text);
+/* ── Result rendering ─────────────────────────────── */
+
+function renderResult(data, ok, status) {
+  if (!resultEl) return;
+  const statusClass = status === 'valid' ? 'status-valid' : status === 'used' ? 'status-used' : 'status-invalid';
+  const statusLabel = status === 'valid' ? 'ACCESO PERMITIDO' : status === 'used' ? 'YA UTILIZADO' : 'INVALIDO';
+  const icon = status === 'valid' ? '\u2713' : status === 'used' ? '\u2717' : '!';
+
+  const ticket = data.ticket || data || {};
+  const order = ticket.order || {};
+  const event = ticket.event || {};
+  const usedAt = data.usedAt || ticket.usedAt;
+
+  let html = `
+  <div class="result-card card rounded-2xl overflow-hidden">
+    <div class="${statusClass} p-4 text-center">
+      <div class="text-4xl font-black mb-1">${icon}</div>
+      <div class="text-lg font-extrabold tracking-wide">${statusLabel}</div>
+    </div>
+    <div class="p-5 space-y-3">`;
+
+  if (order.full_name) {
+    html += `
+      <div>
+        <div class="text-xs text-white/40 uppercase tracking-wider mb-1">Titular</div>
+        <div class="text-xl font-bold">${order.full_name}</div>
+      </div>`;
+  }
+  if (event.title) {
+    html += `
+      <div>
+        <div class="text-xs text-white/40 uppercase tracking-wider mb-1">Evento</div>
+        <div class="text-base font-semibold text-secondary">${event.title}</div>
+      </div>`;
+  }
+
+  const code = ticket.ticket_code || data.ticket_code || '';
+  if (code) {
+    html += `
+      <div>
+        <div class="text-xs text-white/40 uppercase tracking-wider mb-1">Codigo</div>
+        <div class="text-sm font-mono font-bold tracking-widest text-white/70">${code}</div>
+      </div>`;
+  }
+
+  if (status === 'used' && usedAt) {
+    const dt = new Date(usedAt);
+    html += `
+      <div class="bg-red-900/20 border border-red-500/20 rounded-lg p-3">
+        <div class="text-xs text-red-400">Utilizado: ${dt.toLocaleString('es-MX')}</div>
+      </div>`;
+  }
+
+  html += '</div></div>';
+  resultEl.innerHTML = html;
+
+  // Add to history
+  if (code || order.full_name) {
+    addToHistory({ name: order.full_name || 'Desconocido', code, status, time: new Date() });
+  }
+
+  // Flash cooldown indicator
+  if (cooldownEl && status === 'valid') {
+    cooldownEl.classList.add('active');
+    setTimeout(() => cooldownEl.classList.remove('active'), 800);
+  }
 }
 
-function buildScanPayload(raw){
+function setError(message) {
+  if (!resultEl) return;
+  resultEl.innerHTML = `
+  <div class="result-card card rounded-2xl overflow-hidden">
+    <div class="status-invalid p-4 text-center">
+      <div class="text-2xl font-black mb-1">!</div>
+      <div class="text-sm font-bold">${message}</div>
+    </div>
+  </div>`;
+}
+
+/* ── History ──────────────────────────────────────── */
+
+function addToHistory(entry) {
+  if (!historyEl) return;
+  historySection.classList.remove('hidden');
+  const statusColor = entry.status === 'valid' ? 'bg-green-500' : entry.status === 'used' ? 'bg-red-500' : 'bg-gray-500';
+  const time = entry.time.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  const div = document.createElement('div');
+  div.className = 'flex items-center gap-3 bg-black/20 rounded-xl px-4 py-3';
+  div.innerHTML = `
+    <div class="${statusColor} w-2.5 h-2.5 rounded-full flex-shrink-0"></div>
+    <div class="flex-1 min-w-0">
+      <div class="text-sm font-semibold truncate">${entry.name}</div>
+      <div class="text-xs text-white/40 font-mono">${entry.code}</div>
+    </div>
+    <div class="text-xs text-white/30">${time}</div>`;
+  historyEl.insertBefore(div, historyEl.firstChild);
+  // Keep max 50 entries
+  while (historyEl.children.length > 50) historyEl.removeChild(historyEl.lastChild);
+}
+
+document.getElementById('clearHistory')?.addEventListener('click', () => {
+  if (historyEl) historyEl.innerHTML = '';
+  historySection.classList.add('hidden');
+});
+
+/* ── API call ─────────────────────────────────────── */
+
+function buildScanPayload(raw) {
   const value = String(raw || '').trim();
-  if(!value) return { code: '' };
-  if(value.startsWith('{')){
-    try{
-      const parsed = JSON.parse(value);
-      if(parsed && parsed.ticketId) return { ticket_id: parsed.ticketId };
-      if(parsed && parsed.code) return { code: parsed.code };
-    }catch(_){ }
+  if (!value) return { code: '' };
+
+  // Handle validation URL from QR
+  if (value.includes('/validate-ticket/')) {
+    const match = value.match(/\/validate-ticket\/([A-Fa-f0-9]+)/i);
+    if (match) return { code: match[1].toUpperCase() };
   }
+
+  // Handle JSON payload from QR
+  if (value.startsWith('{')) {
+    try {
+      const parsed = JSON.parse(value);
+      if (parsed && parsed.ticketId) return { ticket_id: parsed.ticketId };
+      if (parsed && parsed.code) return { code: parsed.code };
+    } catch (_) { }
+  }
+
   return { code: value };
 }
 
-async function validateCode(code){
+async function validateCode(code) {
+  if (scanCooldown) return;
+  scanCooldown = true;
+  setTimeout(() => { scanCooldown = false; }, 1500); // prevent double-scans
+
   const payload = buildScanPayload(code);
-  try{
-    const res = await fetch(window.__SUNSESH_API_BASE + '/api/tickets/scan',{
-      method:'POST',
-      credentials:'include',
-      headers:{'Content-Type':'application/json'},
+  try {
+    const res = await fetch(window.__SUNSESH_API_BASE + '/api/tickets/scan', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
     const data = await res.json();
-    if(!res.ok){
-      setResult((data && data.message) || 'Ticket invalido', false);
+
+    if (!res.ok) {
+      const status = data.status || (res.status === 409 ? 'used' : 'invalid');
+      renderResult(data, false, status);
+
+      // Play error vibration
+      if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
       return;
     }
-    const ticket = data.ticket || {};
-    const order = ticket.order || {};
-    const event = ticket.event || {};
-    setResult(`OK: ${order.full_name||''} - ${event.title||''} (${ticket.ticket_code||''})`, true);
-  }catch(_){
-    setResult('No se pudo validar', false);
+
+    renderResult(data, true, 'valid');
+    scanCountNum++;
+    if (scanCountEl) scanCountEl.textContent = scanCountNum;
+
+    // Success vibration
+    if (navigator.vibrate) navigator.vibrate(200);
+
+  } catch (_) {
+    setError('No se pudo conectar con el servidor');
   }
 }
 
-function initScanner(){
-  if(scanner) return;
+/* ── Scanner ──────────────────────────────────────── */
+
+function initScanner() {
+  if (scanner) return;
   scanner = new Html5Qrcode('reader');
 }
 
-async function startScan(){
-  if(scanning) return;
-
-  // La API de camara requiere HTTPS o localhost
-  if(location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1'){
-    setResult('La camara requiere HTTPS o localhost. Abre la pagina desde localhost:puerto o usa HTTPS.', false);
+async function startScan() {
+  if (scanning) return;
+  if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+    setError('La camara requiere HTTPS o localhost');
     return;
   }
 
   initScanner();
   scanning = true;
 
-  const onScan = (decodedText) => { if(decodedText) validateCode(decodedText); };
-  const config = { fps: 10, qrbox: 250 };
+  const startBtn = document.getElementById('startScan');
+  if (startBtn) { startBtn.textContent = 'Escaneando...'; startBtn.disabled = true; }
 
-  // Intenta camara trasera primero, si falla usa cualquier camara disponible
-  try{
+  const onScan = (decodedText) => { if (decodedText) validateCode(decodedText); };
+  const config = { fps: 10, qrbox: { width: 280, height: 280 } };
+
+  try {
     await scanner.start({ facingMode: 'environment' }, config, onScan);
-  }catch(err1){
-    try{
+  } catch (err1) {
+    try {
       await scanner.start({ facingMode: 'user' }, config, onScan);
-    }catch(err2){
+    } catch (err2) {
       scanning = false;
-      const msg = err2 && err2.message ? err2.message : String(err2);
-      setResult('No se pudo iniciar la camara: ' + msg, false);
+      if (startBtn) { startBtn.textContent = 'Iniciar camara'; startBtn.disabled = false; }
+      setError('No se pudo iniciar la camara: ' + (err2?.message || err2));
     }
   }
 }
 
-async function stopScan(){
-  if(!scanner || !scanning) return;
-  try{
-    await scanner.stop();
-  }catch(_){ }
+async function stopScan() {
+  if (!scanner || !scanning) return;
+  try { await scanner.stop(); } catch (_) { }
   scanning = false;
+  const startBtn = document.getElementById('startScan');
+  if (startBtn) { startBtn.textContent = 'Iniciar camara'; startBtn.disabled = false; }
 }
 
-const startBtn = document.getElementById('startScan');
-const stopBtn = document.getElementById('stopScan');
-if(startBtn) startBtn.addEventListener('click', startScan);
-if(stopBtn) stopBtn.addEventListener('click', stopScan);
+document.getElementById('startScan')?.addEventListener('click', startScan);
+document.getElementById('stopScan')?.addEventListener('click', stopScan);
 
-const manualBtn = document.getElementById('manualBtn');
-if(manualBtn){
-  manualBtn.addEventListener('click',()=>{
-    const code = (document.getElementById('manualCode')||{}).value || '';
-    if(code.trim()) validateCode(code.trim());
-    else setResult('Ingresa un codigo', false);
-  });
-}
+document.getElementById('manualBtn')?.addEventListener('click', () => {
+  const code = (document.getElementById('manualCode') || {}).value || '';
+  if (code.trim()) validateCode(code.trim());
+  else setError('Ingresa un codigo');
+});
+
+// Enter key for manual input
+document.getElementById('manualCode')?.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    document.getElementById('manualBtn')?.click();
+  }
+});
 </script>
-  <script src="assets/js/ssc-ux.js" defer></script>
+<script src="assets/js/ssc-ux.js" defer></script>
 </body>
 </html>
-
-
-
-
-
-
-
-

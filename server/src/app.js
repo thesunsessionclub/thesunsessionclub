@@ -57,6 +57,14 @@ app.get('/api/health', (req, res) => {
 
 app.use('/api', routes);
 app.use(express.static(projectRoot));
+
+// Validate-ticket URL (linked from QR codes) → redirects to ticket viewer page
+app.get('/validate-ticket/:code', (req, res) => {
+  const code = String(req.params.code || '').trim();
+  if (!code) return res.redirect('/');
+  res.redirect(`/ticket.html?code=${encodeURIComponent(code)}`);
+});
+
 app.get('/', (req, res) => {
   res.sendFile(path.join(projectRoot, 'index.html'));
 });
