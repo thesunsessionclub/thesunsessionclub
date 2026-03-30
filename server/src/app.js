@@ -8,6 +8,7 @@ import { config } from './config/env.js';
 import routes from './routes/index.js';
 import { notFound, errorHandler } from './middleware/errorHandler.js';
 import { createRateLimiter } from './middleware/rateLimit.js';
+import { apiCache, staticCacheHeaders, uploadsCacheHeaders } from './middleware/cache.js';
 
 const app = express();
 const projectRoot = path.resolve(process.cwd(), '..');
@@ -43,7 +44,14 @@ app.use(
   })
 );
 app.use(morgan('dev'));
-app.use('/uploads', express.static(path.resolve(process.cwd(), 'uploads')));
+
+// Cache control: uploads (ticket images = immutable, payments = private short cache)
+app.use('/uploads', uploadsCacheHeaders, express.static(path.resolve(process.cwd(), 'uploads')));
+
+// Cache control: API routes (no-cache for auth/tickets/orders, short for events/merch/artists)
+app.use('/api', apiCache);
+
+// Rate limiters
 app.use('/api/auth/login', createRateLimiter({ windowMs: 60_000, max: 20, keyPrefix: 'auth-login' }));
 app.use('/api/auth/register', createRateLimiter({ windowMs: 60_000, max: 10, keyPrefix: 'auth-register' }));
 app.use('/api/tickets/request', createRateLimiter({ windowMs: 60_000, max: 20, keyPrefix: 'tickets-request' }));
@@ -56,6 +64,9 @@ app.get('/api/health', (req, res) => {
 });
 
 app.use('/api', routes);
+
+// Cache control: static frontend assets (long cache for images/CSS/JS)
+app.use(staticCacheHeaders);
 app.use(express.static(projectRoot));
 
 // Validate-ticket URL (linked from QR codes) → redirects to ticket viewer page
