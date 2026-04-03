@@ -1,6 +1,6 @@
 module.exports = {
   content: [
-    './sunsessionesp_fixed_v3.html',
+    './home.html',
     './assets/js/**/*.js'
   ],
   darkMode: 'class',

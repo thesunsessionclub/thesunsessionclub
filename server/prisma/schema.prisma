@@ -94,6 +94,7 @@ model Event {
   status      String      @default("ACTIVE")
   featured    Boolean     @default(false)
   sort_order  Int         @default(0)
+  ticket_design_json String?
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
   deletedAt   DateTime?
@@ -118,6 +119,8 @@ model Settings {
   story_break_image      String?
   story_banner_image     String?
   about_gallery_images   String?
+  hero_event_json        String?
+  ticket_templates_json  String?
   order_notification_email String?
   card_background      String?  @default("#0d1b13")
   global_text_color    String?  @default("#ffffff")
@@ -345,4 +348,16 @@ model ArtistGenre {
   genre     Genre    @relation(fields: [genreId], references: [id])
 
   @@unique([artistId, genreId])
+}
+
+model Subscriber {
+  id             String    @id @default(uuid())
+  email          String    @unique
+  name           String?
+  tier           String    @default("FREE")
+  active         Boolean   @default(true)
+  userId         String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  unsubscribedAt DateTime?
 }

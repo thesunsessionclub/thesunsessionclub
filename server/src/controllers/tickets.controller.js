@@ -11,12 +11,15 @@ import {
   buildRequestReceivedEmail,
   buildPaymentReminderEmail,
 } from '../services/ticketMailer.js';
+import { buildAdminTicketNotification } from '../services/orderMailer.js';
+import { config } from '../config/env.js';
 
 const UPLOADS_DIR = path.resolve(process.cwd(), 'uploads');
 const PAYMENTS_DIR = path.join(UPLOADS_DIR, 'payments');
 
 const ORDER_ACTIVE_STATUSES = ['pending', 'paid', 'confirmed'];
 const TICKET_VALID_STATUSES = ['valid', 'used'];
+const DUPLICATE_REQUEST_WINDOW_MS = 5 * 60 * 1000;
 
 /* ── helpers ──────────────────────────────────────────── */
 
@@ -66,6 +69,22 @@ function pickHost(req) {
   const proto = req.headers['x-forwarded-proto'] || req.protocol || 'http';
   const host = req.headers['x-forwarded-host'] || req.get('host');
   return `${proto}://${host}`;
+}
+
+async function findRecentDuplicateRequest({ eventId, fullName, email, phone, qty }) {
+  const cutoff = new Date(Date.now() - DUPLICATE_REQUEST_WINDOW_MS);
+  return prisma.ticketOrder.findFirst({
+    where: {
+      eventId,
+      full_name: fullName,
+      email,
+      phone,
+      qty,
+      status: { in: ORDER_ACTIVE_STATUSES },
+      createdAt: { gte: cutoff },
+    },
+    orderBy: { createdAt: 'desc' },
+  });
 }
 
 /* ── availability ─────────────────────────────────────── */
@@ -140,6 +159,9 @@ export const createRequest = async (req, res) => {
   if (!errors.isEmpty()) return res.status(400).json({ message: 'Validación fallida', errors: errors.array() });
   const { event_id, full_name, email, phone, qty, payment_proof } = req.body || {};
   const eventId = cleanString(event_id);
+  const fullName = cleanString(full_name);
+  const emailValue = cleanString(email).toLowerCase();
+  const phoneValue = cleanString(phone);
   const qtyNum = Number(qty || 0);
   try {
     const event = await prisma.event.findUnique({ where: { id: eventId } });
@@ -148,12 +170,28 @@ export const createRequest = async (req, res) => {
     if (availability && availability.limit != null && qtyNum > availability.remaining) {
       return res.status(409).json({ message: 'No hay suficientes boletos disponibles', remaining: availability.remaining });
     }
+    const duplicateOrder = await findRecentDuplicateRequest({
+      eventId,
+      fullName,
+      email: emailValue,
+      phone: phoneValue,
+      qty: qtyNum,
+    });
+    if (duplicateOrder) {
+      return res.status(200).json({
+        ...duplicateOrder,
+        duplicate: true,
+        mail_sent: false,
+        whatsapp_sent: false,
+        message: 'Ya recibimos esta solicitud hace unos momentos.',
+      });
+    }
     const order = await prisma.ticketOrder.create({
       data: {
         eventId,
-        full_name: cleanString(full_name),
-        email: cleanString(email),
-        phone: cleanString(phone),
+        full_name: fullName,
+        email: emailValue,
+        phone: phoneValue,
         qty: qtyNum,
         status: 'pending',
       },
@@ -163,7 +201,7 @@ export const createRequest = async (req, res) => {
       await prisma.ticketOrder.update({ where: { id: order.id }, data: { payment_proof: proofUrl } });
     }
 
-    // Professional branded email
+    // Customer confirmation email
     const emailContent = buildRequestReceivedEmail({ event, order });
     const mailSent = await safeNotify('request-email', () =>
       sendOrderNotification({
@@ -173,8 +211,22 @@ export const createRequest = async (req, res) => {
         html: emailContent.html,
       })
     );
+
+    // Admin notification email
+    let adminMailSent = false;
+    try {
+      const settings = await prisma.settings.findUnique({ where: { id: 'site' } });
+      const adminEmail = settings?.order_notification_email || config.notificationEmail || '';
+      if (adminEmail) {
+        const adminContent = buildAdminTicketNotification({ event, order: { ...order, payment_proof: proofUrl || order.payment_proof } });
+        adminMailSent = await safeNotify('request-admin-email', () =>
+          sendOrderNotification({ to: adminEmail, ...adminContent })
+        );
+      }
+    } catch { /* admin mail is non-critical */ }
+
     const whatsappSent = await safeNotify('request-whatsapp', () => sendTicketWhatsApp({ type: 'request', order, event }));
-    res.status(201).json({ ...order, payment_proof: proofUrl || order.payment_proof, mail_sent: mailSent, whatsapp_sent: whatsappSent });
+    res.status(201).json({ ...order, payment_proof: proofUrl || order.payment_proof, mail_sent: mailSent, admin_mail_sent: adminMailSent, whatsapp_sent: whatsappSent });
   } catch (err) {
     res.status(500).json({ message: 'No se pudo crear solicitud', details: err?.message });
   }
@@ -226,6 +278,21 @@ export const approveOrder = async (req, res) => {
     const order = await prisma.ticketOrder.findUnique({ where: { id }, include: { event: true } });
     if (!order) return res.status(404).json({ message: 'Solicitud no encontrada' });
     const event = order.event;
+    const existingTickets = await prisma.ticketItem.findMany({
+      where: { orderId: order.id },
+      orderBy: { createdAt: 'asc' },
+    });
+
+    if (order.status === 'confirmed' || existingTickets.length > 0) {
+      return res.json({
+        order,
+        tickets: existingTickets,
+        mail_sent: false,
+        whatsapp_sent: false,
+        duplicate: true,
+        already_confirmed: order.status === 'confirmed',
+      });
+    }
 
     // Check availability (excluding this order)
     const otherReservedAgg = await prisma.ticketOrder.aggregate({

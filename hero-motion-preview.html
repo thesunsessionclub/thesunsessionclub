@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sunsesh Hero Motion Preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #060505;
+      --panel: rgba(14, 12, 11, 0.72);
+      --border: rgba(255, 255, 255, 0.12);
+      --text: #f7ead8;
+      --muted: rgba(247, 234, 216, 0.72);
+      --accent: #f59f45;
+      --accent-soft: #f0cf8a;
+      --display: "Cormorant Garamond", serif;
+      --body: "Manrope", sans-serif;
+      --shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background:
+        radial-gradient(circle at top, rgba(245, 159, 69, 0.12), transparent 26%),
+        linear-gradient(180deg, #0b0908 0%, #050505 100%);
+      color: var(--text);
+      font-family: var(--body);
+    }
+
+    body {
+      padding: 24px;
+    }
+
+    .preview-shell {
+      width: min(1320px, 100%);
+      margin: 0 auto;
+      display: grid;
+      gap: 20px;
+    }
+
+    .topbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 18px 20px;
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      background: var(--panel);
+      backdrop-filter: blur(16px);
+      box-shadow: var(--shadow);
+    }
+
+    .topbar h1,
+    .hero-copy h2 {
+      margin: 0;
+      font-family: var(--display);
+      line-height: 0.95;
+      letter-spacing: -0.03em;
+    }
+
+    .topbar h1 {
+      font-size: clamp(2rem, 4vw, 3.4rem);
+    }
+
+    .topbar p {
+      margin: 8px 0 0;
+      max-width: 62ch;
+      color: var(--muted);
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .controls button {
+      min-height: 42px;
+      padding: 0 16px;
+      border: 1px solid rgba(240, 207, 138, 0.28);
+      border-radius: 999px;
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.04);
+      font: inherit;
+      cursor: pointer;
+      transition: transform 180ms ease-out, background 180ms ease-out, border-color 180ms ease-out;
+    }
+
+    .controls button:hover,
+    .controls button.is-active {
+      transform: translateY(-1px);
+      background: rgba(245, 159, 69, 0.16);
+      border-color: rgba(245, 159, 69, 0.52);
+    }
+
+    .hero-preview {
+      position: relative;
+      min-height: 78vh;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: 32px;
+      box-shadow: var(--shadow);
+      background: #070707;
+      isolation: isolate;
+    }
+
+    .hero-media,
+    .hero-image,
+    .hero-image-blur,
+    .hero-image-shift,
+    .hero-fog,
+    .hero-grid,
+    .hero-glow,
+    .hero-beams,
+    .hero-sweep {
+      position: absolute;
+      inset: 0;
+    }
+
+    .hero-media {
+      transform-origin: center center;
+      will-change: transform, filter;
+    }
+
+    .hero-image,
+    .hero-image-blur,
+    .hero-image-shift {
+      background-image: url('assets/hero-rave.png');
+      background-size: cover;
+      background-position: center center;
+    }
+
+    .hero-image-blur {
+      opacity: 0.16;
+      filter: blur(18px) saturate(1.2);
+      transform: scale(1.08);
+      mix-blend-mode: screen;
+    }
+
+    .hero-image-shift {
+      opacity: 0.28;
+      mix-blend-mode: lighten;
+      filter: saturate(1.14) contrast(1.08);
+    }
+
+    .hero-fog {
+      background:
+        radial-gradient(circle at 50% 56%, rgba(242, 222, 186, 0.14), transparent 14%),
+        radial-gradient(circle at 18% 72%, rgba(255, 255, 255, 0.12), transparent 18%),
+        radial-gradient(circle at 74% 68%, rgba(255, 255, 255, 0.1), transparent 20%),
+        linear-gradient(180deg, rgba(7, 6, 6, 0.12), rgba(7, 6, 6, 0.66));
+      mix-blend-mode: screen;
+      opacity: 0.72;
+    }
+
+    .hero-glow {
+      background:
+        radial-gradient(circle at 50% 42%, rgba(245, 159, 69, 0.16), transparent 20%),
+        radial-gradient(circle at 16% 20%, rgba(240, 207, 138, 0.14), transparent 18%),
+        radial-gradient(circle at 82% 18%, rgba(240, 207, 138, 0.14), transparent 18%);
+      filter: blur(14px);
+      opacity: 0.95;
+    }
+
+    .hero-grid {
+      background-image:
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 70px 70px;
+      opacity: 0.22;
+      mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.9), transparent 78%);
+    }
+
+    .hero-beams {
+      opacity: 0.55;
+      background:
+        linear-gradient(116deg, transparent 0 13%, rgba(245, 159, 69, 0.22) 14%, transparent 15% 100%),
+        linear-gradient(64deg, transparent 0 83%, rgba(240, 207, 138, 0.18) 84%, transparent 85% 100%);
+      mix-blend-mode: screen;
+      transform-origin: center center;
+    }
+
+    .hero-sweep::before {
+      content: "";
+      position: absolute;
+      inset: -12% auto -12% -20%;
+      width: 32%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.11), transparent);
+      transform: skewX(-18deg);
+      filter: blur(8px);
+      opacity: 0;
+    }
+
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(5,4,4,0.2) 0%, rgba(5,4,4,0.5) 55%, rgba(5,4,4,0.82) 100%);
+      z-index: 2;
+    }
+
+    .hero-copy {
+      position: absolute;
+      inset: auto auto 0 0;
+      z-index: 3;
+      width: min(720px, 100%);
+      padding: 32px;
+    }
+
+    .eyebrow {
+      margin: 0 0 14px;
+      color: var(--muted);
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      font-size: 0.76rem;
+    }
+
+    .hero-copy h2 {
+      font-size: clamp(3rem, 7vw, 6rem);
+      max-width: 10ch;
+    }
+
+    .hero-copy h2 span {
+      color: var(--accent-soft);
+    }
+
+    .hero-copy p:last-of-type {
+      max-width: 56ch;
+      margin: 18px 0 0;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .meta-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    .meta-chip {
+      padding: 10px 14px;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.05);
+      font-size: 0.85rem;
+    }
+
+    .legend {
+      display: grid;
+      gap: 12px;
+      padding: 18px 20px;
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      background: var(--panel);
+    }
+
+    .legend strong {
+      color: var(--accent-soft);
+    }
+
+    .mode-pulse .hero-media {
+      animation: pulseZoom 14s ease-in-out infinite alternate;
+    }
+
+    .mode-pulse .hero-image-shift {
+      animation: pulseShift 8s ease-in-out infinite alternate;
+    }
+
+    .mode-pulse .hero-glow {
+      animation: glowPulse 6s ease-in-out infinite alternate;
+    }
+
+    .mode-drift .hero-media {
+      animation: driftFloat 18s ease-in-out infinite alternate;
+    }
+
+    .mode-drift .hero-image-shift {
+      animation: driftSlide 16s ease-in-out infinite alternate;
+    }
+
+    .mode-drift .hero-beams {
+      animation: beamTilt 12s ease-in-out infinite alternate;
+    }
+
+    .mode-drift .hero-sweep::before {
+      animation: sweepPass 7.4s ease-in-out infinite;
+    }
+
+    .mode-signal .hero-media {
+      animation: signalZoom 12s cubic-bezier(0.22, 1, 0.36, 1) infinite alternate;
+    }
+
+    .mode-signal .hero-image-shift {
+      animation: signalFlicker 4.8s steps(2, end) infinite;
+    }
+
+    .mode-signal .hero-glow {
+      animation: signalGlow 3.6s ease-in-out infinite alternate;
+    }
+
+    .mode-signal .hero-beams {
+      animation: signalBeam 8s ease-in-out infinite alternate;
+    }
+
+    .mode-signal .hero-sweep::before {
+      animation: sweepPass 5.5s ease-in-out infinite;
+    }
+
+    @keyframes pulseZoom {
+      0% { transform: scale(1) translate3d(0, 0, 0); filter: saturate(1) contrast(1); }
+      100% { transform: scale(1.09) translate3d(0, -10px, 0); filter: saturate(1.08) contrast(1.05); }
+    }
+
+    @keyframes pulseShift {
+      0% { transform: scale(1.02) translate3d(0, 0, 0); opacity: 0.16; }
+      100% { transform: scale(1.08) translate3d(10px, -8px, 0); opacity: 0.3; }
+    }
+
+    @keyframes glowPulse {
+      0% { opacity: 0.62; transform: scale(1); }
+      100% { opacity: 1; transform: scale(1.04); }
+    }
+
+    @keyframes driftFloat {
+      0% { transform: scale(1.04) translate3d(-10px, 8px, 0); }
+      100% { transform: scale(1.12) translate3d(18px, -14px, 0); }
+    }
+
+    @keyframes driftSlide {
+      0% { transform: scale(1.04) translate3d(-18px, 10px, 0); opacity: 0.2; }
+      100% { transform: scale(1.12) translate3d(18px, -14px, 0); opacity: 0.34; }
+    }
+
+    @keyframes beamTilt {
+      0% { transform: rotate(-1.5deg) scale(1); opacity: 0.38; }
+      100% { transform: rotate(2deg) scale(1.06); opacity: 0.62; }
+    }
+
+    @keyframes sweepPass {
+      0%, 8% { opacity: 0; transform: translateX(0) skewX(-18deg); }
+      18%, 42% { opacity: 0.72; }
+      58%, 100% { opacity: 0; transform: translateX(440%) skewX(-18deg); }
+    }
+
+    @keyframes signalZoom {
+      0% { transform: scale(1.02) translate3d(0, 0, 0); filter: saturate(1) contrast(1); }
+      100% { transform: scale(1.14) translate3d(0, -14px, 0); filter: saturate(1.14) contrast(1.08); }
+    }
+
+    @keyframes signalFlicker {
+      0%, 100% { opacity: 0.2; transform: scale(1.04) translate3d(0, 0, 0); }
+      10% { opacity: 0.12; transform: scale(1.06) translate3d(4px, -2px, 0); }
+      12% { opacity: 0.34; transform: scale(1.08) translate3d(-6px, 2px, 0); }
+      16% { opacity: 0.18; transform: scale(1.05) translate3d(2px, 0, 0); }
+      58% { opacity: 0.24; transform: scale(1.08) translate3d(8px, -6px, 0); }
+    }
+
+    @keyframes signalGlow {
+      0% { opacity: 0.52; filter: blur(12px); }
+      100% { opacity: 1; filter: blur(18px); }
+    }
+
+    @keyframes signalBeam {
+      0% { transform: rotate(-2.5deg) scale(1); opacity: 0.32; }
+      100% { transform: rotate(2.5deg) scale(1.08); opacity: 0.66; }
+    }
+
+    @media (max-width: 720px) {
+      body { padding: 16px; }
+      .hero-preview { min-height: 70vh; }
+      .hero-copy { padding: 22px; }
+      .topbar { padding: 16px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .hero-media,
+      .hero-image-shift,
+      .hero-glow,
+      .hero-beams,
+      .hero-sweep::before {
+        animation: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="preview-shell">
+    <section class="topbar">
+      <div>
+        <h1>Hero Motion Preview</h1>
+        <p>
+          Este archivo no toca la home real. Solo muestra cómo se vería la imagen hero
+          actual animada con tres intensidades distintas.
+        </p>
+      </div>
+
+      <div class="controls" aria-label="Animation modes">
+        <button class="is-active" data-mode="mode-pulse">Pulse suave</button>
+        <button data-mode="mode-drift">Drift cinematográfico</button>
+        <button data-mode="mode-signal">Signal intenso</button>
+      </div>
+    </section>
+
+    <section class="hero-preview mode-pulse" id="preview">
+      <div class="hero-media">
+        <div class="hero-image"></div>
+        <div class="hero-image-blur"></div>
+        <div class="hero-image-shift"></div>
+        <div class="hero-fog"></div>
+        <div class="hero-glow"></div>
+        <div class="hero-beams"></div>
+        <div class="hero-sweep"></div>
+        <div class="hero-grid"></div>
+      </div>
+
+      <div class="hero-overlay"></div>
+
+      <div class="hero-copy">
+        <p class="eyebrow">Sunsesh / preview de animación hero</p>
+        <h2>Una noche que <span>se siente viva</span> antes de empezar.</h2>
+        <p>
+          La idea aquí no es convertir la foto en video falso, sino darle respiración:
+          profundidad, glow, barridos de luz y un movimiento lento que haga que el hero
+          se sienta más premium y más inmersivo.
+        </p>
+
+        <div class="meta-strip">
+          <div class="meta-chip">Recomendado: <strong>Drift cinematográfico</strong></div>
+          <div class="meta-chip">Más sobrio: Pulse suave</div>
+          <div class="meta-chip">Más agresivo: Signal intenso</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="legend">
+      <div><strong>Pulse suave:</strong> zoom lento + glow respirando. El más seguro para una home premium.</div>
+      <div><strong>Drift cinematográfico:</strong> movimiento lateral, sweep de luz y sensación de profundidad. Mi favorito para Sunsesh.</div>
+      <div><strong>Signal intenso:</strong> más energía, flicker y hazes. Funciona si quieres una apertura más club y más dramática.</div>
+    </section>
+  </div>
+
+  <script>
+    const preview = document.getElementById('preview');
+    const buttons = Array.from(document.querySelectorAll('[data-mode]'));
+
+    buttons.forEach((button) => {
+      button.addEventListener('click', () => {
+        buttons.forEach((item) => item.classList.remove('is-active'));
+        button.classList.add('is-active');
+        preview.className = 'hero-preview ' + button.dataset.mode;
+      });
+    });
+  </script>
+</body>
+</html>

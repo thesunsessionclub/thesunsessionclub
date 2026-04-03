@@ -1,0 +1,17 @@
+[Unit]
+Description=The Sun Session Club web + API
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/var/www/sunsesh/server
+ExecStart=/usr/bin/npm start
+Restart=always
+RestartSec=5
+Environment=NODE_ENV=production
+EnvironmentFile=/var/www/sunsesh/server/.env
+User=www-data
+Group=www-data
+
+[Install]
+WantedBy=multi-user.target

@@ -19,6 +19,8 @@ router.put(
     body('button_style').optional().isString(),
     body('font_family').optional().isString(),
     body('hero_background_image').optional().isString(),
+    body('hero_event_json').optional().isString(),
+    body('ticket_templates_json').optional().isString(),
     body('order_notification_email').optional().isString(),
     body('card_background').optional().isString(),
     body('global_text_color').optional().isString(),

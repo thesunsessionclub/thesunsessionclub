@@ -13,6 +13,71 @@
   --shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
   --glow: 0 0 30px rgba(0, 255, 170, 0.28);
   --display: 'Bebas Neue', 'Montserrat', sans-serif;
+  --radius-sm: 10px;
+  --radius-lg: 20px;
+  --radius-pill: 9999px;
+  --card-bg: rgba(12, 21, 17, 0.82);
+  --card-border: rgba(255, 255, 255, 0.08);
+  --input-bg: rgba(12, 21, 17, 0.65);
+  --input-border: rgba(255, 255, 255, 0.12);
+  --input-focus: rgba(0, 255, 170, 0.25);
+  --badge-bg: var(--primary);
+  --badge-text: #07110c;
+  --transition-base: 0.3s cubic-bezier(0.2, 0.65, 0.2, 1);
+}
+
+/* ── Unified Badges ── */
+.ssc-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: var(--badge-bg);
+  color: var(--badge-text);
+  border-radius: var(--radius-pill);
+  padding: 0.2rem 0.6rem;
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.ssc-badge--outline {
+  background: transparent;
+  border: 1px solid rgba(0, 255, 170, 0.4);
+  color: var(--primary);
+}
+
+.ssc-badge--danger {
+  background: linear-gradient(135deg, #ff6b6b, #cc3333);
+  color: #fff;
+}
+
+.ssc-badge--gold {
+  background: linear-gradient(135deg, #ffc842, #e0a800);
+  color: #000;
+}
+
+/* ── Unified Inputs ── */
+.ssc-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.875rem;
+  outline: none;
+  transition: border-color var(--transition-base), box-shadow var(--transition-base);
+}
+
+.ssc-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--input-focus);
+}
+
+.ssc-input::placeholder {
+  color: var(--muted);
 }
 
 * { box-sizing: border-box; }

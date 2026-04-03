@@ -1,10 +1,11 @@
 import { validationResult } from 'express-validator';
 import { prisma } from '../prisma.js';
 import { sendOrderNotification } from '../services/mailer.js';
+import { config } from '../config/env.js';
 import fs from 'fs/promises';
 import path from 'path';
 
-const FALLBACK_CONTACT_EMAIL = 'thesunsessionclub@gmail.com';
+const FALLBACK_CONTACT_EMAIL = config.notificationEmail || 'thesunsessionclub@gmail.com';
 const CONTACT_FALLBACK_DIR = path.resolve(process.cwd(), 'uploads', 'contact');
 const CONTACT_FALLBACK_FILE = path.join(CONTACT_FALLBACK_DIR, 'messages.jsonl');
 

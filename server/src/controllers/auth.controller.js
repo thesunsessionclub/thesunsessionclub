@@ -51,29 +51,32 @@ export const register = async (req, res) => {
   // Public signup must never escalate privileges.
   const cleanRole = 'USER';
 
-  const existing = await prisma.user.findFirst({
-    where: {
-      OR: [
-        { email: cleanEmail },
-        { name: cleanName },
-      ],
-    },
+  const existing = await prisma.user.findUnique({
+    where: { email: cleanEmail },
   });
-  if (existing) return res.status(409).json({ message: 'Usuario ya registrado' });
+  if (existing) return res.status(409).json({ message: 'Ese correo ya esta registrado' });
 
-  const passwordHash = await bcrypt.hash(String(password || ''), 10);
-  const user = await prisma.user.create({
-    data: {
-      name: cleanName,
-      email: cleanEmail,
-      passwordHash,
-      phone,
-      role: cleanRole,
-      vipStatus: false,
-      purchaseCount: 0,
-      eventParticipation: 0,
-    },
-  });
+  let user;
+  try {
+    const passwordHash = await bcrypt.hash(String(password || ''), 10);
+    user = await prisma.user.create({
+      data: {
+        name: cleanName,
+        email: cleanEmail,
+        passwordHash,
+        phone,
+        role: cleanRole,
+        vipStatus: false,
+        purchaseCount: 0,
+        eventParticipation: 0,
+      },
+    });
+  } catch (err) {
+    if (err?.code === 'P2002') {
+      return res.status(409).json({ message: 'Ese correo ya esta registrado' });
+    }
+    return res.status(500).json({ message: 'No se pudo crear la cuenta', details: err?.message || 'register_error' });
+  }
 
   await logActivity(user.id, 'register', 'auth', req.ip);
   const access = signAccessToken(user);

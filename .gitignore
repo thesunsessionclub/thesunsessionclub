@@ -40,6 +40,13 @@ cloudflared.exe
 # AI tools
 .claude/
 .codex/
+.gemini-home/
+
+# Local tools
+.tools/
+
+# Temp files
+tmp/
 
 # Build output
 dist/

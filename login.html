@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es-MX">
 <head>
 <meta charset="UTF-8">
@@ -6,14 +6,14 @@
 <title>Acceso | The Sun Session</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css" rel="stylesheet">
 <link href="assets/css/site.css?v=20260329-01" rel="stylesheet">
 <style>
 :root{color-scheme:dark}
 body{font-family:'Montserrat',sans-serif;background:#030b08;color:#fff;min-height:100vh}
 .login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:28px;background:radial-gradient(1300px 580px at 85% 0%,rgba(0,255,170,.22),transparent 62%),radial-gradient(1100px 520px at 12% 100%,rgba(0,120,70,.26),transparent 68%),#030b08}
-.login-card{width:min(960px,96vw);display:grid;grid-template-columns:1.02fr 1fr;background:rgba(0,0,0,.72);border:1px solid rgba(0,255,170,.2);border-radius:24px;overflow:hidden;box-shadow:0 25px 80px rgba(0,0,0,.45)}
+.login-card{width:min(960px,96vw);display:grid;grid-template-columns:1.02fr 1fr;background:var(--card-bg,rgba(12,21,17,0.82));border:1px solid rgba(0,255,170,.2);border-radius:var(--radius-lg,20px);overflow:hidden;box-shadow:var(--shadow,0 16px 40px rgba(0,0,0,.45))}
 .left-pane{padding:34px;position:relative;background:linear-gradient(145deg,rgba(0,0,0,.45),rgba(0,255,170,.1));border-right:1px solid rgba(255,255,255,.08)}
 .right-pane{padding:34px}
 .brand-kicker{font-size:.76rem;letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,.65)}
@@ -26,8 +26,8 @@ body{font-family:'Montserrat',sans-serif;background:#030b08;color:#fff;min-heigh
 .form.active{display:block}
 .field{display:flex;flex-direction:column;gap:7px;margin-bottom:13px}
 .field label{font-size:.8rem;color:rgba(255,255,255,.8)}
-.field input{width:100%;border:1px solid rgba(255,255,255,.14);border-radius:12px;background:rgba(255,255,255,.06);padding:11px 12px;color:#fff;outline:none}
-.field input:focus{border-color:rgba(0,255,170,.9);box-shadow:0 0 0 3px rgba(0,255,170,.18)}
+.field input{width:100%;border:1px solid var(--input-border,rgba(255,255,255,.12));border-radius:var(--radius-sm,10px);background:var(--input-bg,rgba(12,21,17,0.65));padding:11px 12px;color:#fff;outline:none}
+.field input:focus{border-color:var(--primary,#00FFAA);box-shadow:0 0 0 3px var(--input-focus,rgba(0,255,170,.25))}
 .submit{width:100%;margin-top:8px;border:none;border-radius:12px;padding:12px 14px;font-weight:800;letter-spacing:.02em;background:#00ffaa;color:#03120d;cursor:pointer;transition:transform .2s ease,box-shadow .2s ease}
 .submit:hover{transform:translateY(-1px);box-shadow:0 10px 22px rgba(0,255,170,.28)}
 .submit:disabled{opacity:.6;cursor:not-allowed;transform:none;box-shadow:none}
@@ -61,7 +61,7 @@ body{font-family:'Montserrat',sans-serif;background:#030b08;color:#fff;min-heigh
         <h1 class="brand-title">THE SUN SESSION</h1>
         <p class="brand-kicker">UNDERGROUND ACCESS</p>
         <p class="brand-copy">Inicia sesión para gestionar tus compras, desbloquear contenido exclusivo y mantenerte dentro del circuito oficial.</p>
-        <a class="muted-link" href="sunsessionesp_fixed_v3.html"><i class="ri-arrow-left-line"></i> Volver al inicio</a>
+        <a class="muted-link" href="home.html"><i class="ri-arrow-left-line"></i> Volver al inicio</a>
       </aside>
       <div class="right-pane">
         <div class="tabs" role="tablist">
@@ -159,7 +159,7 @@ function renderQuick(user){
   quickBox.innerHTML=`
     <p>Sesión activa como <strong>${safeName}</strong> (${role||'USER'}).</p>
     <div class="actions">
-      <a href="sunsessionesp_fixed_v3.html">Ir al inicio</a>
+      <a href="home.html">Ir al inicio</a>
       ${role==='ADMIN'?'<a href="admin.html">Abrir panel admin</a>':''}
       <button type="button" id="logoutNow">Cerrar sesión</button>
     </div>
@@ -202,8 +202,14 @@ loginForm.addEventListener('submit',async(ev)=>{
       body:JSON.stringify({identifier,password})
     });
     if(!res.ok){
-      const msg=await res.text().catch(()=> 'No se pudo iniciar sesión.');
-      setStatus(msg||'No se pudo iniciar sesión.','error');
+      let msg='No se pudo iniciar sesión.';
+      try{
+        const data=await res.json();
+        msg=(data&&data.message)||msg;
+      }catch{
+        msg=await res.text().catch(()=> msg) || msg;
+      }
+      setStatus(msg,'error');
       return;
     }
     const data=await res.json();
@@ -212,7 +218,7 @@ loginForm.addEventListener('submit',async(ev)=>{
     persistSession(user);
     setStatus('Acceso correcto. Redirigiendo...','ok');
     const role=String(user.role||'').toUpperCase();
-    setTimeout(()=>{window.location.href=(role==='ADMIN'?'admin.html':'sunsessionesp_fixed_v3.html');},500);
+    setTimeout(()=>{window.location.href=(role==='ADMIN'?'admin.html':'home.html');},500);
   }catch{
     setStatus('Error de conexión con el servidor.','error');
   }finally{btn.disabled=false;}
@@ -236,15 +242,21 @@ registerForm.addEventListener('submit',async(ev)=>{
       body:JSON.stringify({name,email,password,phone,role:'USER'})
     });
     if(!res.ok){
-      const msg=await res.text().catch(()=> 'No se pudo crear la cuenta.');
-      setStatus(msg||'No se pudo crear la cuenta.','error');
+      let msg='No se pudo crear la cuenta.';
+      try{
+        const data=await res.json();
+        msg=(data&&data.message)||msg;
+      }catch{
+        msg=await res.text().catch(()=> msg) || msg;
+      }
+      setStatus(msg,'error');
       return;
     }
     const data=await res.json();
     const user=data&&data.user?data.user:null;
     if(user) persistSession(user);
     setStatus('Cuenta creada correctamente. Ya puedes continuar.','ok');
-    setTimeout(()=>{window.location.href='sunsessionesp_fixed_v3.html';},700);
+    setTimeout(()=>{window.location.href='home.html';},700);
   }catch{
     setStatus('Error de conexión con el servidor.','error');
   }finally{btn.disabled=false;}
@@ -271,7 +283,6 @@ registerForm.addEventListener('submit',async(ev)=>{
 </script>
 </body>
 </html>
-
 
 
 

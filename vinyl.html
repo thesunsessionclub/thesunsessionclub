@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es-MX">
 <head>
 <script>
@@ -20,11 +20,10 @@
   <link href="assets/css/site.css?v=20260329-01" rel="stylesheet">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com/3.4.16"></script>
-<script>tailwind.config={theme:{extend:{colors:{primary:'#006400',secondary:'#00FFAA'},borderRadius:{'button':'8px'}}}}</script>
+<script>tailwind.config={theme:{extend:{colors:{primary:'#006400',secondary:'#00FFAA'},borderRadius:{'button':'16px'}}}}</script>
 <style>body{font-family:'Montserrat',sans-serif}</style>
 </head>
 <body class="bg-black text-white">
@@ -46,7 +45,7 @@
 <div class="mt-6"><h3 class="text-xl font-bold">Descripción</h3><p id="vinylDesc" class="text-white/70 mt-2"></p></div>
 <div class="mt-6"><h3 class="text-xl font-bold">Tracklist</h3><ul id="vinylTracklist" class="list-disc list-inside text-white/70 mt-2"></ul></div>
 <div class="mt-6 flex items-center justify-between"><span id="vinylPrice" class="text-3xl font-extrabold"></span><span id="vinylStock" class="text-white/60"></span></div>
-<div class="mt-4 flex space-x-3"><button id="btnAdd" class="bg-primary text-black font-bold px-4 py-2 rounded-button">AGREGAR AL CARRITO</button><a href="sunsessionesp_fixed_v3.html#merch" class="border border-white/20 text-white rounded-button px-4 py-2 hover:border-primary hover:text-primary">Ver Merch</a></div>
+<div class="mt-4 flex space-x-3"><button id="btnAdd" class="bg-primary text-black font-bold px-4 py-2 rounded-button">AGREGAR AL CARRITO</button><a href="home.html#merch" class="border border-white/20 text-white rounded-button px-4 py-2 hover:border-primary hover:text-primary">Ver Merch</a></div>
 </div>
 </div>
 <div class="mt-10"><h3 class="text-xl font-bold">Productos Relacionados</h3><div id="relatedGrid" class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div></div>
@@ -57,7 +56,7 @@
 <div class="flex justify-between items-center mb-4"><h3 class="text-xl font-bold">Tu Carrito</h3><button onclick="closeCart()" class="text-gray-700 hover:text-black"><i class="ri-close-line text-2xl"></i></button></div>
 <div id="cartItems" class="space-y-3"></div>
 <div class="mt-6 flex justify-between items-center"><span class="font-bold">Total:</span><span id="cartTotal" class="text-xl font-extrabold">$0.00</span></div>
-<div class="mt-6 space-y-3"><a href="sunsessionesp_fixed_v3.html#merch" class="block text-center bg-primary text-black font-bold py-3 rounded-button">Pagar en Tienda</a><button onclick="closeCart()" class="w-full border border-gray-300 text-gray-700 py-3 rounded-button">Seguir navegando</button></div>
+<div class="mt-6 space-y-3"><a href="home.html#merch" class="block text-center bg-primary text-black font-bold py-3 rounded-button">Pagar en Tienda</a><button onclick="closeCart()" class="w-full border border-gray-300 text-gray-700 py-3 rounded-button">Seguir navegando</button></div>
 </div>
 </div>
 <script>

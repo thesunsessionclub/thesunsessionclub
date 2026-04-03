@@ -1,4 +1,4 @@
-﻿(function(){
+(function(){
   const explicit = (window.SUNSESH_API || '').trim();
  const currentPort = String(location.port || '');
  const hasLikelyDevPort = !!currentPort && !['80', '443', '4000'].includes(currentPort);
@@ -372,7 +372,7 @@
         <button class="ssc-account-btn ssc-account-btn-primary" data-account-logout type="button">Cerrar sesion</button>
       </div>
       <div class="ssc-account-links">
-        <a class="ssc-account-link" href="sunsessionesp_fixed_v3.html">Inicio</a>
+        <a class="ssc-account-link" href="home.html">Inicio</a>
         ${adminLink}
       </div>
     `;
@@ -564,8 +564,83 @@
   }
 })();
 
+/* ── Dynamic copyright year ── */
+document.querySelectorAll('.ssc-year').forEach(function(el){ el.textContent = new Date().getFullYear(); });
 
+/* ── Newsletter subscribe (footer forms) ── */
+(function(){
+  var apiBase = (window.__SUNSESH_API_BASE || '').replace(/\/$/, '');
+  if (!apiBase) {
+    var loc = window.location;
+    var isLocal = loc.hostname === 'localhost' || loc.hostname === '127.0.0.1' || /^\d{1,3}(\.\d{1,3}){3}$/.test(loc.hostname);
+    apiBase = isLocal ? (loc.protocol + '//' + loc.hostname + ':4000') : loc.origin;
+  }
 
+  document.querySelectorAll('form').forEach(function(form){
+    var btn = form.querySelector('button[type="submit"]');
+    if (!btn || btn.textContent.trim() !== 'SUSCRIBIRSE') return;
 
+    var emailInput = form.querySelector('input[type="email"]');
+    var consentBox = form.querySelector('input[type="checkbox"]');
+    if (!emailInput) return;
+
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+
+      var email = (emailInput.value || '').trim().toLowerCase();
+      if (!email) { showFormMsg(form, 'Ingresa tu correo electrónico', 'error'); return; }
+      if (!consentBox || !consentBox.checked) { showFormMsg(form, 'Acepta recibir correos para continuar', 'error'); return; }
+
+      btn.disabled = true;
+      btn.textContent = 'ENVIANDO...';
+
+      fetch(apiBase + '/api/newsletter/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email })
+      })
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        if (data.ok) {
+          showFormMsg(form, data.already ? '¡Ya estás suscrito!' : '¡Suscripción exitosa! 🎶', 'success');
+          emailInput.value = '';
+          if (consentBox) consentBox.checked = false;
+        } else {
+          showFormMsg(form, data.message || 'Error al suscribirse', 'error');
+        }
+      })
+      .catch(function(){
+        showFormMsg(form, 'Error de conexión. Inténtalo de nuevo.', 'error');
+      })
+      .finally(function(){
+        btn.disabled = false;
+        btn.textContent = 'SUSCRIBIRSE';
+      });
+    });
+  });
+
+  function showFormMsg(form, msg, type){
+    var existing = form.querySelector('.ssc-form-msg');
+    if (existing) existing.remove();
+
+    var div = document.createElement('div');
+    div.className = 'ssc-form-msg';
+    div.style.cssText = 'margin-top:8px;padding:10px 16px;border-radius:8px;font-size:13px;font-weight:600;text-align:center;transition:opacity 0.3s;';
+    if (type === 'success') {
+      div.style.background = 'rgba(0,255,170,0.15)';
+      div.style.color = '#00FFAA';
+      div.style.border = '1px solid rgba(0,255,170,0.3)';
+    } else {
+      div.style.background = 'rgba(255,60,60,0.15)';
+      div.style.color = '#ff6b6b';
+      div.style.border = '1px solid rgba(255,60,60,0.3)';
+    }
+    div.textContent = msg;
+    form.appendChild(div);
+
+    setTimeout(function(){ div.style.opacity = '0'; }, 4000);
+    setTimeout(function(){ div.remove(); }, 4500);
+  }
+})();
 
 

@@ -1,5 +1,6 @@
 import { prisma } from '../prisma.js';
 import { validationResult } from 'express-validator';
+import { notifyNewVinyl } from '../services/newsletter.service.js';
 
 export const list = async (req, res) => {
   try {
@@ -15,6 +16,10 @@ export const create = async (req, res) => {
   try {
     const data = sanitize(req.body);
     const item = await prisma.vinylRelease.create({ data });
+
+    // Notify subscribers (fire & forget)
+    notifyNewVinyl(item).catch(() => {});
+
     res.status(201).json(item);
   } catch (err) {
     res.status(500).json({ message: 'No se pudo crear vinilo', details: err?.message });

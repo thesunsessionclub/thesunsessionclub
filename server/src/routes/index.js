@@ -15,6 +15,7 @@ import ordersRoutes from './orders.routes.js';
 import ticketsRoutes from './tickets.routes.js';
 import analyticsRoutes from './analytics.routes.js';
 import contactRoutes from './contact.routes.js';
+import newsletterRoutes from './newsletter.routes.js';
 
 const router = Router();
 
@@ -34,5 +35,6 @@ router.use('/orders', ordersRoutes);
 router.use('/tickets', ticketsRoutes);
 router.use('/analytics', analyticsRoutes);
 router.use('/contact', contactRoutes);
+router.use('/newsletter', newsletterRoutes);
 
 export default router;

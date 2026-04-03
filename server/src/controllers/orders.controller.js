@@ -1,6 +1,8 @@
 import { prisma } from '../prisma.js';
 import { validationResult } from 'express-validator';
 import { sendOrderNotification } from '../services/mailer.js';
+import { buildAdminOrderNotification, buildCustomerOrderConfirmation } from '../services/orderMailer.js';
+import { config } from '../config/env.js';
 
 const ORDER_STATUSES = new Set([
   'new_order',
@@ -26,49 +28,7 @@ function sanitizeProducts(products) {
     .filter((p) => p.title && p.qty > 0);
 }
 
-function buildOrderEmail(order, items) {
-  const fullName = `${order.name} ${order.last_name}`.trim();
-  const rows = items
-    .map(
-      (item) =>
-        `<li><strong>${item.title}</strong> - Color: ${item.color || 'N/A'} - Talla: ${item.size || 'N/A'} - Cantidad: ${
-          item.qty
-        }</li>`
-    )
-    .join('');
-
-  const html = `
-    <h2>Nueva orden recibida</h2>
-    <p><strong>Cliente:</strong> ${fullName}</p>
-    <p><strong>Telefono:</strong> ${order.phone}</p>
-    <p><strong>Correo:</strong> ${order.email}</p>
-    <p><strong>Fecha:</strong> ${new Date(order.date).toLocaleString()}</p>
-    <h3>Productos ordenados:</h3>
-    <ul>${rows}</ul>
-    ${order.notes ? `<p><strong>Notas:</strong> ${order.notes}</p>` : ''}
-    <p>Contacta al cliente para finalizar la compra.</p>
-  `;
-
-  const text = [
-    'Nueva orden recibida',
-    '',
-    `Cliente: ${fullName}`,
-    `Telefono: ${order.phone}`,
-    `Correo: ${order.email}`,
-    `Fecha: ${new Date(order.date).toLocaleString()}`,
-    '',
-    'Productos ordenados:',
-    ...items.map(
-      (item) =>
-        `- ${item.title} | Color: ${item.color || 'N/A'} | Talla: ${item.size || 'N/A'} | Cantidad: ${item.qty}`
-    ),
-    order.notes ? `Notas: ${order.notes}` : '',
-    '',
-    'Contacta al cliente para finalizar la compra.',
-  ].join('\n');
-
-  return { subject: `Nueva orden recibida - ${fullName}`, html, text };
-}
+// buildOrderEmail removed — replaced by branded templates in orderMailer.js
 
 function orderStatusMeta(statusRaw) {
   const status = String(statusRaw || '').trim().toLowerCase();
@@ -181,11 +141,21 @@ export const createOrder = async (req, res) => {
     }
 
     let mail = { skipped: true };
+    let customerMail = { skipped: true };
     try {
       const settings = await prisma.settings.findUnique({ where: { id: 'site' } });
-      const to = settings?.order_notification_email || '';
-      const content = buildOrderEmail(order, items);
-      mail = await sendOrderNotification({ to, ...content });
+      const adminEmail = settings?.order_notification_email || config.notificationEmail || '';
+
+      // Admin notification
+      const adminContent = buildAdminOrderNotification({ order, items });
+      mail = await sendOrderNotification({ to: adminEmail, ...adminContent });
+
+      // Customer confirmation
+      if (order.email) {
+        const customerContent = buildCustomerOrderConfirmation({ order, items });
+        customerMail = await sendOrderNotification({ to: order.email, ...customerContent });
+      }
+
       if (vipUpgraded) {
         await sendOrderNotification({
           to: order.email,
@@ -198,7 +168,7 @@ export const createOrder = async (req, res) => {
       mail = { skipped: true };
     }
 
-    res.status(201).json({ order, mail_sent: !mail.skipped, vip_upgraded: vipUpgraded });
+    res.status(201).json({ order, mail_sent: !mail.skipped, customer_mail_sent: !customerMail.skipped, vip_upgraded: vipUpgraded });
   } catch (err) {
     res.status(500).json({ message: 'No se pudo crear la orden', details: err?.message });
   }
