@@ -1624,8 +1624,8 @@ document.addEventListener('DOMContentLoaded',async()=>{await loadEventsFromApi()
           <div class="absolute inset-0 flex items-center justify-center"><i class="ri-play-fill text-white text-4xl bg-primary/80 rounded-full p-3"></i></div>
         </div>
         <div class="p-6">
-          <h3 class="text-2xl font-bold mb-2">${v.title||''}</h3>
-          <p class="text-gray-600 mb-2">${v.location||''}${v.date?('  '+v.date):''}</p>
+          <h3 class="text-2xl font-bold mb-2 text-gray-900">${v.title||''}</h3>
+          <p class="text-gray-700 mb-2">${v.location||''}${v.date?('  '+v.date):''}</p>
           <div class="flex items-center justify-between">
             <a href="${v.youtubeLink||'#'}" target="_blank" class="bg-black text-white font-semibold py-2 px-4 !rounded-button whitespace-nowrap hover:bg-primary transition-colors flex items-center space-x-2"><i class="ri-youtube-fill"></i><span>Watch on YouTube</span></a>
             <a href="${v.soundcloudLink||'#'}" target="_blank" class="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-primary transition-colors"><i class="ri-soundcloud-fill text-2xl"></i></a>
