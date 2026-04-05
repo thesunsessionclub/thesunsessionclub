@@ -3418,8 +3418,13 @@ function showEventDetails(e) {
     eventButton.style.display='none';
   }
   if(eventBuyBtn){
-    eventBuyBtn.onclick = function(){ openTicketModal(e); };
-    eventBuyBtn.style.display='flex';
+    const isFree=e.isFree||Number(e.price||0)===0;
+    if(isFree){
+      eventBuyBtn.style.display='none';
+    }else{
+      eventBuyBtn.onclick = function(){ openTicketModal(e); };
+      eventBuyBtn.style.display='flex';
+    }
   }
   updateHomeEventTicketInfo(e);
   refreshEventSummary(e.id);
