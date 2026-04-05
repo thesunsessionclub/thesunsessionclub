@@ -530,8 +530,13 @@ function openEventModal(e){
     }
   }
   if(buy){
-    buy.onclick=function(){openTicketModal(e)};
-    buy.style.display='inline-flex';
+    const isFree=e.isFree||Number(e.price||0)===0;
+    if(isFree){
+      buy.style.display='none';
+    }else{
+      buy.onclick=function(){openTicketModal(e)};
+      buy.style.display='inline-flex';
+    }
   }
   updateEventTicketInfo(e);
   refreshEventSummary(e.id);
