@@ -989,6 +989,7 @@ input::placeholder, textarea::placeholder{color:rgba(255,255,255,.7)}
 <option value="hidden">Oculto</option>
 </select>
 <label class="flex items-center space-x-2"><input id="ee_featured" type="checkbox"><span>Destacado</span></label>
+<label class="flex items-center space-x-2"><input id="ee_hero" type="checkbox"><span class="text-amber-300 font-semibold">Evento Hero (portada)</span></label>
 <input id="ee_order" type="number" placeholder="Orden manual" class="w-full bg-muted border border-white/10 rounded px-3 py-2">
 </div>
 <div class="flex items-center gap-3">
@@ -1965,7 +1966,10 @@ if(type==='event'){title.textContent=index!=null?'Editar Evento':'Agregar Evento
 }
 function openEventModal(index){showEventEditor(index)}
 let currentEventIndex=null;let currentEventImage='';
-function showEventEditor(indexOrId){let idx=null;if(typeof indexOrId==='number'){idx=indexOrId}else if(typeof indexOrId==='string'&&indexOrId){idx=(store.events||[]).findIndex(ev=>String(ev.id||'')===String(indexOrId||''))}currentEventIndex=(idx!=null&&idx>=0)?idx:null;const editor=document.getElementById('eventEditor');editor.style.display='block';const e=currentEventIndex!=null?store.events[currentEventIndex]:{title:'',artists:'',location:'',venue:'',date:'',time:'',image:'',price:0,genre:'',description:'',ticketLink:'',socialLink:'',isFree:false,status:'active',featured:false,sort_order:0,buttonText:'COMPRAR BOLETOS'};document.getElementById('ee_title').value=e.title||'';document.getElementById('ee_artists').value=e.artists||'';document.getElementById('ee_venue').value=e.venue||'';document.getElementById('ee_location').value=e.location||'';document.getElementById('ee_date').value=toInputDate(e.date);const timeParts=(e.time||'').split(' - ');document.getElementById('ee_time_start').value=timeParts[0]||'';document.getElementById('ee_time_end').value=timeParts[1]||'';document.getElementById('ee_type').value=e.isFree?'free':'paid';document.getElementById('ee_price').value=e.price||0;document.getElementById('ee_ticket_limit').value=(e.ticket_limit==null?'':e.ticket_limit);document.getElementById('ee_ticket_link').value=e.ticketLink||'';document.getElementById('ee_social_link').value=e.socialLink||'';document.getElementById('ee_genre').value=e.genre||'';document.getElementById('ee_desc').value=e.description||'';const statusValue=((String(e.status||'').toLowerCase()==='active')?'active':(String(e.status||'').toLowerCase()==='draft'?'draft':'hidden'));document.getElementById('ee_status').value=statusValue;document.getElementById('ee_featured').checked=!!e.featured;document.getElementById('ee_order').value=e.sort_order||0;currentEventImage=e.image||'';const eePreview=document.getElementById('ee_image_preview');if(eePreview)eePreview.src=currentEventImage||'';setupDrop('ee_image_drop',url=>{currentEventImage=url;const p=document.getElementById('ee_image_preview');if(p)p.src=url});document.getElementById('ee_title').focus()
+function showEventEditor(indexOrId){let idx=null;if(typeof indexOrId==='number'){idx=indexOrId}else if(typeof indexOrId==='string'&&indexOrId){idx=(store.events||[]).findIndex(ev=>String(ev.id||'')===String(indexOrId||''))}currentEventIndex=(idx!=null&&idx>=0)?idx:null;const editor=document.getElementById('eventEditor');editor.style.display='block';const e=currentEventIndex!=null?store.events[currentEventIndex]:{title:'',artists:'',location:'',venue:'',date:'',time:'',image:'',price:0,genre:'',description:'',ticketLink:'',socialLink:'',isFree:false,status:'active',featured:false,sort_order:0,buttonText:'COMPRAR BOLETOS'};document.getElementById('ee_title').value=e.title||'';document.getElementById('ee_artists').value=e.artists||'';document.getElementById('ee_venue').value=e.venue||'';document.getElementById('ee_location').value=e.location||'';document.getElementById('ee_date').value=toInputDate(e.date);const timeParts=(e.time||'').split(' - ');document.getElementById('ee_time_start').value=timeParts[0]||'';document.getElementById('ee_time_end').value=timeParts[1]||'';document.getElementById('ee_type').value=e.isFree?'free':'paid';document.getElementById('ee_price').value=e.price||0;document.getElementById('ee_ticket_limit').value=(e.ticket_limit==null?'':e.ticket_limit);document.getElementById('ee_ticket_link').value=e.ticketLink||'';document.getElementById('ee_social_link').value=e.socialLink||'';document.getElementById('ee_genre').value=e.genre||'';document.getElementById('ee_desc').value=e.description||'';const statusValue=((String(e.status||'').toLowerCase()==='active')?'active':(String(e.status||'').toLowerCase()==='draft'?'draft':'hidden'));document.getElementById('ee_status').value=statusValue;document.getElementById('ee_featured').checked=!!e.featured;document.getElementById('ee_order').value=e.sort_order||0;
+/* populate hero checkbox: match by title+date against current heroEvent */
+;(function(){var he=(store.settings&&store.settings.heroEvent)||{};var heTitle=String(he.title||'').trim().toLowerCase();var heDate=String(he.date||'').trim();var eTitle=String(e.title||'').trim().toLowerCase();var eDate=toInputDate(e.date);var isHero=!!(heTitle&&eTitle&&heTitle===eTitle)||(heDate&&eDate&&heDate===eDate&&heTitle===eTitle);document.getElementById('ee_hero').checked=isHero})();
+currentEventImage=e.image||'';const eePreview=document.getElementById('ee_image_preview');if(eePreview)eePreview.src=currentEventImage||'';setupDrop('ee_image_drop',url=>{currentEventImage=url;const p=document.getElementById('ee_image_preview');if(p)p.src=url});document.getElementById('ee_title').focus()
 
   // Add event listener for event type to toggle ticket link visibility
   const eventTypeSelect = document.getElementById('ee_type');
@@ -2014,6 +2018,19 @@ async function saveEventEditor(){
   base.featured = document.getElementById('ee_featured').checked;
   base.sort_order = Number(document.getElementById('ee_order').value || 0);
   base.image = currentEventImage || '';
+  /* Sync hero event when checkbox is checked */
+  var isHeroChecked = document.getElementById('ee_hero').checked;
+  if(isHeroChecked){
+    if(!store.settings)store.settings={};
+    var he=store.settings.heroEvent||{};
+    he.title=base.title;he.date=base.date;he.time=base.time;
+    he.location=base.location||base.venue;he.venue=base.venue;
+    he.description=base.description;he.image=base.image;
+    he.isFree=base.isFree;he.status='active';he.displayEnabled=true;
+    he.badge=he.badge||'PRÓXIMO';he.button1Text=he.button1Text||'BOLETOS PREVENTA';
+    store.settings.heroEvent=he;
+    base.featured=true; /* hero events are always featured */
+  }
   if(base.title.length<2){
     showToast('El título debe tener al menos 2 caracteres','error');
     return;

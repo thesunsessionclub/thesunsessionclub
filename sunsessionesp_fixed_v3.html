@@ -56,7 +56,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;1,9..40,400&family=Space+Mono&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+<link rel="stylesheet" href="assets/css/v4-redesign.css">
 <style>
 html { --hero-start: rgba(255,255,255,0.25); --hero-end: rgba(0,100,0,0.55); }
 .dark { --hero-start: rgba(255,255,255,0.15); --hero-end: rgba(0,0,0,0.25); }
@@ -73,15 +75,15 @@ scroll-behavior: smooth;
     display: flex !important;
   }
 }
-#events:not(.dark) .section-title,
+html:not(.dark) #events .section-title,
 body:not(.dark) #events .section-title,
-#about:not(.dark) .section-title,
+html:not(.dark) #about .section-title,
 body:not(.dark) #about .section-title,
 body:not(.dark) #about h3,
 body:not(.dark) #about h4,
-#merch:not(.dark) .section-title,
+html:not(.dark) #merch .section-title,
 body:not(.dark) #merch .section-title,
-#contact:not(.dark) .section-title,
+html:not(.dark) #contact .section-title,
 body:not(.dark) #contact .section-title {
 color: #000 !important;
 }
@@ -285,7 +287,8 @@ border: 1px solid rgba(0,255,170,0.25);
 background: rgba(6,14,10,0.85);
 box-shadow: 0 16px 40px rgba(0,0,0,0.45);
 }
-.vibe-card video {
+.vibe-card video,
+.vibe-card img {
 width: 100%;
 height: 100%;
 object-fit: cover;
@@ -572,7 +575,6 @@ text-shadow: 0 8px 24px rgba(0,0,0,0.65);
 #merch .section-title,
 #merch p.text-gray-600,
 #merch #merchEmpty,
-#gallery p.text-gray-600,
 #contact .section-title,
 #contact p.text-gray-600,
 #contact .bg-white,
@@ -806,7 +808,7 @@ animation: pulse 2s infinite;
 <div class="container mx-auto px-6 py-20 md:py-32">
 <div class="hero-content max-w-3xl">
 <div class="hero-kicker hero-anim delay-1 display-font">Acceso Underground</div>
-<h1 class="hero-title-main hero-anim delay-1 mt-4 display-font glitch-text" data-text="THE SUN SESSION">THE SUN SESSION</h1>
+<h1 class="hero-title-main hero-anim delay-1 mt-4 display-font glitch-text" data-text="THE SUN SESSION CLUB"><span class="hero-title-the">THE</span><span class="hero-title-name">SUN<br>SESSION</span><span class="hero-title-club">CLUB</span></h1>
 <div class="hero-subtitle hero-anim delay-2 mt-4 display-font">Acceso limitado únicamente.</div>
 <div class="hero-actions flex flex-wrap gap-4 hero-anim delay-3 mt-8">
 <button id="heroPrimaryCta" onclick="sscGoToPrimaryTicket()" class="hero-btn-primary hero-cta-main whitespace-nowrap pulse">COMPRAR BOLETOS</button>
@@ -975,7 +977,10 @@ function applyLocalSettings(){
       const hasDisplayFlag=Object.prototype.hasOwnProperty.call(he,'displayEnabled');
       const heroEnabled=hasDisplayFlag?displayEnabled:(statusRaw==='active');
       const heroBlock=document.getElementById('heroEventBlock');
+      const heroSection=document.querySelector('.hero-event-section');
+      var heroPaid=heroEnabled&&!he.isFree&&Number(he.price||0)>0;
       if(heroBlock){heroBlock.style.display=heroEnabled?'':'none'}
+      if(heroSection){if(heroPaid){heroSection.classList.add('v4-hero-active')}else{heroSection.classList.remove('v4-hero-active')}}
       if(heroEnabled){
         const b=document.getElementById('heroBadgeEl');
         const t=document.getElementById('heroTitleEl');
@@ -1101,7 +1106,7 @@ function applyLocalSettings(){
 <li><a href="#artists" class="text-white hover:text-secondary font-medium uppercase text-sm nav-link">Artistas</a></li>
 <li><a href="events.html" class="text-white hover:text-secondary font-medium uppercase text-sm nav-link">Eventos</a></li>
 <li><a href="music.html" class="text-white hover:text-secondary font-medium uppercase text-sm nav-link">Música</a></li>
-<li><a href="#video" class="text-white hover:text-secondary font-medium uppercase text-sm nav-link">Videos</a></li>
+<li><a href="videos.html" class="text-white hover:text-secondary font-medium uppercase text-sm nav-link">Videos</a></li>
 <li><a href="#about" class="text-white hover:text-secondary font-medium uppercase text-sm nav-link">Nosotros</a></li>
 <li><a href="gallery.html" class="text-white hover:text-secondary font-medium uppercase text-sm nav-link">Galería</a></li>
           <li><a href="merch.html" class="text-white hover:text-secondary font-medium uppercase text-sm nav-link">MERCH</a></li>
@@ -1136,19 +1141,190 @@ function applyLocalSettings(){
   <a href="#artists" onclick="toggleMobileMenu()" class="text-2xl text-white hover:text-primary font-bold uppercase transition-colors">Artistas</a>
   <a href="#events" onclick="toggleMobileMenu()" class="text-2xl text-white hover:text-primary font-bold uppercase transition-colors">Eventos</a>
   <a href="music.html" onclick="toggleMobileMenu()" class="text-2xl text-white hover:text-primary font-bold uppercase transition-colors">Música</a>
-  <a href="#video" onclick="toggleMobileMenu()" class="text-2xl text-white hover:text-primary font-bold uppercase transition-colors">Videos</a>
+  <a href="videos.html" onclick="toggleMobileMenu()" class="text-2xl text-white hover:text-primary font-bold uppercase transition-colors">Videos</a>
   <a href="#about" onclick="toggleMobileMenu()" class="text-2xl text-white hover:text-primary font-bold uppercase transition-colors">Nosotros</a>
   <a href="gallery.html" onclick="toggleMobileMenu()" class="text-2xl text-white hover:text-primary font-bold uppercase transition-colors">Galería</a>
           <a href="merch.html" onclick="toggleMobileMenu()" class="text-2xl text-white hover:text-primary font-bold uppercase transition-colors">MERCH</a>
   <a href="#contact" onclick="toggleMobileMenu()" class="text-2xl text-white hover:text-primary font-bold uppercase transition-colors">Contacto</a>
   <a href="login.html" onclick="toggleMobileMenu()" class="text-2xl text-white hover:text-primary font-bold uppercase transition-colors">Iniciar Sesión</a>
 </div>
+<!-- Marquee Ticker — 4 copies so content always fills any viewport width -->
+<div class="v4-marquee" aria-hidden="true">
+  <div class="v4-marquee__track"><span>TECHNO &nbsp;◆&nbsp; HOUSE &nbsp;◆&nbsp; UNDERGROUND &nbsp;◆&nbsp; MINIMAL &nbsp;◆&nbsp; TRIBAL &nbsp;◆&nbsp; PROGRESSIVE &nbsp;◆&nbsp; DEEP TECH &nbsp;◆&nbsp; MELODIC &nbsp;◆&nbsp; THE SUN SESSION &nbsp;◆&nbsp; </span><span>TECHNO &nbsp;◆&nbsp; HOUSE &nbsp;◆&nbsp; UNDERGROUND &nbsp;◆&nbsp; MINIMAL &nbsp;◆&nbsp; TRIBAL &nbsp;◆&nbsp; PROGRESSIVE &nbsp;◆&nbsp; DEEP TECH &nbsp;◆&nbsp; MELODIC &nbsp;◆&nbsp; THE SUN SESSION &nbsp;◆&nbsp; </span><span>TECHNO &nbsp;◆&nbsp; HOUSE &nbsp;◆&nbsp; UNDERGROUND &nbsp;◆&nbsp; MINIMAL &nbsp;◆&nbsp; TRIBAL &nbsp;◆&nbsp; PROGRESSIVE &nbsp;◆&nbsp; DEEP TECH &nbsp;◆&nbsp; MELODIC &nbsp;◆&nbsp; THE SUN SESSION &nbsp;◆&nbsp; </span><span>TECHNO &nbsp;◆&nbsp; HOUSE &nbsp;◆&nbsp; UNDERGROUND &nbsp;◆&nbsp; MINIMAL &nbsp;◆&nbsp; TRIBAL &nbsp;◆&nbsp; PROGRESSIVE &nbsp;◆&nbsp; DEEP TECH &nbsp;◆&nbsp; MELODIC &nbsp;◆&nbsp; THE SUN SESSION &nbsp;◆&nbsp; </span></div>
+</div>
+<script>
+(function(){
+  function fixMarquee(){
+    try{
+      var track=document.querySelector('.v4-marquee__track');
+      var span=track&&track.querySelector('span');
+      if(!span||!track) return;
+      var w=span.getBoundingClientRect().width;
+      if(!w) return;
+      /* inject keyframe with exact pixel shift = one span width */
+      var sid='v4-mq-kf';
+      var old=document.getElementById(sid);
+      if(old) old.remove();
+      var s=document.createElement('style');
+      s.id=sid;
+      s.textContent='@keyframes v4MarqueeScroll{from{transform:translateX(0)}to{transform:translateX('+Math.round(-w)+'px)}}';
+      document.head.appendChild(s);
+      /* restart animation so it picks up the new keyframe */
+      track.style.animation='none';
+      void track.offsetWidth;
+      track.style.animation='';
+    }catch(e){}
+  }
+  if(document.fonts&&document.fonts.ready){
+    document.fonts.ready.then(fixMarquee);
+  } else {
+    window.addEventListener('load',fixMarquee);
+  }
+})();
+</script>
+<script>
+/* Global section scroll-reveal (music-label experience narrative) */
+(function(){
+  document.addEventListener('DOMContentLoaded',function(){
+    var eventsEl=document.getElementById('events');
+    var artistsEl=document.getElementById('artists');
+    if(eventsEl&&artistsEl&&artistsEl.parentNode){
+      artistsEl.parentNode.insertBefore(eventsEl,artistsEl);
+    }
+    var sectionIds=['events','artists','vibe','merch','about','contact'];
+    var obs=new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){e.target.classList.add('v4-visible');obs.unobserve(e.target)}
+      });
+    },{threshold:0.08});
+    sectionIds.forEach(function(id){
+      var el=document.getElementById(id);
+      if(el){el.classList.add('v4-section-reveal');obs.observe(el)}
+    });
+  });
+})();
+</script>
+<!-- Events Section -->
+<section id="events" class="py-20">
+<div class="container mx-auto px-6">
+<h2 class="section-title text-4xl font-bold text-center mb-3" style="color:#fff !important;-webkit-text-fill-color:#fff;">PRÓXIMOS EVENTOS</h2>
+<div class="w-24 h-1 bg-primary mx-auto mb-12"></div>
+<p class="text-center max-w-3xl mx-auto mb-16" style="color:rgba(255,255,255,0.72) !important;-webkit-text-fill-color:rgba(255,255,255,0.72);">No te pierdas los eventos más exclusivos de la ciudad. Boletos limitados disponibles.</p>
+<div id="featuredEventsTitle" class="text-center mb-6" style="display:none;"><h3 class="text-2xl font-bold text-yellow-600">EVENTOS DESTACADOS</h3></div>
+<div id="featuredEventsRow" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12"></div>
+<div id="homeEventsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+<div class="text-center mt-12">
+<a href="events.html">
+<button class="bg-transparent border-2 border-primary text-primary font-bold py-3 px-8 !rounded-button whitespace-nowrap hover:bg-primary hover:text-white transition-all">VER TODOS LOS EVENTOS</button>
+</a>
+</div>
+</div>
+</section>
+<script>
+(function(){
+const STORE_KEY='ssc_store_v1';
+function getStore(){try{return JSON.parse(localStorage.getItem(STORE_KEY)||'{}')}catch(e){return{}}}
+function setStore(next){localStorage.setItem(STORE_KEY,JSON.stringify(next||{}))}
+function toInputDate(value){if(!value)return '';if(typeof value==='string'){const t=value.trim();const m=t.match(/^\d{4}-\d{2}-\d{2}/);if(m)return m[0]}const d=new Date(value);if(Number.isNaN(d.getTime()))return '';const y=d.getFullYear();const m=String(d.getMonth()+1).padStart(2,'0');const day=String(d.getDate()).padStart(2,'0');return y+'-'+m+'-'+day}
+function normalizeEvent(evt){const e=(evt&&typeof evt==='object')?Object.assign({},evt):{};e.date=toInputDate(e.date);e.price=Number(e.price||0);e.sort_order=Number(e.sort_order||0);var raw=String(e.status||'').toLowerCase();e.status=raw==='active'?'ACTIVE':(raw==='draft'?'DRAFT':'CANCELLED');e.featured=!!e.featured;e.isFree=!!e.isFree||e.price===0;return e}
+function eventKey(evt){var id=String((evt&&evt.id)||'').trim();if(id)return 'id:'+id;var title=String((evt&&evt.title)||'').trim().toLowerCase();var date=String((evt&&evt.date)||'').trim();var place=String((evt&&(evt.venue||evt.location))||'').trim().toLowerCase();var time=String((evt&&evt.time)||'').trim().toLowerCase();return 'fp:'+title+'|'+date+'|'+place+'|'+time}
+function mergeEvents(apiEvents,localEvents){var map=new Map();(Array.isArray(apiEvents)?apiEvents:[]).map(normalizeEvent).forEach(function(evt){map.set(eventKey(evt),evt)});(Array.isArray(localEvents)?localEvents:[]).map(normalizeEvent).forEach(function(evt){var id=String(evt.id||'').trim();var keepLocal=!id||id.indexOf('local-')===0||!!evt._localDirty;var key=eventKey(evt);if(keepLocal||!map.has(key)){map.set(key,evt)}});return Array.from(map.values())}
+function badgeFromDate(str){if(!str)return '';var d=new Date(str);return d.toLocaleString('es-MX',{month:'short',day:'2-digit'}).toUpperCase()}
+function eventDateValue(evt){var d=new Date(evt&&evt.date?evt.date:'');return Number.isNaN(d.getTime())?Number.MAX_SAFE_INTEGER:d.getTime()}
+function pickHeroEventFromSettings(events,settings){
+var hero=((settings&&settings.heroEvent)||{});
+var statusRaw=String(hero.status||'inactive').toLowerCase();
+var displayRaw=hero.displayEnabled;
+var displayEnabled=!(displayRaw===false||String(displayRaw).toLowerCase()==='false');
+var hasDisplayFlag=Object.prototype.hasOwnProperty.call(hero,'displayEnabled');
+var heroEnabled=hasDisplayFlag?displayEnabled:(statusRaw==='active');
+if(!heroEnabled) return null;
+var heroTitle=String(hero.title||'').trim().toLowerCase();
+var heroDate=toInputDate(hero.date);
+var heroVenue=String(hero.location||hero.venue||'').trim().toLowerCase();
+if(!heroTitle&&!heroDate&&!heroVenue) return null;
+return events.find(function(evt){
+  var evtTitle=String(evt.title||'').trim().toLowerCase();
+  var evtDate=toInputDate(evt.date);
+  var evtVenue=String(evt.location||evt.venue||'').trim().toLowerCase();
+  var titleOk=heroTitle&&evtTitle?evtTitle===heroTitle:false;
+  var dateOk=heroDate&&evtDate?evtDate===heroDate:false;
+  var venueOk=heroVenue&&evtVenue?(evtVenue.indexOf(heroVenue)!==-1||heroVenue.indexOf(evtVenue)!==-1):false;
+  return titleOk||((heroTitle||heroDate)&&dateOk)||((heroDate||heroVenue)&&dateOk&&venueOk);
+})||null;
+}
+function pickPrimaryEvent(list,settings){
+var events=Array.isArray(list)?list.filter(Boolean):[];
+if(!events.length) return null;
+var fromHero=pickHeroEventFromSettings(events,settings);
+if(fromHero) return fromHero;
+var now=Date.now();
+var featuredFuture=events.filter(function(e){return e.featured&&eventDateValue(e)>=now}).sort(function(a,b){return eventDateValue(a)-eventDateValue(b)});
+if(featuredFuture.length) return featuredFuture[0];
+var future=events.filter(function(e){return eventDateValue(e)>=now}).sort(function(a,b){return eventDateValue(a)-eventDateValue(b)});
+if(future.length) return future[0];
+var featuredAny=events.filter(function(e){return e.featured}).sort(function(a,b){return eventDateValue(a)-eventDateValue(b)});
+if(featuredAny.length) return featuredAny[0];
+return events.slice().sort(function(a,b){return eventDateValue(a)-eventDateValue(b)})[0]||null;
+}
+async function loadEventsFromApi(){try{var res=await fetch(window.__SUNSESH_API_BASE + '/api/events',{headers:{'Cache-Control':'no-cache'},cache:'no-store'});var data=await res.json();if(Array.isArray(data)){var s=getStore();s.events=mergeEvents(data,Array.isArray(s.events)?s.events:[]);setStore(s)}}catch(_){}}
+function renderHomeEvents(){
+var s=getStore();var list=Array.isArray(s.events)?s.events.map(normalizeEvent):[];var evts=list.filter(function(e){return (e.status||'').toLowerCase()==='active'}).slice().sort(function(a,b){return new Date(a.date)-new Date(b.date)});
+var primary=pickPrimaryEvent(evts,s.settings||{});
+var primaryKey=primary?eventKey(primary):'';
+var gridEvents=primaryKey?evts.filter(function(e){return eventKey(e)!==primaryKey}):evts.slice();
+var featuredGrid=document.querySelector('#featuredEventsRow');
+var regularGrid=document.querySelector('#homeEventsGrid');
+var featuredTitle=document.querySelector('#featuredEventsTitle');
+if(!featuredGrid||!regularGrid||!featuredTitle)return;
+featuredGrid.textContent='';
+regularGrid.textContent='';
+var featuredEvents=gridEvents.filter(function(e){return e.featured});
+var regularEvents=gridEvents.filter(function(e){return !e.featured});
+function createEventCard(e,isFeatured){
+var isFree=e.isFree||Number(e.price||0)===0;
+var priceEl=isFree?'<span class="text-primary font-bold">Abierto</span>':'<span class="text-primary font-bold">$'+Number(e.price||0).toFixed(2)+'</span>';
+var card=document.createElement('div');card.className='card-hover bg-white rounded-2xl overflow-hidden shadow-lg border border-primary/30'+(isFeatured?' ring-2 ring-yellow-400':'');
+var badgeHtml=isFeatured?'<div class="absolute top-4 left-4 bg-yellow-400 text-black font-bold py-1 px-3 rounded-full text-sm">DESTACADO</div>':'';
+card.innerHTML='<div class="relative h-60 overflow-hidden"><img src="'+(e.image||'')+'" alt="'+(e.title||'')+'" class="w-full h-full object-cover object-top card-image">'+badgeHtml+'<div class="absolute top-4 right-4 bg-primary text-black font-bold py-1 px-3 rounded-full text-sm">'+badgeFromDate(e.date)+'</div></div><div class="p-6"><h3 class="text-2xl font-bold mb-2 text-black">'+(e.title||'')+'</h3><p class="text-black/60 mb-4">'+(e.artists||'')+'</p><div class="flex items-center space-x-2 mb-3"><div class="w-5 h-5 flex items-center justify-center text-primary"><i class="ri-map-pin-line"></i></div><span class="text-black/60">'+(e.location||e.venue||'')+'</span></div><div class="flex items-center space-x-2 mb-6"><div class="w-5 h-5 flex items-center justify-center text-primary"><i class="ri-time-line"></i></div><span class="text-black/60">'+(e.time||'')+'</span></div><div class="flex items-center justify-between"><span>'+priceEl+'</span><button class="bg-black text-white font-semibold py-2 px-4 !rounded-button whitespace-nowrap hover:bg-primary transition-colors">VER MÁS</button></div></div>';
+card.dataset.eventId=e.id||'';
+var info=document.createElement('div');
+info.className='text-xs text-black/60 mt-2';
+info.dataset.ticketInfo='1';
+var content=card.querySelector('.p-6');
+if(content) content.appendChild(info);
+return card;
+}
+featuredTitle.style.display=featuredEvents.length>0?'block':'none';
+featuredEvents.slice(0,3).forEach(function(e){
+var card=createEventCard(e,true);
+featuredGrid.appendChild(card);
+var btn=card.querySelector('button');if(btn)btn.onclick=function(){showEventDetails(e)};
+});
+regularEvents.slice(0,featuredEvents.length>0?2:3).forEach(function(e){
+var card=createEventCard(e,false);
+regularGrid.appendChild(card);
+var btn=card.querySelector('button');if(btn)btn.onclick=function(){showEventDetails(e)};
+});
+if(typeof renderTicketInfoOnCards==='function') renderTicketInfoOnCards();
+var ids=evts.map(function(e){return e.id}).filter(Boolean);
+if(ids.length&&typeof fetchTicketSummaries==='function') fetchTicketSummaries(ids);
+if(typeof startTicketSummaryPolling==='function') startTicketSummaryPolling();
+window.__sscHomeEvents=evts;
+if(typeof window.sscSetPrimaryEvent==='function'){
+  window.sscSetPrimaryEvent(primary);
+}
+}
+window.addEventListener('storage',function(ev){if(ev.key===STORE_KEY){try{renderHomeEvents()}catch(_){}}});
+document.addEventListener('DOMContentLoaded',async function(){await loadEventsFromApi();renderHomeEvents()});
+})();
+</script>
 <!-- Artists Section -->
 <section id="artists" class="py-20">
 <div class="container mx-auto px-6">
-<h2 class="section-title text-4xl font-bold text-center mb-3 dark:text-white">ARTISTAS DESTACADOS</h2>
+<h2 class="section-title text-4xl font-bold text-center mb-3 text-white">ARTISTAS DESTACADOS</h2>
 <div class="w-24 h-1 bg-primary mx-auto mb-12"></div>
-<p class="text-center max-w-3xl mx-auto mb-16 text-gray-600">Descubre a los DJs que están transformando la escena musical de la región. Haz clic en cada artista para acceder a su press kit exclusivo.</p>
+<p class="text-center max-w-3xl mx-auto mb-16 text-white/70">Descubre a los DJs que están transformando la escena musical de la región. Haz clic en cada artista para acceder a su press kit exclusivo.</p>
 <div id="artistGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 <!-- Artist Card 1 -->
 <div class="card-hover bg-white rounded-lg overflow-hidden shadow-lg border border-gray-200">
@@ -1296,121 +1472,60 @@ function applyLocalSettings(){
   document.addEventListener('DOMContentLoaded',async()=>{const list=await fetchArtists();renderHomeArtists(list)});
 })();
 </script>
-<!-- Spotlight Section removed -->
-<!-- Events Section -->
-<section id="events" class="py-20 bg-gray-50">
+<!-- ══════ EXPLORE TILES — Immersive Category Navigation ══════ -->
+<section class="v4-explore" aria-label="Explora el club">
 <div class="container mx-auto px-6">
-<h2 class="section-title text-4xl font-bold text-center mb-3 text-black dark:text-white">PRÓXIMOS EVENTOS</h2>
-<div class="w-24 h-1 bg-primary mx-auto mb-12"></div>
-<p class="text-center max-w-3xl mx-auto mb-16 text-gray-600">No te pierdas los eventos más exclusivos de la ciudad. Boletos limitados disponibles.</p>
-<div id="featuredEventsTitle" class="text-center mb-6" style="display:none;"><h3 class="text-2xl font-bold text-yellow-600">EVENTOS DESTACADOS</h3></div>
-<div id="featuredEventsRow" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12"></div>
-<div id="homeEventsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
-<div class="text-center mt-12">
-<a href="events.html">
-<button class="bg-transparent border-2 border-primary text-primary font-bold py-3 px-8 !rounded-button whitespace-nowrap hover:bg-primary hover:text-white transition-all">VER TODOS LOS EVENTOS</button>
-</a>
-</div>
+  <div class="v4-explore__header">
+    <p class="v4-explore__label">Explora</p>
+    <h2 class="v4-explore__title">Adéntrate en la experiencia</h2>
+  </div>
+  <div class="v4-explore__grid">
+    <!-- Tile 1: Live Sets -->
+    <a href="videos.html" class="v4-tile" aria-label="Ver Live Sets">
+      <img src="assets/img/tile-livesets.jpg" alt="Live sets crowd" class="v4-tile__img" loading="lazy" onerror="this.src='assets/img/explore-rave.png'">
+      <div class="v4-tile__overlay"></div>
+      <div class="v4-tile__content">
+        <i class="ri-headphone-line v4-tile__icon"></i>
+        <h3 class="v4-tile__name">Live Sets</h3>
+        <p class="v4-tile__desc">Sets grabados en vivo desde nuestros eventos</p>
+        <span class="v4-tile__arrow">Explorar <i class="ri-arrow-right-line"></i></span>
+      </div>
+    </a>
+    <!-- Tile 2: Música Reciente -->
+    <a href="music.html" class="v4-tile" aria-label="Escuchar Música">
+      <img src="assets/img/tile-musica.jpg" alt="Música y visual identity" class="v4-tile__img" loading="lazy" onerror="this.src='assets/img/vibe-replacement.png'">
+      <div class="v4-tile__overlay"></div>
+      <div class="v4-tile__content">
+        <i class="ri-disc-line v4-tile__icon"></i>
+        <h3 class="v4-tile__name">Música</h3>
+        <p class="v4-tile__desc">Tracks y mezclas de nuestros DJs residentes</p>
+        <span class="v4-tile__arrow">Escuchar <i class="ri-arrow-right-line"></i></span>
+      </div>
+    </a>
+    <!-- Tile 3: Galería -->
+    <a href="gallery.html" class="v4-tile" aria-label="Ver Galería">
+      <img src="assets/img/tile-galeria.jpg" alt="Galería de eventos" class="v4-tile__img" loading="lazy" onerror="this.src='assets/img/vibe-replacement.png'">
+      <div class="v4-tile__overlay"></div>
+      <div class="v4-tile__content">
+        <i class="ri-camera-lens-line v4-tile__icon"></i>
+        <h3 class="v4-tile__name">Galería</h3>
+        <p class="v4-tile__desc">Momentos capturados de cada noche</p>
+        <span class="v4-tile__arrow">Ver fotos <i class="ri-arrow-right-line"></i></span>
+      </div>
+    </a>
+  </div>
 </div>
 </section>
 <script>
+/* Explore tiles — scroll reveal via data attribute */
 (function(){
-const STORE_KEY='ssc_store_v1';
-function getStore(){try{return JSON.parse(localStorage.getItem(STORE_KEY)||'{}')}catch(e){return{}}}
-function setStore(next){localStorage.setItem(STORE_KEY,JSON.stringify(next||{}))}
-function toInputDate(value){if(!value)return '';if(typeof value==='string'){const t=value.trim();const m=t.match(/^\d{4}-\d{2}-\d{2}/);if(m)return m[0]}const d=new Date(value);if(Number.isNaN(d.getTime()))return '';const y=d.getFullYear();const m=String(d.getMonth()+1).padStart(2,'0');const day=String(d.getDate()).padStart(2,'0');return `${y}-${m}-${day}`}
-function normalizeEvent(evt){const e=(evt&&typeof evt==='object')?{...evt}:{};e.date=toInputDate(e.date);e.price=Number(e.price||0);e.sort_order=Number(e.sort_order||0);const raw=String(e.status||'').toLowerCase();e.status=raw==='active'?'ACTIVE':(raw==='draft'?'DRAFT':'CANCELLED');e.featured=!!e.featured;e.isFree=!!e.isFree||e.price===0;return e}
-function eventKey(evt){const id=String((evt&&evt.id)||'').trim();if(id)return `id:${id}`;const title=String((evt&&evt.title)||'').trim().toLowerCase();const date=String((evt&&evt.date)||'').trim();const place=String((evt&&(evt.venue||evt.location))||'').trim().toLowerCase();const time=String((evt&&evt.time)||'').trim().toLowerCase();return `fp:${title}|${date}|${place}|${time}`}
-function mergeEvents(apiEvents,localEvents){const map=new Map();(Array.isArray(apiEvents)?apiEvents:[]).map(normalizeEvent).forEach(evt=>{map.set(eventKey(evt),evt)});(Array.isArray(localEvents)?localEvents:[]).map(normalizeEvent).forEach(evt=>{const id=String(evt.id||'').trim();const keepLocal=!id||id.startsWith('local-')||!!evt._localDirty;const key=eventKey(evt);if(keepLocal||!map.has(key)){map.set(key,evt)}});return Array.from(map.values())}
-function badgeFromDate(str){if(!str)return '';const d=new Date(str);return d.toLocaleString('es-MX',{month:'short',day:'2-digit'}).toUpperCase()}
-function eventDateValue(evt){const d=new Date(evt&&evt.date?evt.date:'');return Number.isNaN(d.getTime())?Number.MAX_SAFE_INTEGER:d.getTime()}
-function pickHeroEventFromSettings(events,settings){
-const hero=((settings&&settings.heroEvent)||{});
-const statusRaw=String(hero.status||'inactive').toLowerCase();
-const displayRaw=hero.displayEnabled;
-const displayEnabled=!(displayRaw===false||String(displayRaw).toLowerCase()==='false');
-const hasDisplayFlag=Object.prototype.hasOwnProperty.call(hero,'displayEnabled');
-const heroEnabled=hasDisplayFlag?displayEnabled:(statusRaw==='active');
-if(!heroEnabled) return null;
-const heroTitle=String(hero.title||'').trim().toLowerCase();
-const heroDate=toInputDate(hero.date);
-const heroVenue=String(hero.location||hero.venue||'').trim().toLowerCase();
-if(!heroTitle&&!heroDate&&!heroVenue) return null;
-return events.find(evt=>{
-  const evtTitle=String(evt.title||'').trim().toLowerCase();
-  const evtDate=toInputDate(evt.date);
-  const evtVenue=String(evt.location||evt.venue||'').trim().toLowerCase();
-  const titleOk=heroTitle&&evtTitle?evtTitle===heroTitle:false;
-  const dateOk=heroDate&&evtDate?evtDate===heroDate:false;
-  const venueOk=heroVenue&&evtVenue?(evtVenue.includes(heroVenue)||heroVenue.includes(evtVenue)):false;
-  return titleOk||((heroTitle||heroDate)&&dateOk)||((heroDate||heroVenue)&&dateOk&&venueOk);
-})||null;
-}
-function pickPrimaryEvent(list,settings){
-const events=Array.isArray(list)?list.filter(Boolean):[];
-if(!events.length) return null;
-const fromHero=pickHeroEventFromSettings(events,settings);
-if(fromHero) return fromHero;
-const now=Date.now();
-const featuredFuture=events.filter(e=>e.featured&&eventDateValue(e)>=now).sort((a,b)=>eventDateValue(a)-eventDateValue(b));
-if(featuredFuture.length) return featuredFuture[0];
-const future=events.filter(e=>eventDateValue(e)>=now).sort((a,b)=>eventDateValue(a)-eventDateValue(b));
-if(future.length) return future[0];
-const featuredAny=events.filter(e=>e.featured).sort((a,b)=>eventDateValue(a)-eventDateValue(b));
-if(featuredAny.length) return featuredAny[0];
-return events.slice().sort((a,b)=>eventDateValue(a)-eventDateValue(b))[0]||null;
-}
-async function loadEventsFromApi(){try{const res=await fetch(window.__SUNSESH_API_BASE + '/api/events',{headers:{'Cache-Control':'no-cache'},cache:'no-store'});const data=await res.json();if(Array.isArray(data)){const s=getStore();s.events=mergeEvents(data,Array.isArray(s.events)?s.events:[]);setStore(s)}}catch(_){}} 
-  function renderHomeArtistsLocal(){const s=getStore();const list=Array.isArray(s.artists)?s.artists:[];const artists=list.filter(a=>((a.status||'ACTIVE').toLowerCase()==='active')||(a.active!==false)).slice(0,3);const grid=document.getElementById('artistGrid');if(!grid)return;if(!artists.length)return;grid.innerHTML='';artists.forEach((a,i)=>{const name=(a.name||'').toUpperCase();const genres=Array.isArray(a.genres)?a.genres.join(' | '):(a.genre||'');const ph="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='900' height='900'><rect width='100%' height='100%' fill='%23111'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%23ffffff' font-size='42' font-family='Montserrat'>DJ</text></svg>";const img=(a.image||a.profile_image||ph);const idx=i+1;const card=`<div class="card-hover bg-white rounded-lg overflow-hidden shadow-lg border border-gray-200"><div class="h-80 overflow-hidden"><img src="${img}" alt="${name}" class="w-full h-full object-cover object-top card-image" onerror="this.src='${ph}'"></div><div class="p-6"><h3 class="text-2xl font-bold mb-2">${name}</h3><p class="text-black mb-4">${genres}</p><div class="flex items-center justify-between"><div class="flex space-x-3">${artistSocialIcons(a)}</div><button onclick="showProfile('${name}', '${genres}', ${idx})" class="bg-black text-white font-semibold py-2 px-4 !rounded-button whitespace-nowrap hover:bg-primary transition-colors">VER PERFIL</button></div></div></div>`;grid.insertAdjacentHTML('beforeend',card)})}
-function renderHomeEvents(){
-const s=getStore();const list=Array.isArray(s.events)?s.events.map(normalizeEvent):[];const evts=list.filter(e=>((e.status||'').toLowerCase()==='active')).slice().sort((a,b)=>new Date(a.date)-new Date(b.date));
-const primary=pickPrimaryEvent(evts,s.settings||{});
-const primaryKey=primary?eventKey(primary):'';
-const gridEvents=primaryKey?evts.filter(e=>eventKey(e)!==primaryKey):evts.slice();
-const featuredGrid=document.querySelector('#featuredEventsRow');
-const regularGrid=document.querySelector('#homeEventsGrid');
-const featuredTitle=document.querySelector('#featuredEventsTitle');
-if(!featuredGrid||!regularGrid||!featuredTitle)return;
-featuredGrid.innerHTML='';
-regularGrid.innerHTML='';
-const featuredEvents=gridEvents.filter(e=>e.featured);
-const regularEvents=gridEvents.filter(e=>!e.featured);
-function createEventCard(e,isFeatured=false){
-const isFree=e.isFree||Number(e.price||0)===0;
-const priceEl=isFree?'<span class="text-primary font-bold">Abierto</span>':`<span class="text-primary font-bold">$${Number(e.price||0).toFixed(2)}</span>`;
-const card=document.createElement('div');card.className='card-hover bg-white rounded-2xl overflow-hidden shadow-lg border border-primary/30'+(isFeatured?' ring-2 ring-yellow-400':'');
-card.innerHTML=`<div class="relative h-60 overflow-hidden"><img src="${e.image||''}" alt="${e.title||''}" class="w-full h-full object-cover object-top card-image">${isFeatured?'<div class="absolute top-4 left-4 bg-yellow-400 text-black font-bold py-1 px-3 rounded-full text-sm">DESTACADO</div>':''}<div class="absolute top-4 right-4 bg-primary text-black font-bold py-1 px-3 rounded-full text-sm">${badgeFromDate(e.date)}</div></div><div class="p-6"><h3 class="text-2xl font-bold mb-2 text-black">${e.title||''}</h3><p class="text-black/60 mb-4">${e.artists||''}</p><div class="flex items-center space-x-2 mb-3"><div class="w-5 h-5 flex items-center justify-center text-primary"><i class="ri-map-pin-line"></i></div><span class="text-black/60">${e.location||e.venue||''}</span></div><div class="flex items-center space-x-2 mb-6"><div class="w-5 h-5 flex items-center justify-center text-primary"><i class="ri-time-line"></i></div><span class="text-black/60">${e.time||''}</span></div><div class="flex items-center justify-between"><span>${priceEl}</span><button class="bg-black text-white font-semibold py-2 px-4 !rounded-button whitespace-nowrap hover:bg-primary transition-colors">VER MÁS</button></div></div>`;
-card.dataset.eventId=e.id||'';
-const info=document.createElement('div');
-info.className='text-xs text-black/60 mt-2';
-info.dataset.ticketInfo='1';
-const content=card.querySelector('.p-6');
-if(content) content.appendChild(info);
-
-return card;
-}
-featuredTitle.style.display=featuredEvents.length>0?'block':'none';
-featuredEvents.slice(0,3).forEach(e=>{
-const card=createEventCard(e,true);
-featuredGrid.appendChild(card);
-const btn=card.querySelector('button');if(btn)btn.onclick=()=>showEventDetails(e);
-});
-regularEvents.slice(0,featuredEvents.length>0?2:3).forEach(e=>{
-const card=createEventCard(e,false);
-regularGrid.appendChild(card);
-const btn=card.querySelector('button');if(btn)btn.onclick=()=>showEventDetails(e);
-});
-renderTicketInfoOnCards();
-const ids=evts.map(e=>e.id).filter(Boolean);
-if(ids.length) fetchTicketSummaries(ids);
-startTicketSummaryPolling();
-window.__sscHomeEvents=evts;
-if(typeof window.sscSetPrimaryEvent==='function'){
-  window.sscSetPrimaryEvent(primary);
-}
-}
-window.addEventListener('storage',function(ev){if(ev.key===STORE_KEY){try{renderHomeEvents()}catch(_){}}});
-document.addEventListener('DOMContentLoaded',async()=>{await loadEventsFromApi();renderHomeEvents()});
+  document.querySelectorAll('.v4-tile').forEach(function(t){t.dataset.revealed='false'});
+  var observer=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){e.target.dataset.revealed='true';observer.unobserve(e.target)}
+    });
+  },{threshold:0.12});
+  document.querySelectorAll('.v4-tile').forEach(function(el){observer.observe(el)});
 })();
 </script>
 <section id="vibe" class="vibe-section">
@@ -1420,10 +1535,8 @@ document.addEventListener('DOMContentLoaded',async()=>{await loadEventsFromApi()
       <h2 class="vibe-title text-white">Siente la energía</h2>
       <p class="vibe-quote mt-3">Esto no es solo un club. Es un movimiento.</p>
     </div>
-    <article class="vibe-card ssc-parallax" data-parallax="0.2" data-parallax-range="180" data-parallax-mode="translate" data-parallax-target="video">
-      <video autoplay muted loop playsinline preload="metadata" crossorigin="anonymous" poster="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1600&q=80">
-        <source src="https://cdn.coverr.co/videos/coverr-crowd-at-a-concert-1579/1080p.mp4" type="video/mp4">
-      </video>
+    <article class="vibe-card ssc-parallax" data-parallax="0.2" data-parallax-range="180" data-parallax-mode="translate" data-parallax-target="img">
+      <img src="assets/img/vibe-replacement.png" alt="Crowd and lights at The Sun Session Club">
       <div class="vibe-content">
         <p class="text-white/90 font-semibold text-lg">Multitud, luces y energía total. No te pierdas el próximo evento.</p>
         <button onclick="sscGoToPrimaryTicket()" class="hero-btn-primary mt-4 whitespace-nowrap">COMPRAR BOLETOS</button>
@@ -1435,77 +1548,14 @@ document.addEventListener('DOMContentLoaded',async()=>{await loadEventsFromApi()
 <!-- Merch Section -->
 <section id="merch" class="py-20" style="background:#0b1e14;">
 <div class="container mx-auto px-6">
-<h2 class="section-title text-4xl font-bold text-center mb-3 text-white">MERCH</h2>
+<h2 class="section-title text-4xl font-bold text-center mb-3 text-white" style="color:#ffffff !important;-webkit-text-fill-color:#ffffff;">MERCH</h2>
 <div class="w-24 h-1 bg-primary mx-auto mb-12"></div>
-<p class="text-center max-w-3xl mx-auto mb-16 text-white/70">Muestra tu apoyo con nuestra colección exclusiva de mercancía de alta calidad.</p>
+<p class="text-center max-w-3xl mx-auto mb-16 text-white/70" style="color:rgba(255,255,255,0.72) !important;-webkit-text-fill-color:rgba(255,255,255,0.72);">Muestra tu apoyo con nuestra colección exclusiva de mercancía de alta calidad.</p>
 <div id="merchGrid" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
-<div id="merchEmpty" class="text-center text-white/60 mt-8">Aún no hay merch destacado disponible.</div>
+<div id="merchEmpty" class="text-center text-white/60 mt-8" style="color:rgba(255,255,255,0.6) !important;-webkit-text-fill-color:rgba(255,255,255,0.6);">Aún no hay merch destacado disponible.</div>
 </div>
 </section>
 
-<!-- Videos Section -->
-<section id="video" class="py-20">
-<div class="container mx-auto px-6">
-<h2 class="section-title text-4xl font-bold text-center mb-3 dark:text-white">LIVE SETS</h2>
-<div class="w-24 h-1 bg-primary mx-auto mb-12"></div>
-<p class="text-center max-w-3xl mx-auto mb-16 text-gray-600">Revive la energía de nuestros sets grabados. Mira la experiencia completa y escucha el audio en plataformas de streaming.</p>
-<div id="homeVideosEmpty" class="text-center text-white/70 py-10 hidden">Aún no hay videos publicados.</div>
-<div id="homeVideosGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
-<div id="homeVideosCta" class="text-center mt-12">
-<a href="videos.html">
-<button onclick="window.location.href='videos.html'" class="bg-transparent border-2 border-primary text-primary font-bold py-3 px-8 !rounded-button whitespace-nowrap hover:bg-primary hover:text-white transition-all">VER TODOS LOS VIDEOS</button>
-</a>
-</div>
-</div>
-</section>
-<script>
-(function(){
-  const grid=document.getElementById('homeVideosGrid');
-  const empty=document.getElementById('homeVideosEmpty');
-  const cta=document.getElementById('homeVideosCta');
-  if(!grid||!empty||!cta) return;
-  const API_BASE=window.__SUNSESH_API_BASE||'';
-  const VIDEO_API=`${API_BASE}/api/videos`;
-  function setEmpty(show){
-    empty.classList.toggle('hidden',!show);
-  }
-  function render(list){
-    grid.innerHTML='';
-    list.slice(0,3).forEach(v=>{
-      const card=document.createElement('div');
-      card.className='card-hover bg-white rounded-lg overflow-hidden shadow-lg border border-gray-200';
-      card.innerHTML=`
-        <div class="relative h-56 overflow-hidden">
-          <img src="${v.thumbnail||''}" class="w-full h-full object-cover" alt="${v.title||'Video set'}">
-          <div class="absolute inset-0 bg-black/40"></div>
-          <div class="absolute inset-0 flex items-center justify-center"><i class="ri-play-fill text-white text-4xl bg-primary/80 rounded-full p-3"></i></div>
-        </div>
-        <div class="p-6">
-          <h3 class="text-2xl font-bold mb-2">${v.title||''}</h3>
-          <p class="text-gray-600 mb-2">${v.location||''}${v.date?('  '+v.date):''}</p>
-          <div class="flex items-center justify-between">
-            <a href="${v.youtubeLink||'#'}" target="_blank" class="bg-black text-white font-semibold py-2 px-4 !rounded-button whitespace-nowrap hover:bg-primary transition-colors flex items-center space-x-2"><i class="ri-youtube-fill"></i><span>Watch on YouTube</span></a>
-            <a href="${v.soundcloudLink||'#'}" target="_blank" class="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-primary transition-colors"><i class="ri-soundcloud-fill text-2xl"></i></a>
-          </div>
-        </div>`;
-      grid.appendChild(card);
-    });
-  }
-  async function load(){
-    try{
-      const res=await fetch(VIDEO_API,{headers:{'Cache-Control':'no-cache'},cache:'no-store'});
-      const data=await res.json();
-      if(Array.isArray(data)&&data.length){
-        setEmpty(false);
-        render(data);
-        return;
-      }
-    }catch{}
-    setEmpty(true);
-  }
-  load();
-})();
-</script>
 <!-- About Section -->
 <section id="about" class="ssc-story">
 <div class="ssc-story-hero ssc-depth ssc-parallax" data-parallax="0.24" data-parallax-range="170" style="background-image:url('https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=1600&q=80')">
@@ -1525,17 +1575,6 @@ document.addEventListener('DOMContentLoaded',async()=>{await loadEventsFromApi()
     </div>
   </div>
 </div>
-<div class="ssc-story-break ssc-parallax" data-parallax="0.12" style="background-image:url('https://images.unsplash.com/photo-1506157786151-b8491531f063?auto=format&fit=crop&w=1600&q=80')"></div>
-<div class="container mx-auto px-6">
-  <div class="ssc-story-grid reverse">
-    <div class="ssc-story-block ssc-story-block--wide">
-      <h3 class="text-3xl font-bold text-white mb-4">Diseño, ritmo y atmósfera</h3>
-      <p class="text-white/90 mb-4">Combinamos curaduría musical, narrativa visual y producción técnica para construir eventos con profundidad, luz y movimiento.</p>
-      <p class="text-white/90">Cada set, cada flyer y cada escenario se diseñan para contar una historia: la de una comunidad en constante evolución.</p>
-    </div>
-  </div>
-</div>
-
 <div class="ssc-story-banner ssc-parallax" data-parallax="0.16" data-parallax-range="190" data-parallax-mode="bg" style="background-image:url('https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?auto=format&fit=crop&w=1800&q=80')">
   <div class="ssc-story-banner__content container mx-auto px-6">
     <p class="ssc-eyebrow">Nuestra esencia</p>
@@ -1573,8 +1612,7 @@ document.addEventListener('DOMContentLoaded',async()=>{await loadEventsFromApi()
       .gradient-text{background:linear-gradient(to right,${primary},${secondary});-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
       body{color:${text}}
       #about .ssc-story-block h3,#about .ssc-story-block p,#about .ssc-story-banner h3,#about .ssc-story-banner p,#about .ssc-story-banner .ssc-eyebrow{color:#fff!important}
-      #merch .section-title,#merch p.text-gray-600,#merch #merchEmpty,#contact .section-title,#contact p.text-gray-600,#contact .bg-white,#contact .bg-white h3,#contact .bg-white h4,#contact .bg-white p,#contact .bg-white span,#contact .bg-white a{color:#111!important}
-      #gallery .section-title,#gallery p.text-gray-600,#gallery #homeGalleryEmpty{color:#fff!important}
+      #merch .section-title,#merch p.text-gray-600,#merch #merchEmpty{color:#111!important}
       footer .text-gray-400, footer .text-gray-500, footer p, footer span, footer a, footer li{color:#ffffff!important}
       footer .bg-primary{color:${btnText}!important}
       #backToTop button{color:${btnText}!important}
@@ -1587,113 +1625,6 @@ document.addEventListener('DOMContentLoaded',async()=>{await loadEventsFromApi()
       if(f) f.src=window.__SUNSESH_PROXY_IMAGE?window.__SUNSESH_PROXY_IMAGE(logo):logo;
     }
   }catch(_){}
-})();
-</script>
-<!-- Music Section -->
-<section id="music" class="py-20">
-<div class="container mx-auto px-6">
-<h2 class="section-title text-4xl font-bold text-center mb-3 dark:text-white">MÚSICA RECIENTE</h2>
-<div class="w-24 h-1 bg-primary mx-auto mb-12"></div>
-<p class="text-center max-w-3xl mx-auto mb-16 text-gray-600">Escucha las últimas mezclas y tracks de nuestros DJs residentes e invitados especiales.</p>
-<div id="homeMusicGrid" class="grid grid-cols-1 md:grid-cols-2 gap-8"></div>
-<div class="text-center mt-12">
-<a href="music.html">
-<button onclick="window.location.href='music.html'" class="bg-transparent border-2 border-primary text-primary font-bold py-3 px-8 !rounded-button whitespace-nowrap hover:bg-primary hover:text-white transition-all">VER TODA LA MÚSICA</button>
-</a>
-</div>
-</div>
-</section>
-<script>
-(function(){
-const STORE_KEY='ssc_store_v1';
-const grid=document.getElementById('homeMusicGrid');
-if(!grid)return;
-function parseLinks(raw){
-  const out={spotify:'',soundcloud:'',youtube:'',genre:'',genres:[]};
-  if(raw&&typeof raw==='object'){
-    out.spotify=String(raw.spotify||'').trim();
-    out.soundcloud=String(raw.soundcloud||'').trim();
-    out.youtube=String(raw.youtube||'').trim();
-    out.genre=String(raw.genre||'').trim();
-    out.genres=Array.isArray(raw.genres)?raw.genres:[];
-    return out;
-  }
-  const txt=String(raw||'').trim();
-  if(!txt)return out;
-  try{
-    const obj=JSON.parse(txt);
-    if(obj&&typeof obj==='object')return parseLinks(obj);
-  }catch{}
-  txt.split(',').map(x=>x.trim()).filter(Boolean).forEach(url=>{
-    const l=url.toLowerCase();
-    if(!out.spotify&&l.includes('spotify.com'))out.spotify=url;
-    else if(!out.soundcloud&&l.includes('soundcloud.com'))out.soundcloud=url;
-    else if(!out.youtube&&(l.includes('youtube.com')||l.includes('youtu.be')))out.youtube=url;
-  });
-  return out;
-}
-function fromApi(x){
-  const links=parseLinks(x.platform_links||'');
-  const genres=Array.isArray(links.genres)&&links.genres.length?links.genres:String(links.genre||'').split(',').map(s=>s.trim()).filter(Boolean);
-  return {
-    title:x.title||'',
-    artist:x.artist_id||'',
-    cover:x.cover_image||'https://placehold.co/600x600?text=NO+COVER',
-    genres,
-    spotify:links.spotify||'',
-    soundcloud:links.soundcloud||'',
-    youtube:links.youtube||'',
-    status:x.status||'ACTIVE'
-  };
-}
-function fromStore(x){
-  const links=parseLinks(x.platform_links||{spotify:x.spotifyLink,soundcloud:x.soundcloudLink,youtube:x.youtubeLink,genre:Array.isArray(x.genre)?x.genre.join(', '):x.genre,genres:Array.isArray(x.genre)?x.genre:[]});
-  return {
-    title:x.title||'',
-    artist:x.artist||'',
-    cover:x.cover||x.cover_image||'https://placehold.co/600x600?text=NO+COVER',
-    genres:Array.isArray(x.genre)?x.genre:[],
-    spotify:links.spotify||'',
-    soundcloud:links.soundcloud||'',
-    youtube:links.youtube||'',
-    status:x.status||'ACTIVE'
-  };
-}
-function render(list){
-  grid.innerHTML='';
-  list.filter(t=>String(t.status||'ACTIVE').toLowerCase()==='active').slice(0,2).forEach(t=>{
-    const links=[
-      t.spotify?`<a href="${t.spotify}" target="_blank" class="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-primary transition-colors"><i class="ri-spotify-fill text-2xl"></i></a>`:'',
-      t.soundcloud?`<a href="${t.soundcloud}" target="_blank" class="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-primary transition-colors"><i class="ri-soundcloud-fill text-2xl"></i></a>`:'',
-      t.youtube?`<a href="${t.youtube}" target="_blank" class="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-primary transition-colors"><i class="ri-youtube-fill text-2xl"></i></a>`:''
-    ].filter(Boolean).join('');
-    const el=document.createElement('div');
-    el.className='card-hover bg-white rounded-lg overflow-hidden shadow-lg border border-gray-200';
-    el.innerHTML=`<div class="flex flex-col md:flex-row"><div class="md:w-1/3 h-60 md:h-auto overflow-hidden"><img src="${t.cover}" alt="${t.title}" class="w-full h-full object-cover object-top card-image"></div><div class="md:w-2/3 p-6"><h3 class="text-2xl font-bold mb-2">${t.title||''}</h3><p class="text-gray-600 mb-4">${t.artist||''}</p><div class="flex items-center space-x-2 mb-4"><div class="w-5 h-5 flex items-center justify-center text-primary"><i class="ri-music-2-line"></i></div><span class="text-gray-600">${(t.genres||[]).join(' | ')}</span></div><div class="flex items-center space-x-4">${links||'<span class="text-gray-500">Sin links</span>'}</div></div></div>`;
-    grid.appendChild(el);
-  });
-}
-async function loadHomeMusic(){
-  try{
-    const res=await fetch(window.__SUNSESH_API_BASE + '/api/music',{headers:{'Cache-Control':'no-cache'},cache:'no-store'});
-    const data=await res.json();
-    if(Array.isArray(data)){render(data.map(fromApi));return;}
-  }catch{}
-  try{
-    const s=JSON.parse(localStorage.getItem(STORE_KEY)||'{}');
-    render((Array.isArray(s.tracks)?s.tracks:[]).map(fromStore));
-  }catch{
-    render([]);
-  }
-}
-window.addEventListener('storage',ev=>{
-  if(ev.key!==STORE_KEY)return;
-  try{
-    const s=JSON.parse(ev.newValue||'{}');
-    render((Array.isArray(s.tracks)?s.tracks:[]).map(fromStore));
-  }catch{}
-});
-loadHomeMusic();
 })();
 </script>
 <!-- Cart Modal -->
@@ -2209,296 +2140,50 @@ requestAnimationFrame(animate);
 </script>
 </div>
 </section>
-<!-- Contact Section -->
-<section id="gallery" class="py-20">
-<div class="container mx-auto px-6">
-<h2 class="section-title text-4xl font-bold text-center mb-3 dark:text-white">GALERÍA</h2>
-<div class="w-24 h-1 bg-primary mx-auto mb-12"></div>
-<p class="text-center max-w-3xl mx-auto mb-16 text-gray-600">Relive the energy of our events through these images.</p>
-<div id="homeGalleryEmpty" class="text-center text-white/70 py-10 hidden">Aún no hay fotos en la galería. Agrega un evento desde el panel.</div>
-<div id="homeGalleryShell" class="home-gallery-shell hidden">
-  <div class="home-gallery-lanes">
-    <div class="home-gallery-lane">
-      <div id="homeGalleryLane1" class="home-gallery-track track-x-right"></div>
-    </div>
-    <div class="home-gallery-lane">
-      <div id="homeGalleryLane2" class="home-gallery-track track-y-down"></div>
-    </div>
-    <div class="home-gallery-lane">
-      <div id="homeGalleryLane3" class="home-gallery-track track-y-up"></div>
-    </div>
-  </div>
-</div>
-<div id="homeGalleryCta" class="text-center mt-12 hidden">
-<a href="gallery.html">
-<button onclick="window.location.href='gallery.html'" class="bg-transparent border-2 border-primary text-primary font-bold py-3 px-8 !rounded-button whitespace-nowrap hover:bg-primary hover:text-white transition-all">VER MÁS FOTOS</button>
-</a>
-</div>
-</div>
-</section>
-<script>
-(function(){
-  const shell=document.getElementById('homeGalleryShell');
-  const lane1=document.getElementById('homeGalleryLane1');
-  const lane2=document.getElementById('homeGalleryLane2');
-  const lane3=document.getElementById('homeGalleryLane3');
-  const empty=document.getElementById('homeGalleryEmpty');
-  const cta=document.getElementById('homeGalleryCta');
-  if(!shell||!lane1||!lane2||!lane3||!empty||!cta) return;
-  const API_BASE=window.__SUNSESH_API_BASE||'';
-  const EVENTS_API=`${API_BASE}/api/gallery/events`;
-  const DETAIL_API=(id)=>`${API_BASE}/api/gallery/events/${encodeURIComponent(id)}`;
-  const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
-  const SLIDE_DELAY=7000;
-  const laneTimers=[];
-
-  function isAbs(url){
-    return /^https?:\/\//i.test(url||'');
-  }
-  function normalize(src){
-    const s=String(src||'').trim();
-    if(!s) return '';
-    if(isAbs(s)) return s;
-    if(s.startsWith('/')) return `${API_BASE}${s}`;
-    if(s.startsWith('uploads/')) return `${API_BASE}/${s}`;
-    return s;
-  }
-  function shuffle(arr){
-    const out=[...arr];
-    for(let i=out.length-1;i>0;i-=1){
-      const j=Math.floor(Math.random()*(i+1));
-      [out[i],out[j]]=[out[j],out[i]];
-    }
-    return out;
-  }
-  function setEmpty(show){
-    empty.classList.toggle('hidden',!show);
-    shell.classList.toggle('hidden',show);
-    cta.classList.toggle('hidden',show);
-    if(show){
-      while(laneTimers.length){
-        const t=laneTimers.pop();
-        clearInterval(t);
-      }
-      lane1.innerHTML='';
-      lane2.innerHTML='';
-      lane3.innerHTML='';
-    }
-  }
-
-  function makeSlide(src, axis, dir, idx){
-    const card=document.createElement('article');
-    card.className='home-gallery-slide';
-    const depth=(0.035 + ((idx%5)*0.008)).toFixed(3);
-    card.innerHTML=`<img src="${src}" alt="Gallery photo" class="home-gallery-image gallery-image" data-zoomable="1" data-parallax-axis="${axis}" data-parallax-dir="${dir}" data-depth="${depth}" loading="lazy">`;
-    return card;
-  }
-
-  function setSlideOffset(img, axis, dir, value){
-    if(!img) return;
-    const offset=`${value}%`;
-    if(axis==='x'){
-      img.style.setProperty('--slide-x', offset);
-      img.style.setProperty('--slide-y', '0%');
-    }else{
-      img.style.setProperty('--slide-x', '0%');
-      img.style.setProperty('--slide-y', offset);
-    }
-    img.dataset.parallaxAxis=axis;
-    img.dataset.parallaxDir=String(dir);
-  }
-
-  function initLaneSlider(el, images, axis, dir, cfg){
-    el.innerHTML='';
-    if(!images.length) return;
-    const delay=(cfg&&cfg.delay)||SLIDE_DELAY;
-    const startAfter=(cfg&&cfg.startAfter)||0;
-    let index=0;
-    const first=makeSlide(images[0], axis, dir, 0);
-    first.classList.add('is-current');
-    const firstImg=first.querySelector('.home-gallery-image');
-    setSlideOffset(firstImg, axis, dir, 0);
-    el.appendChild(first);
-    if(images.length<2) return;
-
-    const step=()=>{
-      const current=el.querySelector('.home-gallery-slide.is-current');
-      if(!current) return;
-      index=(index+1)%images.length;
-      const next=makeSlide(images[index], axis, dir, index);
-      const nextImg=next.querySelector('.home-gallery-image');
-      setSlideOffset(nextImg, axis, dir, dir===1 ? -110 : 110);
-      next.classList.add('is-next');
-      el.appendChild(next);
-      requestAnimationFrame(()=>{
-        requestAnimationFrame(()=>{
-          setSlideOffset(nextImg, axis, dir, 0);
-          current.classList.remove('is-current');
-          current.style.opacity='0';
-        });
-      });
-      setTimeout(()=>{
-        current.remove();
-        next.classList.remove('is-next');
-        next.classList.add('is-current');
-      }, 1220);
-    };
-
-    const timeoutId=setTimeout(()=>{
-      step();
-      const intervalId=setInterval(step, delay);
-      laneTimers.push(intervalId);
-    }, startAfter);
-    laneTimers.push(timeoutId);
-  }
-
-  function bindHomeGalleryParallax(){
-    if(window.__homeGalleryParallaxBound) return;
-    window.__homeGalleryParallaxBound=true;
-    let raf=0;
-    const update=()=>{
-      raf=0;
-      document.querySelectorAll('#gallery .home-gallery-image').forEach((img)=>{
-        const rect=img.getBoundingClientRect();
-        const depth=parseFloat(img.dataset.depth||'0.04');
-        const dir=parseFloat(img.dataset.parallaxDir||'1');
-        const axis=img.dataset.parallaxAxis||'y';
-        const drift=clamp(((window.innerHeight*0.5)-(rect.top+rect.height*0.5))*depth*dir,-14,14);
-        if(axis==='x'){
-          img.style.setProperty('--parallax-x', `${drift}px`);
-          img.style.setProperty('--parallax-y', '0px');
-        }else{
-          img.style.setProperty('--parallax-x', '0px');
-          img.style.setProperty('--parallax-y', `${drift}px`);
-        }
-      });
-    };
-    const request=()=>{ if(raf) return; raf=requestAnimationFrame(update); };
-    window.__refreshHomeGalleryParallax=request;
-    window.addEventListener('scroll',request,{passive:true});
-    window.addEventListener('resize',request);
-    request();
-  }
-
-  async function loadGallery(){
-    try{
-      const res=await fetch(EVENTS_API,{headers:{'Cache-Control':'no-cache'},cache:'no-store'});
-      const data=await res.json();
-      if(!Array.isArray(data)||!data.length){
-        setEmpty(true);
-        return;
-      }
-
-      const detailResponses=await Promise.all(
-        data
-          .map(ev=>ev&&ev.id)
-          .filter(Boolean)
-          .map(async(id)=>{
-            try{
-              const r=await fetch(DETAIL_API(id),{headers:{'Cache-Control':'no-cache'},cache:'no-store'});
-              if(!r.ok) return null;
-              return await r.json();
-            }catch{
-              return null;
-            }
-          })
-      );
-
-      const merged=[];
-      detailResponses.forEach((detail)=>{
-        if(!detail||!Array.isArray(detail.images)) return;
-        detail.images.forEach((img)=>{
-          const src=normalize(img?.image_path||img?.thumb_path||'');
-          if(src) merged.push(src);
-        });
-      });
-      data.forEach((ev)=>{
-        const cover=normalize(ev.cover_image||ev.cover_thumb||ev.coverImage||ev.coverThumb||'');
-        if(cover) merged.push(cover);
-      });
-
-      const unique=[...new Set(merged.filter(Boolean))];
-      if(!unique.length){
-        setEmpty(true);
-        return;
-      }
-
-      const randomized=shuffle(unique);
-      const total=Math.max(18, randomized.length);
-      const expanded=[];
-      for(let i=0;i<total;i+=1){
-        expanded.push(randomized[i%randomized.length]);
-      }
-      const col1=[],col2=[],col3=[];
-      expanded.forEach((src,idx)=>{
-        if(idx%3===0) col1.push(src);
-        else if(idx%3===1) col2.push(src);
-        else col3.push(src);
-      });
-
-      while(laneTimers.length){
-        const t=laneTimers.pop();
-        clearInterval(t);
-      }
-      initLaneSlider(lane1, col1, 'x', 1, { delay: 7000, startAfter: 0 });
-      initLaneSlider(lane2, col2, 'y', 1, { delay: 7600, startAfter: 1800 });
-      initLaneSlider(lane3, col3, 'y', -1, { delay: 8200, startAfter: 3600 });
-
-      setEmpty(false);
-      bindHomeGalleryParallax();
-      if(window.__refreshHomeGalleryParallax) window.__refreshHomeGalleryParallax();
-    }catch{
-      setEmpty(true);
-    }
-  }
-  setEmpty(true);
-  loadGallery();
-})();
-</script>
 <section id="contact" class="py-20 bg-gray-50">
 <div class="container mx-auto px-6">
-<h2 class="section-title text-4xl font-bold text-center mb-3 text-black dark:text-white">CONTÁCTANOS</h2>
+<h2 class="section-title text-4xl font-bold text-center mb-3 text-white" style="color:#ffffff !important;-webkit-text-fill-color:#ffffff;">CONTÁCTANOS</h2>
 <div class="w-24 h-1 bg-primary mx-auto mb-12"></div>
-<p class="text-center max-w-3xl mx-auto mb-16 text-gray-600">¿Tienes preguntas o quieres colaborar? Ponte en contacto con nosotros.</p>
+<p class="text-center max-w-3xl mx-auto mb-16 text-white/70" style="color:rgba(255,255,255,0.72) !important;-webkit-text-fill-color:rgba(255,255,255,0.72);">¿Tienes preguntas o quieres colaborar? Ponte en contacto con nosotros.</p>
 <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
 <div>
 <form action="#" method="POST" class="space-y-6" id="contactForm">
 <div>
-<label for="name" class="block text-gray-700 font-medium mb-2">Nombre</label>
+<label for="name" class="block text-white font-medium mb-2">Nombre</label>
 <input type="text" id="name" name="name" class="w-full px-4 py-3 border border-gray-300 rounded text-black placeholder:text-gray-500 focus:outline-none focus:border-primary" placeholder="Tu nombre" required>
 </div>
 <div>
-<label for="email" class="block text-gray-700 font-medium mb-2">Correo electrónico</label>
+<label for="email" class="block text-white font-medium mb-2">Correo electrónico</label>
 <input type="email" id="email" name="email" class="w-full px-4 py-3 border border-gray-300 rounded text-black placeholder:text-gray-500 focus:outline-none focus:border-primary" placeholder="Tu correo electrónico" required>
 </div>
 <div>
-<label for="subject" class="block text-gray-700 font-medium mb-2">Asunto</label>
+<label for="subject" class="block text-white font-medium mb-2">Asunto</label>
 <input type="text" id="subject" name="subject" class="w-full px-4 py-3 border border-gray-300 rounded text-black placeholder:text-gray-500 focus:outline-none focus:border-primary" placeholder="Asunto" required>
 </div>
 <div>
-<label for="message" class="block text-gray-700 font-medium mb-2">Mensaje</label>
+<label for="message" class="block text-white font-medium mb-2">Mensaje</label>
 <textarea id="message" name="message" rows="5" class="w-full px-4 py-3 border border-gray-300 rounded text-black placeholder:text-gray-500 focus:outline-none focus:border-primary" placeholder="Tu mensaje" maxlength="500" required></textarea>
-<div class="text-sm text-gray-500 mt-1"><span id="charCount">0</span>/500 caracteres</div>
+<div class="text-sm text-white/60 mt-1"><span id="charCount">0</span>/500 caracteres</div>
 </div>
 <div class="flex items-center">
 <input type="checkbox" id="consent" name="consent" class="custom-checkbox mr-3" required>
-<label for="consent" class="text-gray-600 text-sm">Acepto recibir correos electrónicos sobre próximos eventos y promociones.</label>
+<label for="consent" class="text-white/70 text-sm">Acepto recibir correos electrónicos sobre próximos eventos y promociones.</label>
 </div>
 <div id="formMessage" class="hidden rounded-lg p-4 mb-4"></div>
 <button type="submit" class="bg-primary hover:bg-opacity-90 text-black font-bold py-3 px-8 !rounded-button whitespace-nowrap transition-all">ENVIAR MENSAJE</button>
 </form>
 </div>
 <div>
-<div class="bg-white p-8 rounded-lg shadow-lg h-full">
-<h3 class="text-2xl font-bold mb-6">Ponte en contacto</h3>
+<div class="p-8 rounded-lg shadow-lg h-full" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);backdrop-filter:blur(12px);">
+<h3 class="text-2xl font-bold mb-6 text-white">Ponte en contacto</h3>
 <div class="space-y-6">
 <div class="flex items-start space-x-4">
 <div class="w-10 h-10 flex items-center justify-center text-primary bg-primary bg-opacity-10 rounded-full mt-1">
 <i class="ri-map-pin-line"></i>
 </div>
 <div>
-<h4 class="font-bold text-gray-800 mb-1">Locacion</h4>
-<p class="text-gray-600">Mexicali B.C.</p>
+<h4 class="font-bold text-white mb-1">Locacion</h4>
+<p class="text-white/70">Mexicali B.C.</p>
 </div>
 </div>
 <div class="flex items-start space-x-4">
@@ -2506,8 +2191,8 @@ requestAnimationFrame(animate);
 <i class="ri-mail-line"></i>
 </div>
 <div>
-<h4 class="font-bold text-gray-800 mb-1">Email</h4>
-<p class="text-gray-600">thes<br>thesunsessionclub@gmail.com</p>
+<h4 class="font-bold text-white mb-1">Email</h4>
+<p class="text-white/70">thes<br>thesunsessionclub@gmail.com</p>
 </div>
 </div>
 <div class="flex items-start space-x-4">
@@ -2515,8 +2200,8 @@ requestAnimationFrame(animate);
 <i class="ri-phone-line"></i>
 </div>
 <div>
-<h4 class="font-bold text-gray-800 mb-1">Phone</h4>
-<p class="text-gray-600">+1 (686) 109 5015<br>
+<h4 class="font-bold text-white mb-1">Phone</h4>
+<p class="text-white/70">+1 (686) 109 5015<br>
 </div>
 </div>
 <div class="flex items-start space-x-4">
@@ -2524,27 +2209,27 @@ requestAnimationFrame(animate);
 <i class="ri-time-line"></i>
 </div>
 <div>
-<h4 class="font-bold text-gray-800 mb-1">Office Hours</h4>
-<p class="text-gray-600">Monday - Friday: 10:00 AM - 6:00 PM<br>Saturday: 12:00 PM - 4:00 PM</p>
+<h4 class="font-bold text-white mb-1">Office Hours</h4>
+<p class="text-white/70">Monday - Friday: 10:00 AM - 6:00 PM<br>Saturday: 12:00 PM - 4:00 PM</p>
 </div>
 </div>
 </div>
 <div class="mt-8">
-<h4 class="font-bold text-gray-800 mb-4">Siguenos</h4>
+<h4 class="font-bold text-white mb-4">Siguenos</h4>
 <div class="flex space-x-4">
-<a href="#" class="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-primary transition-colors">
+<a href="#" class="w-10 h-10 flex items-center justify-center text-white/70 hover:text-primary transition-colors">
 <i class="ri-facebook-fill text-xl"></i>
 </a>
-<a href="#" class="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-primary transition-colors">
+<a href="#" class="w-10 h-10 flex items-center justify-center text-white/70 hover:text-primary transition-colors">
 <i class="ri-instagram-fill text-xl"></i>
 </a>
-<a href="#" class="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-primary transition-colors">
+<a href="#" class="w-10 h-10 flex items-center justify-center text-white/70 hover:text-primary transition-colors">
 <i class="ri-twitter-fill text-xl"></i>
 </a>
-<a href="#" class="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-primary transition-colors">
+<a href="#" class="w-10 h-10 flex items-center justify-center text-white/70 hover:text-primary transition-colors">
 <i class="ri-youtube-fill text-xl"></i>
 </a>
-<a href="#" class="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-primary transition-colors">
+<a href="#" class="w-10 h-10 flex items-center justify-center text-white/70 hover:text-primary transition-colors">
 <i class="ri-soundcloud-fill text-xl"></i>
 </a>
 </div>
@@ -2582,9 +2267,9 @@ requestAnimationFrame(animate);
 <ul class="space-y-3">
 <li><a href="#artists" class="text-gray-400 hover:text-primary transition-colors">Artistas</a></li>
 <li><a href="#events" class="text-gray-400 hover:text-primary transition-colors">Eventos</a></li>
-<li><a href="#music" class="text-gray-400 hover:text-primary transition-colors">Música</a></li>
+<li><a href="music.html" class="text-gray-400 hover:text-primary transition-colors">Música</a></li>
 <li><a href="#about" class="text-gray-400 hover:text-primary transition-colors">Nosotros</a></li>
-<li><a href="#gallery" class="text-gray-400 hover:text-primary transition-colors">Galería</a></li>
+<li><a href="gallery.html" class="text-gray-400 hover:text-primary transition-colors">Galería</a></li>
 <li><a href="#contact" class="text-gray-400 hover:text-primary transition-colors">Contacto</a></li>
 </ul>
 </div>
@@ -2843,6 +2528,7 @@ function sscGetStatus(event,summary){
 function sscSetStatusPill(el,status){
   if(!el) return;
   el.dataset.state=status.key;
+  el.dataset.urgency=status.key;
   el.textContent=status.label;
 }
 
@@ -2970,6 +2656,12 @@ function sscUpdatePrimaryEventUi(){
 function sscSetPrimaryEvent(event){
   primaryHomeEvent=event&&typeof event==='object'?event:null;
   sscUpdatePrimaryEventUi();
+  /* Show hero-conversion-panel only when a PAID hero event exists */
+  var panel=document.querySelector('.hero-conversion-panel');
+  if(panel){
+    var isPaid=primaryHomeEvent&&!primaryHomeEvent.isFree&&Number(primaryHomeEvent.price||0)>0;
+    if(isPaid){panel.classList.add('v4-panel-active')}else{panel.classList.remove('v4-panel-active')}
+  }
 }
 
 function sscGoToPrimaryTicket(){
