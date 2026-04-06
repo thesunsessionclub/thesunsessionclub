@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es-MX" class="dark">
 <head>
 <meta charset="UTF-8">
@@ -12,7 +12,7 @@
   const origin = (location.origin && location.origin !== 'null') ? location.origin : '';
   const currentPort = String(location.port || '');
   const hasLikelyDevPort = !!currentPort && !['80', '443', '4000'].includes(currentPort);
-  const isLanIp = /^(127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.)/.test(location.hostname);
+  const isLanIp = /^\d{1,3}(?:\.\d{1,3}){3}$/.test(location.hostname);
   const preferLocalApi = isLanIp || location.hostname === 'localhost' || location.hostname === '127.0.0.1' || hasLikelyDevPort;
   const base = explicit || (preferLocalApi ? (location.protocol + '//' + location.hostname + ':4000') : origin);
   window.__SUNSESH_API_BASE = String(base || '').replace(/\/$/, '');
@@ -54,8 +54,11 @@
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;1,9..40,400&family=Space+Mono&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+<link rel="stylesheet" href="assets/css/v4-redesign.css">
 <style>
 html { --hero-start: rgba(255,255,255,0.25); --hero-end: rgba(0,100,0,0.55); }
 .dark { --hero-start: rgba(255,255,255,0.15); --hero-end: rgba(0,0,0,0.25); }
@@ -72,15 +75,15 @@ scroll-behavior: smooth;
     display: flex !important;
   }
 }
-#events:not(.dark) .section-title,
+html:not(.dark) #events .section-title,
 body:not(.dark) #events .section-title,
-#about:not(.dark) .section-title,
+html:not(.dark) #about .section-title,
 body:not(.dark) #about .section-title,
 body:not(.dark) #about h3,
 body:not(.dark) #about h4,
-#merch:not(.dark) .section-title,
+html:not(.dark) #merch .section-title,
 body:not(.dark) #merch .section-title,
-#contact:not(.dark) .section-title,
+html:not(.dark) #contact .section-title,
 body:not(.dark) #contact .section-title {
 color: #000 !important;
 }
@@ -279,12 +282,13 @@ background: linear-gradient(180deg, rgba(4,10,8,0.96), rgba(5,8,7,1));
 .vibe-card {
 position: relative;
 overflow: hidden;
-border-radius: var(--radius-lg);
+border-radius: 18px;
 border: 1px solid rgba(0,255,170,0.25);
-background: var(--card-bg);
-box-shadow: var(--shadow);
+background: rgba(6,14,10,0.85);
+box-shadow: 0 16px 40px rgba(0,0,0,0.45);
 }
-.vibe-card video {
+.vibe-card video,
+.vibe-card img {
 width: 100%;
 height: 100%;
 object-fit: cover;
@@ -466,18 +470,18 @@ box-shadow: 0 15px 30px rgba(0,100,0,0.3);
 border-color: #006400;
 }
 .merch-card {
-background: var(--card-bg);
+background: linear-gradient(180deg, rgba(8,14,11,0.95) 0%, rgba(6,10,8,0.98) 100%);
 border: 1px solid rgba(0,255,170,0.2);
-border-radius: var(--radius-lg);
+border-radius: 18px;
 overflow: hidden;
 position: relative;
-box-shadow: var(--shadow);
-transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
+box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+transition: transform .35s ease, box-shadow .35s ease, border-color .35s ease;
 }
 .merch-card:hover {
 transform: translateY(-6px);
-box-shadow: 0 18px 46px rgba(0,0,0,0.45), 0 0 24px rgba(0,255,170,0.18);
-border-color: rgba(0,255,170,0.35);
+box-shadow: 0 20px 45px rgba(0,255,170,0.18);
+border-color: rgba(0,255,170,0.55);
 }
 .merch-card::after {
 content: '';
@@ -571,7 +575,6 @@ text-shadow: 0 8px 24px rgba(0,0,0,0.65);
 #merch .section-title,
 #merch p.text-gray-600,
 #merch #merchEmpty,
-#gallery p.text-gray-600,
 #contact .section-title,
 #contact p.text-gray-600,
 #contact .bg-white,
@@ -756,58 +759,6 @@ input[type="number"]::-webkit-outer-spin-button {
 -webkit-appearance: none;
 margin: 0;
 }
-.checkout-form-panel {
-color: #111827;
-}
-.checkout-form-panel .checkout-label {
-color: #111827;
-font-weight: 700;
-}
-.checkout-form-panel .checkout-input,
-.checkout-form-panel .checkout-textarea {
-background: #ffffff;
-color: #111827;
-caret-color: #111827;
-border-color: #cbd5e1;
-}
-.checkout-form-panel .checkout-input::placeholder,
-.checkout-form-panel .checkout-textarea::placeholder {
-color: #6b7280;
-opacity: 1;
-}
-.checkout-form-panel .checkout-input:focus,
-.checkout-form-panel .checkout-textarea:focus {
-border-color: #00c981;
-box-shadow: 0 0 0 3px rgba(0, 201, 129, 0.18);
-}
-.checkout-form-panel .checkout-input:-webkit-autofill,
-.checkout-form-panel .checkout-input:-webkit-autofill:hover,
-.checkout-form-panel .checkout-input:-webkit-autofill:focus,
-.checkout-form-panel .checkout-textarea:-webkit-autofill,
-.checkout-form-panel .checkout-textarea:-webkit-autofill:hover,
-.checkout-form-panel .checkout-textarea:-webkit-autofill:focus {
--webkit-text-fill-color: #111827;
--webkit-box-shadow: 0 0 0px 1000px #ffffff inset;
-transition: background-color 9999s ease-in-out 0s;
-}
-.checkout-form-panel .checkout-summary {
-background: #f3f4f6;
-color: #111827;
-}
-.checkout-form-panel .checkout-summary-row {
-color: #111827;
-font-weight: 600;
-}
-.checkout-form-panel .checkout-summary-price {
-color: #047857;
-font-weight: 700;
-}
-.checkout-form-panel .checkout-total {
-color: #111827;
-}
-.checkout-form-panel .checkout-total #checkoutTotal {
-color: #047857;
-}
 @keyframes fadeInUp {
 from {
 opacity: 0;
@@ -856,17 +807,17 @@ animation: pulse 2s infinite;
 
 <div class="container mx-auto px-6 py-20 md:py-32">
 <div class="hero-content max-w-3xl">
-<div class="hero-kicker hero-anim delay-1 display-font">Underground / MXL</div>
-<h1 class="hero-title-main hero-anim delay-1 mt-4 display-font glitch-text" data-text="THE SUN SESSION CLUB">THE SUN SESSION CLUB</h1>
-<div class="hero-subtitle hero-anim delay-2 mt-4 display-font">EL PORTAL A TU SIGUIENTE RAVE</div>
+<div class="hero-kicker hero-anim delay-1 display-font">Acceso Underground</div>
+<h1 class="hero-title-main hero-anim delay-1 mt-4 display-font glitch-text" data-text="THE SUN SESSION CLUB"><span class="hero-title-the">THE</span><span class="hero-title-name">SUN<br>SESSION</span><span class="hero-title-club">CLUB</span></h1>
+<div class="hero-subtitle hero-anim delay-2 mt-4 display-font">Acceso limitado únicamente.</div>
 <div class="hero-actions flex flex-wrap gap-4 hero-anim delay-3 mt-8">
-<button id="heroPrimaryCta" onclick="sscGoToPrimaryTicket()" class="hero-btn-primary hero-cta-main whitespace-nowrap pulse">VER PRÓXIMA FECHA</button>
-<button onclick="window.location.href='#gallery'" class="hero-btn-ghost whitespace-nowrap">VER GALERÍA</button>
+<button id="heroPrimaryCta" onclick="sscGoToPrimaryTicket()" class="hero-btn-primary hero-cta-main whitespace-nowrap pulse">COMPRAR BOLETOS</button>
+<button onclick="window.location.href='merch.html'" class="hero-btn-ghost whitespace-nowrap">ENTRAR AL MERCH</button>
 </div>
-<div id="heroPrimaryPanel" class="hero-conversion-panel hero-anim delay-3">
+<div class="hero-conversion-panel hero-anim delay-3">
   <div class="flex flex-wrap items-center justify-between gap-3">
     <div>
-      <p class="text-xs uppercase tracking-[0.22em] text-white/55">Próxima señal</p>
+      <p class="text-xs uppercase tracking-[0.22em] text-white/55">Acceso principal</p>
       <h3 id="heroPrimaryName" class="text-xl md:text-2xl font-extrabold text-white display-font">Boletos limitados disponibles</h3>
       <p id="heroPrimaryMeta" class="text-white/75 text-sm mt-1">Fecha y ubicación por confirmar</p>
     </div>
@@ -880,7 +831,7 @@ animation: pulse 2s infinite;
     <div class="count-item"><strong>--</strong><span>Min</span></div>
     <div class="count-item"><strong>--</strong><span>Sec</span></div>
   </div>
-  <p class="hero-trust">Acceso limitado, confirmación manual y producción enfocada en la experiencia.</p>
+  <p class="hero-trust">Secure request system - manual confirmation required.</p>
 </div>
 </div>
 </div>
@@ -1008,104 +959,6 @@ animation: pulse 2s infinite;
     if(window.__refreshAboutMosaicParallax) window.__refreshAboutMosaicParallax();
   }
 
-window.sscIsHeroEventEnabled=function(hero){
-    const safe=(hero&&typeof hero==='object')?hero:{};
-    const statusRaw=String(safe.status||'inactive').toLowerCase();
-    const displayRaw=safe.displayEnabled;
-    const displayEnabled=!(displayRaw===false||String(displayRaw).toLowerCase()==='false');
-    const hasDisplayFlag=Object.prototype.hasOwnProperty.call(safe,'displayEnabled');
-    return hasDisplayFlag?displayEnabled:(statusRaw==='active');
-  };
-  window.sscApplyHeroEventBlock=function(hero){
-    const he=(hero&&typeof hero==='object')?hero:{};
-    const heroEnabled=window.sscIsHeroEventEnabled(he);
-    const heroBlock=document.getElementById('heroEventBlock');
-    if(heroBlock){heroBlock.style.display=heroEnabled?'':'none'}
-    if(!heroEnabled) return;
-    const b=document.getElementById('heroBadgeEl');
-    const t=document.getElementById('heroTitleEl');
-    const d=document.getElementById('heroDateEl');
-    const tm=document.getElementById('heroTimeEl');
-    const desc=document.getElementById('heroDescEl');
-    const btn1=document.getElementById('heroBtn1');
-    const btn2=document.getElementById('heroBtn2');
-    const img=document.getElementById('heroImageEl');
-    if(b)b.textContent=he.badge||'EVENTO ESPECIAL';
-    if(t)t.textContent=he.title||'PRÓXIMAMENTE';
-    if(d)d.textContent=he.date||'';
-    if(tm)tm.textContent=he.time||'';
-    if(desc)desc.textContent=he.description||'';
-    if(btn1){
-      if(he.isFree){btn1.textContent='VER EVENTO';btn1.href=he.socialLink||he.button1Link||'#events'}
-      else{btn1.textContent=he.button1Text||'BOLETOS PREVENTA';btn1.href=he.button1Link||he.socialLink||'#events'}
-    }
-    if(btn2){
-      const btn2Text=(he.button2Text||'').trim();
-      const btn2Href=(he.button2Link||'').trim();
-      const showBtn2=!!(btn2Text||btn2Href||he.lineupImage);
-      btn2.style.display=showBtn2?'inline-flex':'none';
-      btn2.textContent=btn2Text||'VER LINEUP';
-      btn2.href=btn2Href||'#';
-    }
-    if(img&&he.image){img.src=window.__SUNSESH_PROXY_IMAGE?window.__SUNSESH_PROXY_IMAGE(he.image):he.image}
-  };
-  window.sscSyncFeaturedHeroFromEvent=function(primary,settings){
-    const settingsObj=(settings&&typeof settings==='object')?settings:{};
-    const configuredHero=(settingsObj.heroEvent&&typeof settingsObj.heroEvent==='object')?settingsObj.heroEvent:{};
-    const manualEnabled=window.sscIsHeroEventEnabled(configuredHero);
-    const manualHasContent=[
-      configuredHero.title,
-      configuredHero.date,
-      configuredHero.time,
-      configuredHero.description,
-      configuredHero.image,
-      configuredHero.button1Link,
-      configuredHero.socialLink
-    ].some(value=>String(value||'').trim());
-    if(manualEnabled&&manualHasContent) return;
-    if(!primary||typeof primary!=='object') return;
-    const summary=typeof getTicketSummary==='function'?getTicketSummary(primary.id):null;
-    const status=typeof sscGetStatus==='function'?sscGetStatus(primary,summary):{key:'upcoming',label:'PRÓXIMO'};
-    const sold=summary?Number(summary.sold||0):0;
-    const limit=summary&&summary.limit!=null?Number(summary.limit||0):null;
-    const remaining=summary&&summary.limit!=null?Number(summary.remaining||0):null;
-    const progress=limit!=null&&limit>0?Math.max(0,Math.min(100,(sold/limit)*100)):(status.key==='sold'?100:35);
-    let dateLabel='';
-    if(primary.date){
-      const d=new Date(primary.date);
-      if(!Number.isNaN(d.getTime())){
-        dateLabel=d.toLocaleDateString('es-MX',{day:'numeric',month:'long',year:'numeric'});
-      }
-    }
-    let remainingText='Boletos limitados disponibles';
-    if(status.key==='sold'){
-      remainingText='AGOTADO - ESPERA LA SIGUIENTE SEÑAL';
-    }else if(limit!=null){
-      remainingText=status.key==='last'?`Últimos boletos - solo quedan ${remaining}`:`Solo quedan ${remaining} boletos`;
-    }
-    window.sscApplyHeroEventBlock({
-      status:'active',
-      displayEnabled:true,
-      badge:primary.featured?'EVENTO DESTACADO':'PRÓXIMO EVENTO',
-      title:primary.title||'PRÓXIMAMENTE',
-      date:dateLabel,
-      time:primary.time||'',
-      description:primary.description||'No te pierdas nuestro próximo evento.',
-      image:primary.image||'',
-      isFree:!!primary.isFree||Number(primary.price||0)===0,
-      socialLink:primary.socialLink||'',
-      button1Text:(!!primary.isFree||Number(primary.price||0)===0)?'VER EVENTO':'COMPRAR BOLETOS',
-      button1Link:primary.ticketLink||primary.socialLink||'#events',
-      button2Text:primary.socialLink?'VER EVENTO':'',
-      button2Link:primary.socialLink||''
-    });
-    const urgencyLabel=document.getElementById('heroUrgencyLabel');
-    const urgencyLeft=document.getElementById('heroUrgencyLeft');
-    const urgencyProgress=document.getElementById('heroUrgencyProgress');
-    if(urgencyLabel) urgencyLabel.textContent=status.label||'PRÓXIMO';
-    if(urgencyLeft) urgencyLeft.textContent=remainingText;
-    if(urgencyProgress) urgencyProgress.style.width=`${progress}%`;
-  };
 function applyLocalSettings(){
     try{
       const s=JSON.parse(localStorage.getItem('ssc_store_v1')||'{}');
@@ -1118,7 +971,41 @@ function applyLocalSettings(){
         s.settings.heroEvent=he;
         localStorage.setItem('ssc_store_v1',JSON.stringify(s));
       }
-      window.sscApplyHeroEventBlock(he);
+      const statusRaw=String(he.status||'inactive').toLowerCase();
+      const displayRaw=he.displayEnabled;
+      const displayEnabled=!(displayRaw===false||String(displayRaw).toLowerCase()==='false');
+      const hasDisplayFlag=Object.prototype.hasOwnProperty.call(he,'displayEnabled');
+      const heroEnabled=hasDisplayFlag?displayEnabled:(statusRaw==='active');
+      const heroBlock=document.getElementById('heroEventBlock');
+      const heroSection=document.querySelector('.hero-event-section');
+      var heroPaid=heroEnabled&&!he.isFree&&Number(he.price||0)>0;
+      if(heroBlock){heroBlock.style.display=heroEnabled?'':'none'}
+      if(heroSection){if(heroPaid){heroSection.classList.add('v4-hero-active')}else{heroSection.classList.remove('v4-hero-active')}}
+      if(heroEnabled){
+        const b=document.getElementById('heroBadgeEl');
+        const t=document.getElementById('heroTitleEl');
+        const d=document.getElementById('heroDateEl');
+        const tm=document.getElementById('heroTimeEl');
+        const desc=document.getElementById('heroDescEl');
+        const btn1=document.getElementById('heroBtn1');
+        const btn2=document.getElementById('heroBtn2');
+        const img=document.getElementById('heroImageEl');
+        if(b)b.textContent=he.badge||'';
+        if(t)t.textContent=he.title||'';
+        if(d)d.textContent=he.date||'';
+        if(tm)tm.textContent=he.time||'';
+        if(desc)desc.textContent=he.description||'';
+        if(btn1){
+          if(he.isFree){btn1.textContent='VER EVENTO';btn1.href=he.socialLink||'#'}
+          else{btn1.textContent=he.button1Text||'BOLETOS PREVENTA';btn1.href=he.button1Link||'#'}
+        }
+        if(btn2){
+          const btn2Text=(he.button2Text||'').trim();
+          btn2.textContent=btn2Text||'VER LINEUP';
+          btn2.href=he.button2Link||'#';
+        }
+        if(img&&he.image){img.src=window.__SUNSESH_PROXY_IMAGE?window.__SUNSESH_PROXY_IMAGE(he.image):he.image}
+      }
       const hero=document.querySelector('.hero-bg');
       if(hero){
         try{
@@ -1145,28 +1032,6 @@ function applyLocalSettings(){
           .then(res=>res.ok?res.json():null)
           .then(sv=>{
             if(!sv)return;
-            if(!s.settings)s.settings={};
-            if(Object.prototype.hasOwnProperty.call(sv,'hero_event_json')){
-              let remoteHero={};
-              try{
-                const parsed=JSON.parse(sv.hero_event_json||'{}');
-                if(parsed&&typeof parsed==='object') remoteHero=parsed;
-              }catch{}
-              s.settings.heroEvent=remoteHero;
-              localStorage.setItem('ssc_store_v1',JSON.stringify(s));
-              const remoteHasContent=[
-                remoteHero.title,
-                remoteHero.date,
-                remoteHero.time,
-                remoteHero.description,
-                remoteHero.image,
-                remoteHero.button1Link,
-                remoteHero.socialLink
-              ].some(value=>String(value||'').trim());
-              if(window.sscIsHeroEventEnabled(remoteHero)&&remoteHasContent){
-                window.sscApplyHeroEventBlock(remoteHero);
-              }
-            }
             const about=document.getElementById('about');
             if(about&&sv.about_background_image){about.style.backgroundImage=`url('${sv.about_background_image}')`;about.style.backgroundSize='cover';about.style.backgroundPosition='center'}
             const gallery=document.getElementById('gallery');
@@ -1204,7 +1069,7 @@ function applyLocalSettings(){
 <div class="flex items-center space-x-4 text-white mb-8">
 <div class="flex items-center space-x-2">
 <i class="ri-calendar-line"></i>
-<span id="heroDateEl" class="font-bold text-lg">Próximamente</span>
+<span id="heroDateEl" class="font-bold text-lg">21 de Junio, 2025</span>
 </div>
 <div class="flex items-center space-x-2">
 <i class="ri-time-line"></i>
@@ -1238,13 +1103,13 @@ function applyLocalSettings(){
 <div class="flex items-center">
 <img id="siteLogoHeader" src="/assets/img/logo.jpg" alt="The Sun Session Club Logo" class="h-12 mr-8 cursor-pointer object-contain" onerror="this.style.display='none'" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
 <ul class="hidden md:flex space-x-8">
-<li><a href="#events" class="text-white hover:text-secondary font-medium uppercase text-sm nav-link">Eventos</a></li>
-<li><a href="#artists" class="text-white hover:text-secondary font-medium uppercase text-sm nav-link">Lineup</a></li>
-<li><a href="#gallery" class="text-white hover:text-secondary font-medium uppercase text-sm nav-link">Galería</a></li>
-<li><a href="#about" class="text-white hover:text-secondary font-medium uppercase text-sm nav-link">Concepto</a></li>
-<li><a href="#music" class="text-white hover:text-secondary font-medium uppercase text-sm nav-link">Música</a></li>
-<li><a href="#video" class="text-white hover:text-secondary font-medium uppercase text-sm nav-link">Sets</a></li>
-<li><a href="#merch" class="text-white hover:text-secondary font-medium uppercase text-sm nav-link">Merch</a></li>
+<li><a href="#artists" class="text-white hover:text-secondary font-medium uppercase text-sm nav-link">Artistas</a></li>
+<li><a href="events.html" class="text-white hover:text-secondary font-medium uppercase text-sm nav-link">Eventos</a></li>
+<li><a href="music.html" class="text-white hover:text-secondary font-medium uppercase text-sm nav-link">Música</a></li>
+<li><a href="videos.html" class="text-white hover:text-secondary font-medium uppercase text-sm nav-link">Videos</a></li>
+<li><a href="#about" class="text-white hover:text-secondary font-medium uppercase text-sm nav-link">Nosotros</a></li>
+<li><a href="gallery.html" class="text-white hover:text-secondary font-medium uppercase text-sm nav-link">Galería</a></li>
+          <li><a href="merch.html" class="text-white hover:text-secondary font-medium uppercase text-sm nav-link">MERCH</a></li>
 <li><a href="#contact" class="text-white hover:text-secondary font-medium uppercase text-sm nav-link">Contacto</a></li>
 </ul>
 </div>
@@ -1270,25 +1135,196 @@ function applyLocalSettings(){
 
 <!-- Mobile Menu -->
 <div id="mobileMenu" class="fixed inset-0 z-40 bg-black bg-opacity-95 transform translate-x-full transition-transform duration-300 md:hidden flex flex-col justify-center items-center space-y-8 backdrop-blur-sm">
-  <button onclick="toggleMobileMenu()" aria-label="Cerrar menu" class="absolute top-6 right-6 text-white hover:text-primary transition-colors text-4xl font-bold leading-none">
-    <span aria-hidden="true">X</span>
+  <button onclick="toggleMobileMenu()" class="absolute top-6 right-6 text-white hover:text-primary transition-colors">
+    <i class="ri-close-line text-4xl"></i>
   </button>
+  <a href="#artists" onclick="toggleMobileMenu()" class="text-2xl text-white hover:text-primary font-bold uppercase transition-colors">Artistas</a>
   <a href="#events" onclick="toggleMobileMenu()" class="text-2xl text-white hover:text-primary font-bold uppercase transition-colors">Eventos</a>
-  <a href="#artists" onclick="toggleMobileMenu()" class="text-2xl text-white hover:text-primary font-bold uppercase transition-colors">Lineup</a>
-  <a href="#gallery" onclick="toggleMobileMenu()" class="text-2xl text-white hover:text-primary font-bold uppercase transition-colors">Galería</a>
-  <a href="#about" onclick="toggleMobileMenu()" class="text-2xl text-white hover:text-primary font-bold uppercase transition-colors">Concepto</a>
-  <a href="#music" onclick="toggleMobileMenu()" class="text-2xl text-white hover:text-primary font-bold uppercase transition-colors">Música</a>
-  <a href="#video" onclick="toggleMobileMenu()" class="text-2xl text-white hover:text-primary font-bold uppercase transition-colors">Sets</a>
-  <a href="#merch" onclick="toggleMobileMenu()" class="text-2xl text-white hover:text-primary font-bold uppercase transition-colors">Merch</a>
+  <a href="music.html" onclick="toggleMobileMenu()" class="text-2xl text-white hover:text-primary font-bold uppercase transition-colors">Música</a>
+  <a href="videos.html" onclick="toggleMobileMenu()" class="text-2xl text-white hover:text-primary font-bold uppercase transition-colors">Videos</a>
+  <a href="#about" onclick="toggleMobileMenu()" class="text-2xl text-white hover:text-primary font-bold uppercase transition-colors">Nosotros</a>
+  <a href="gallery.html" onclick="toggleMobileMenu()" class="text-2xl text-white hover:text-primary font-bold uppercase transition-colors">Galería</a>
+          <a href="merch.html" onclick="toggleMobileMenu()" class="text-2xl text-white hover:text-primary font-bold uppercase transition-colors">MERCH</a>
   <a href="#contact" onclick="toggleMobileMenu()" class="text-2xl text-white hover:text-primary font-bold uppercase transition-colors">Contacto</a>
   <a href="login.html" onclick="toggleMobileMenu()" class="text-2xl text-white hover:text-primary font-bold uppercase transition-colors">Iniciar Sesión</a>
 </div>
+<!-- Marquee Ticker — 4 copies so content always fills any viewport width -->
+<div class="v4-marquee" aria-hidden="true">
+  <div class="v4-marquee__track"><span>TECHNO &nbsp;◆&nbsp; HOUSE &nbsp;◆&nbsp; UNDERGROUND &nbsp;◆&nbsp; MINIMAL &nbsp;◆&nbsp; TRIBAL &nbsp;◆&nbsp; PROGRESSIVE &nbsp;◆&nbsp; DEEP TECH &nbsp;◆&nbsp; MELODIC &nbsp;◆&nbsp; THE SUN SESSION &nbsp;◆&nbsp; </span><span>TECHNO &nbsp;◆&nbsp; HOUSE &nbsp;◆&nbsp; UNDERGROUND &nbsp;◆&nbsp; MINIMAL &nbsp;◆&nbsp; TRIBAL &nbsp;◆&nbsp; PROGRESSIVE &nbsp;◆&nbsp; DEEP TECH &nbsp;◆&nbsp; MELODIC &nbsp;◆&nbsp; THE SUN SESSION &nbsp;◆&nbsp; </span><span>TECHNO &nbsp;◆&nbsp; HOUSE &nbsp;◆&nbsp; UNDERGROUND &nbsp;◆&nbsp; MINIMAL &nbsp;◆&nbsp; TRIBAL &nbsp;◆&nbsp; PROGRESSIVE &nbsp;◆&nbsp; DEEP TECH &nbsp;◆&nbsp; MELODIC &nbsp;◆&nbsp; THE SUN SESSION &nbsp;◆&nbsp; </span><span>TECHNO &nbsp;◆&nbsp; HOUSE &nbsp;◆&nbsp; UNDERGROUND &nbsp;◆&nbsp; MINIMAL &nbsp;◆&nbsp; TRIBAL &nbsp;◆&nbsp; PROGRESSIVE &nbsp;◆&nbsp; DEEP TECH &nbsp;◆&nbsp; MELODIC &nbsp;◆&nbsp; THE SUN SESSION &nbsp;◆&nbsp; </span></div>
+</div>
+<script>
+(function(){
+  function fixMarquee(){
+    try{
+      var track=document.querySelector('.v4-marquee__track');
+      var span=track&&track.querySelector('span');
+      if(!span||!track) return;
+      var w=span.getBoundingClientRect().width;
+      if(!w) return;
+      /* inject keyframe with exact pixel shift = one span width */
+      var sid='v4-mq-kf';
+      var old=document.getElementById(sid);
+      if(old) old.remove();
+      var s=document.createElement('style');
+      s.id=sid;
+      s.textContent='@keyframes v4MarqueeScroll{from{transform:translateX(0)}to{transform:translateX('+Math.round(-w)+'px)}}';
+      document.head.appendChild(s);
+      /* restart animation so it picks up the new keyframe */
+      track.style.animation='none';
+      void track.offsetWidth;
+      track.style.animation='';
+    }catch(e){}
+  }
+  if(document.fonts&&document.fonts.ready){
+    document.fonts.ready.then(fixMarquee);
+  } else {
+    window.addEventListener('load',fixMarquee);
+  }
+})();
+</script>
+<script>
+/* Global section scroll-reveal (music-label experience narrative) */
+(function(){
+  document.addEventListener('DOMContentLoaded',function(){
+    var eventsEl=document.getElementById('events');
+    var artistsEl=document.getElementById('artists');
+    if(eventsEl&&artistsEl&&artistsEl.parentNode){
+      artistsEl.parentNode.insertBefore(eventsEl,artistsEl);
+    }
+    var sectionIds=['events','artists','vibe','merch','about','contact'];
+    var obs=new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){e.target.classList.add('v4-visible');obs.unobserve(e.target)}
+      });
+    },{threshold:0.08});
+    sectionIds.forEach(function(id){
+      var el=document.getElementById(id);
+      if(el){el.classList.add('v4-section-reveal');obs.observe(el)}
+    });
+  });
+})();
+</script>
+<!-- Events Section -->
+<section id="events" class="py-20">
+<div class="container mx-auto px-6">
+<h2 class="section-title text-4xl font-bold text-center mb-3" style="color:#fff !important;-webkit-text-fill-color:#fff;">PRÓXIMOS EVENTOS</h2>
+<div class="w-24 h-1 bg-primary mx-auto mb-12"></div>
+<p class="text-center max-w-3xl mx-auto mb-16" style="color:rgba(255,255,255,0.72) !important;-webkit-text-fill-color:rgba(255,255,255,0.72);">No te pierdas los eventos más exclusivos de la ciudad. Boletos limitados disponibles.</p>
+<div id="featuredEventsTitle" class="text-center mb-6" style="display:none;"><h3 class="text-2xl font-bold text-yellow-600">EVENTOS DESTACADOS</h3></div>
+<div id="featuredEventsRow" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12"></div>
+<div id="homeEventsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+<div class="text-center mt-12">
+<a href="events.html">
+<button class="bg-transparent border-2 border-primary text-primary font-bold py-3 px-8 !rounded-button whitespace-nowrap hover:bg-primary hover:text-white transition-all">VER TODOS LOS EVENTOS</button>
+</a>
+</div>
+</div>
+</section>
+<script>
+(function(){
+const STORE_KEY='ssc_store_v1';
+function getStore(){try{return JSON.parse(localStorage.getItem(STORE_KEY)||'{}')}catch(e){return{}}}
+function setStore(next){localStorage.setItem(STORE_KEY,JSON.stringify(next||{}))}
+function toInputDate(value){if(!value)return '';if(typeof value==='string'){const t=value.trim();const m=t.match(/^\d{4}-\d{2}-\d{2}/);if(m)return m[0]}const d=new Date(value);if(Number.isNaN(d.getTime()))return '';const y=d.getFullYear();const m=String(d.getMonth()+1).padStart(2,'0');const day=String(d.getDate()).padStart(2,'0');return y+'-'+m+'-'+day}
+function normalizeEvent(evt){const e=(evt&&typeof evt==='object')?Object.assign({},evt):{};e.date=toInputDate(e.date);e.price=Number(e.price||0);e.sort_order=Number(e.sort_order||0);var raw=String(e.status||'').toLowerCase();e.status=raw==='active'?'ACTIVE':(raw==='draft'?'DRAFT':'CANCELLED');e.featured=!!e.featured;e.isFree=!!e.isFree||e.price===0;return e}
+function eventKey(evt){var id=String((evt&&evt.id)||'').trim();if(id)return 'id:'+id;var title=String((evt&&evt.title)||'').trim().toLowerCase();var date=String((evt&&evt.date)||'').trim();var place=String((evt&&(evt.venue||evt.location))||'').trim().toLowerCase();var time=String((evt&&evt.time)||'').trim().toLowerCase();return 'fp:'+title+'|'+date+'|'+place+'|'+time}
+function mergeEvents(apiEvents,localEvents){var map=new Map();(Array.isArray(apiEvents)?apiEvents:[]).map(normalizeEvent).forEach(function(evt){map.set(eventKey(evt),evt)});(Array.isArray(localEvents)?localEvents:[]).map(normalizeEvent).forEach(function(evt){var id=String(evt.id||'').trim();var keepLocal=!id||id.indexOf('local-')===0||!!evt._localDirty;var key=eventKey(evt);if(keepLocal||!map.has(key)){map.set(key,evt)}});return Array.from(map.values())}
+function badgeFromDate(str){if(!str)return '';var d=new Date(str);return d.toLocaleString('es-MX',{month:'short',day:'2-digit'}).toUpperCase()}
+function eventDateValue(evt){var d=new Date(evt&&evt.date?evt.date:'');return Number.isNaN(d.getTime())?Number.MAX_SAFE_INTEGER:d.getTime()}
+function pickHeroEventFromSettings(events,settings){
+var hero=((settings&&settings.heroEvent)||{});
+var statusRaw=String(hero.status||'inactive').toLowerCase();
+var displayRaw=hero.displayEnabled;
+var displayEnabled=!(displayRaw===false||String(displayRaw).toLowerCase()==='false');
+var hasDisplayFlag=Object.prototype.hasOwnProperty.call(hero,'displayEnabled');
+var heroEnabled=hasDisplayFlag?displayEnabled:(statusRaw==='active');
+if(!heroEnabled) return null;
+var heroTitle=String(hero.title||'').trim().toLowerCase();
+var heroDate=toInputDate(hero.date);
+var heroVenue=String(hero.location||hero.venue||'').trim().toLowerCase();
+if(!heroTitle&&!heroDate&&!heroVenue) return null;
+return events.find(function(evt){
+  var evtTitle=String(evt.title||'').trim().toLowerCase();
+  var evtDate=toInputDate(evt.date);
+  var evtVenue=String(evt.location||evt.venue||'').trim().toLowerCase();
+  var titleOk=heroTitle&&evtTitle?evtTitle===heroTitle:false;
+  var dateOk=heroDate&&evtDate?evtDate===heroDate:false;
+  var venueOk=heroVenue&&evtVenue?(evtVenue.indexOf(heroVenue)!==-1||heroVenue.indexOf(evtVenue)!==-1):false;
+  return titleOk||((heroTitle||heroDate)&&dateOk)||((heroDate||heroVenue)&&dateOk&&venueOk);
+})||null;
+}
+function pickPrimaryEvent(list,settings){
+var events=Array.isArray(list)?list.filter(Boolean):[];
+if(!events.length) return null;
+var fromHero=pickHeroEventFromSettings(events,settings);
+if(fromHero) return fromHero;
+var now=Date.now();
+var featuredFuture=events.filter(function(e){return e.featured&&eventDateValue(e)>=now}).sort(function(a,b){return eventDateValue(a)-eventDateValue(b)});
+if(featuredFuture.length) return featuredFuture[0];
+var future=events.filter(function(e){return eventDateValue(e)>=now}).sort(function(a,b){return eventDateValue(a)-eventDateValue(b)});
+if(future.length) return future[0];
+var featuredAny=events.filter(function(e){return e.featured}).sort(function(a,b){return eventDateValue(a)-eventDateValue(b)});
+if(featuredAny.length) return featuredAny[0];
+return events.slice().sort(function(a,b){return eventDateValue(a)-eventDateValue(b)})[0]||null;
+}
+async function loadEventsFromApi(){try{var res=await fetch(window.__SUNSESH_API_BASE + '/api/events',{headers:{'Cache-Control':'no-cache'},cache:'no-store'});var data=await res.json();if(Array.isArray(data)){var s=getStore();s.events=mergeEvents(data,Array.isArray(s.events)?s.events:[]);setStore(s)}}catch(_){}}
+function renderHomeEvents(){
+var s=getStore();var list=Array.isArray(s.events)?s.events.map(normalizeEvent):[];var evts=list.filter(function(e){return (e.status||'').toLowerCase()==='active'}).slice().sort(function(a,b){return new Date(a.date)-new Date(b.date)});
+var primary=pickPrimaryEvent(evts,s.settings||{});
+var primaryKey=primary?eventKey(primary):'';
+var gridEvents=primaryKey?evts.filter(function(e){return eventKey(e)!==primaryKey}):evts.slice();
+var featuredGrid=document.querySelector('#featuredEventsRow');
+var regularGrid=document.querySelector('#homeEventsGrid');
+var featuredTitle=document.querySelector('#featuredEventsTitle');
+if(!featuredGrid||!regularGrid||!featuredTitle)return;
+featuredGrid.textContent='';
+regularGrid.textContent='';
+var featuredEvents=gridEvents.filter(function(e){return e.featured});
+var regularEvents=gridEvents.filter(function(e){return !e.featured});
+function createEventCard(e,isFeatured){
+var isFree=e.isFree||Number(e.price||0)===0;
+var priceEl=isFree?'<span class="text-primary font-bold">Abierto</span>':'<span class="text-primary font-bold">$'+Number(e.price||0).toFixed(2)+'</span>';
+var card=document.createElement('div');card.className='card-hover bg-white rounded-2xl overflow-hidden shadow-lg border border-primary/30'+(isFeatured?' ring-2 ring-yellow-400':'');
+var badgeHtml=isFeatured?'<div class="absolute top-4 left-4 bg-yellow-400 text-black font-bold py-1 px-3 rounded-full text-sm">DESTACADO</div>':'';
+card.innerHTML='<div class="relative h-60 overflow-hidden"><img src="'+(e.image||'')+'" alt="'+(e.title||'')+'" class="w-full h-full object-cover object-top card-image">'+badgeHtml+'<div class="absolute top-4 right-4 bg-primary text-black font-bold py-1 px-3 rounded-full text-sm">'+badgeFromDate(e.date)+'</div></div><div class="p-6"><h3 class="text-2xl font-bold mb-2 text-black">'+(e.title||'')+'</h3><p class="text-black/60 mb-4">'+(e.artists||'')+'</p><div class="flex items-center space-x-2 mb-3"><div class="w-5 h-5 flex items-center justify-center text-primary"><i class="ri-map-pin-line"></i></div><span class="text-black/60">'+(e.location||e.venue||'')+'</span></div><div class="flex items-center space-x-2 mb-6"><div class="w-5 h-5 flex items-center justify-center text-primary"><i class="ri-time-line"></i></div><span class="text-black/60">'+(e.time||'')+'</span></div><div class="flex items-center justify-between"><span>'+priceEl+'</span><button class="bg-black text-white font-semibold py-2 px-4 !rounded-button whitespace-nowrap hover:bg-primary transition-colors">VER MÁS</button></div></div>';
+card.dataset.eventId=e.id||'';
+var info=document.createElement('div');
+info.className='text-xs text-black/60 mt-2';
+info.dataset.ticketInfo='1';
+var content=card.querySelector('.p-6');
+if(content) content.appendChild(info);
+return card;
+}
+featuredTitle.style.display=featuredEvents.length>0?'block':'none';
+featuredEvents.slice(0,3).forEach(function(e){
+var card=createEventCard(e,true);
+featuredGrid.appendChild(card);
+var btn=card.querySelector('button');if(btn)btn.onclick=function(){showEventDetails(e)};
+});
+regularEvents.slice(0,featuredEvents.length>0?2:3).forEach(function(e){
+var card=createEventCard(e,false);
+regularGrid.appendChild(card);
+var btn=card.querySelector('button');if(btn)btn.onclick=function(){showEventDetails(e)};
+});
+if(typeof renderTicketInfoOnCards==='function') renderTicketInfoOnCards();
+var ids=evts.map(function(e){return e.id}).filter(Boolean);
+if(ids.length&&typeof fetchTicketSummaries==='function') fetchTicketSummaries(ids);
+if(typeof startTicketSummaryPolling==='function') startTicketSummaryPolling();
+window.__sscHomeEvents=evts;
+if(typeof window.sscSetPrimaryEvent==='function'){
+  window.sscSetPrimaryEvent(primary);
+}
+}
+window.addEventListener('storage',function(ev){if(ev.key===STORE_KEY){try{renderHomeEvents()}catch(_){}}});
+document.addEventListener('DOMContentLoaded',async function(){await loadEventsFromApi();renderHomeEvents()});
+})();
+</script>
 <!-- Artists Section -->
 <section id="artists" class="py-20">
 <div class="container mx-auto px-6">
-<h2 class="section-title text-4xl font-bold text-center mb-3 dark:text-white">LINEUP Y RESIDENTES</h2>
+<h2 class="section-title text-4xl font-bold text-center mb-3 text-white">ARTISTAS DESTACADOS</h2>
 <div class="w-24 h-1 bg-primary mx-auto mb-12"></div>
-<p class="text-center max-w-3xl mx-auto mb-16 ssc-muted">Los nombres que definen la energía de Sunsesh. Explora residentes e invitados antes de la próxima noche.</p>
+<p class="text-center max-w-3xl mx-auto mb-16 text-white/70">Descubre a los DJs que están transformando la escena musical de la región. Haz clic en cada artista para acceder a su press kit exclusivo.</p>
 <div id="artistGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 <!-- Artist Card 1 -->
 <div class="card-hover bg-white rounded-lg overflow-hidden shadow-lg border border-gray-200">
@@ -1296,17 +1332,17 @@ function applyLocalSettings(){
 <img src="/assets/img/rubzz.png" alt="RUBZZ" class="w-full h-full object-cover object-top card-image">
 </div>
 <div class="p-6">
-<h3 class="text-2xl font-bold mb-2 text-black">RUBZZ</h3>
-<p class="mb-4" style="color:#374151;">Techno | Underground | Minimal</p>
+<h3 class="text-2xl font-bold mb-2">RUBZZ</h3>
+<p class="text-gray-600 mb-4">Techno | Underground | Minimal</p>
 <div class="flex items-center justify-between">
 <div class="flex space-x-3">
-<a href="#" class="w-8 h-8 flex items-center justify-center hover:text-primary transition-colors" style="color:#6b7280;">
+<a href="#" class="w-8 h-8 flex items-center justify-center text-gray-600 hover:text-primary transition-colors">
 <i class="ri-instagram-line"></i>
 </a>
-<a href="#" class="w-8 h-8 flex items-center justify-center hover:text-primary transition-colors" style="color:#6b7280;">
+<a href="#" class="w-8 h-8 flex items-center justify-center text-gray-600 hover:text-primary transition-colors">
 <i class="ri-soundcloud-line"></i>
 </a>
-<a href="#" class="w-8 h-8 flex items-center justify-center hover:text-primary transition-colors" style="color:#6b7280;">
+<a href="#" class="w-8 h-8 flex items-center justify-center text-gray-600 hover:text-primary transition-colors">
 <i class="ri-spotify-line"></i>
 </a>
 </div>
@@ -1320,17 +1356,17 @@ function applyLocalSettings(){
 <img src="/assets/img/merme.png" alt="MERME" class="w-full h-full object-cover object-top card-image">
 </div>
 <div class="p-6">
-<h3 class="text-2xl font-bold mb-2 text-black">MERME</h3>
-<p class="mb-4" style="color:#374151;">House | Deep Tech | Progressive</p>
+<h3 class="text-2xl font-bold mb-2">MERME</h3>
+<p class="text-gray-600 mb-4">House | Deep Tech | Progressive</p>
 <div class="flex items-center justify-between">
 <div class="flex space-x-3">
-<a href="#" class="w-8 h-8 flex items-center justify-center hover:text-primary transition-colors" style="color:#6b7280;">
+<a href="#" class="w-8 h-8 flex items-center justify-center text-gray-600 hover:text-primary transition-colors">
 <i class="ri-instagram-line"></i>
 </a>
-<a href="#" class="w-8 h-8 flex items-center justify-center hover:text-primary transition-colors" style="color:#6b7280;">
+<a href="#" class="w-8 h-8 flex items-center justify-center text-gray-600 hover:text-primary transition-colors">
 <i class="ri-soundcloud-line"></i>
 </a>
-<a href="#" class="w-8 h-8 flex items-center justify-center hover:text-primary transition-colors" style="color:#6b7280;">
+<a href="#" class="w-8 h-8 flex items-center justify-center text-gray-600 hover:text-primary transition-colors">
 <i class="ri-spotify-line"></i>
 </a>
 </div>
@@ -1344,17 +1380,17 @@ function applyLocalSettings(){
 <img src="/assets/img/drack.png" alt="DRACK" class="w-full h-full object-cover object-top card-image">
 </div>
 <div class="p-6">
-<h3 class="text-2xl font-bold mb-2 text-black">DRACK</h3>
-<p class="mb-4" style="color:#374151;">Tech House | Melodic | Tribal</p>
+<h3 class="text-2xl font-bold mb-2">DRACK</h3>
+<p class="text-gray-600 mb-4">Tech House | Melodic | Tribal</p>
 <div class="flex items-center justify-between">
 <div class="flex space-x-3">
-<a href="#" class="w-8 h-8 flex items-center justify-center hover:text-primary transition-colors" style="color:#6b7280;">
+<a href="#" class="w-8 h-8 flex items-center justify-center text-gray-600 hover:text-primary transition-colors">
 <i class="ri-instagram-line"></i>
 </a>
-<a href="#" class="w-8 h-8 flex items-center justify-center hover:text-primary transition-colors" style="color:#6b7280;">
+<a href="#" class="w-8 h-8 flex items-center justify-center text-gray-600 hover:text-primary transition-colors">
 <i class="ri-soundcloud-line"></i>
 </a>
-<a href="#" class="w-8 h-8 flex items-center justify-center hover:text-primary transition-colors" style="color:#6b7280;">
+<a href="#" class="w-8 h-8 flex items-center justify-center text-gray-600 hover:text-primary transition-colors">
 <i class="ri-spotify-line"></i>
 </a>
 </div>
@@ -1364,8 +1400,8 @@ function applyLocalSettings(){
 </div>
 </div>
 <div class="text-center mt-12">
-<a href="artistas.html">
-<button onclick="window.location.href='artistas.html'" class="bg-transparent border-2 border-primary text-primary font-bold py-3 px-8 !rounded-button whitespace-nowrap hover:bg-primary hover:text-black transition-all">VER TODOS LOS ARTISTAS</button>
+<a href="artistas_sunsssesion.html">
+<button onclick="window.location.href='artistas_sunsssesion.html'" class="bg-transparent border-2 border-primary text-primary font-bold py-3 px-8 !rounded-button whitespace-nowrap hover:bg-primary hover:text-white transition-all">VER TODOS LOS ARTISTAS</button>
 </a>
 </div>
 </div>
@@ -1419,8 +1455,7 @@ function applyLocalSettings(){
     grid.innerHTML='';
     const featured=source.filter(a=>!!a.featured).slice(0,3);
     const pick=featured.length?featured:source.slice(0,3);
-    pick.forEach(row=>{
-      const a=window.__SSC_MERGE_ARTIST?window.__SSC_MERGE_ARTIST(row):row;
+    pick.forEach(a=>{
       const card=document.createElement('div');card.className='card-hover bg-white rounded-lg overflow-hidden shadow-lg border border-gray-200';
       const ph="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='900' height='900'><rect width='100%' height='100%' fill='%23111'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%23ffffff' font-size='42' font-family='Montserrat'>DJ</text></svg>";
       const imgRaw=a.profile_image||a.image||ph;const imgSrc=proxyImage(imgRaw);
@@ -1429,148 +1464,82 @@ function applyLocalSettings(){
       if(!genres.length){const key=(a.name||'').trim().toLowerCase();const canon={rubzz:['Techno','Underground','Minimal'],merme:['House','Deep Tech','Progressive'],drack:['Tech House','Melodic','Tribal']};if(canon[key])genres=canon[key]}
       const visibleGenres=genres.slice(0,3);
       const socialHtml=artistSocialIcons(a);
-      const profileUrl=window.__SSC_ARTIST_PROFILE_URL?window.__SSC_ARTIST_PROFILE_URL(a):'artistas.html';
-      card.innerHTML=`<div class="h-80 overflow-hidden"><img src="${imgSrc}" alt="${a.name||''}" class="w-full h-full object-cover object-top card-image" onerror="this.src='${ph}'"></div><div class="p-6"><h3 class="text-2xl font-bold mb-2 text-black">${a.name||''}</h3><p class="text-black mb-4">${visibleGenres.join(' | ')}</p><div class="flex items-center justify-between"><div class="flex space-x-3">${socialHtml}</div><button onclick="window.location.href='${profileUrl}'" class="bg-black text-white font-semibold py-2 px-4 !rounded-button whitespace-nowrap hover:bg-primary transition-colors">VER PERFIL</button></div></div>`;
+      const profileUrl=a.id?`artistas_sunsssesion.html?id=${encodeURIComponent(a.id)}`:`artistas_sunsssesion.html`;
+      card.innerHTML=`<div class="h-80 overflow-hidden"><img src="${imgSrc}" alt="${a.name||''}" class="w-full h-full object-cover object-top card-image" onerror="this.src='${ph}'"></div><div class="p-6"><h3 class="text-2xl font-bold mb-2">${a.name||''}</h3><p class="text-black mb-4">${visibleGenres.join(' | ')}</p><div class="flex items-center justify-between"><div class="flex space-x-3">${socialHtml}</div><button onclick="window.location.href='${profileUrl}'" class="bg-black text-white font-semibold py-2 px-4 !rounded-button whitespace-nowrap hover:bg-primary transition-colors">VER PERFIL</button></div></div>`;
       grid.appendChild(card);
     });
   }
   document.addEventListener('DOMContentLoaded',async()=>{const list=await fetchArtists();renderHomeArtists(list)});
 })();
 </script>
-<!-- Spotlight Section removed -->
-<!-- Events Section -->
-<section id="events" class="py-20 bg-gray-50">
+<!-- ══════ EXPLORE TILES — Immersive Category Navigation ══════ -->
+<section class="v4-explore" aria-label="Explora el club">
 <div class="container mx-auto px-6">
-<h2 class="section-title text-4xl font-bold text-center mb-3 text-black dark:text-white">PRÓXIMA FECHA</h2>
-<div class="w-24 h-1 bg-primary mx-auto mb-12"></div>
-<p class="text-center max-w-3xl mx-auto mb-16 text-gray-600">La entrada principal de Sunsesh debe arrancar aquí: próxima fecha, acceso limitado y últimas señales del evento.</p>
-<div id="featuredEventsTitle" class="text-center mb-6" style="display:none;"><h3 class="text-2xl font-bold text-yellow-600">FECHAS DESTACADAS</h3></div>
-<div id="featuredEventsRow" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12"></div>
-<div id="homeEventsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
-<div class="text-center mt-12">
-<a href="events.html">
-<button class="bg-transparent border-2 border-primary text-primary font-bold py-3 px-8 !rounded-button whitespace-nowrap hover:bg-primary hover:text-black transition-all">VER TODOS LOS EVENTOS</button>
-</a>
-</div>
+  <div class="v4-explore__header">
+    <p class="v4-explore__label">Explora</p>
+    <h2 class="v4-explore__title">Adéntrate en la experiencia</h2>
+  </div>
+  <div class="v4-explore__grid">
+    <!-- Tile 1: Live Sets -->
+    <a href="videos.html" class="v4-tile" aria-label="Ver Live Sets">
+      <img src="assets/img/tile-livesets.jpg" alt="Live sets crowd" class="v4-tile__img" loading="lazy" onerror="this.src='assets/img/explore-rave.png'">
+      <div class="v4-tile__overlay"></div>
+      <div class="v4-tile__content">
+        <i class="ri-headphone-line v4-tile__icon"></i>
+        <h3 class="v4-tile__name">Live Sets</h3>
+        <p class="v4-tile__desc">Sets grabados en vivo desde nuestros eventos</p>
+        <span class="v4-tile__arrow">Explorar <i class="ri-arrow-right-line"></i></span>
+      </div>
+    </a>
+    <!-- Tile 2: Música Reciente -->
+    <a href="music.html" class="v4-tile" aria-label="Escuchar Música">
+      <img src="assets/img/tile-musica.jpg" alt="Música y visual identity" class="v4-tile__img" loading="lazy" onerror="this.src='assets/img/vibe-replacement.png'">
+      <div class="v4-tile__overlay"></div>
+      <div class="v4-tile__content">
+        <i class="ri-disc-line v4-tile__icon"></i>
+        <h3 class="v4-tile__name">Música</h3>
+        <p class="v4-tile__desc">Tracks y mezclas de nuestros DJs residentes</p>
+        <span class="v4-tile__arrow">Escuchar <i class="ri-arrow-right-line"></i></span>
+      </div>
+    </a>
+    <!-- Tile 3: Galería -->
+    <a href="gallery.html" class="v4-tile" aria-label="Ver Galería">
+      <img src="assets/img/tile-galeria.jpg" alt="Galería de eventos" class="v4-tile__img" loading="lazy" onerror="this.src='assets/img/vibe-replacement.png'">
+      <div class="v4-tile__overlay"></div>
+      <div class="v4-tile__content">
+        <i class="ri-camera-lens-line v4-tile__icon"></i>
+        <h3 class="v4-tile__name">Galería</h3>
+        <p class="v4-tile__desc">Momentos capturados de cada noche</p>
+        <span class="v4-tile__arrow">Ver fotos <i class="ri-arrow-right-line"></i></span>
+      </div>
+    </a>
+  </div>
 </div>
 </section>
 <script>
+/* Explore tiles — scroll reveal via data attribute */
 (function(){
-const STORE_KEY='ssc_store_v1';
-function getStore(){try{return JSON.parse(localStorage.getItem(STORE_KEY)||'{}')}catch(e){return{}}}
-function setStore(next){localStorage.setItem(STORE_KEY,JSON.stringify(next||{}))}
-function toInputDate(value){if(!value)return '';if(typeof value==='string'){const t=value.trim();const m=t.match(/^\d{4}-\d{2}-\d{2}/);if(m)return m[0]}const d=new Date(value);if(Number.isNaN(d.getTime()))return '';const y=d.getFullYear();const m=String(d.getMonth()+1).padStart(2,'0');const day=String(d.getDate()).padStart(2,'0');return `${y}-${m}-${day}`}
-function normalizeEvent(evt){const e=(evt&&typeof evt==='object')?{...evt}:{};e.date=toInputDate(e.date);e.price=Number(e.price||0);e.sort_order=Number(e.sort_order||0);const raw=String(e.status||'').toLowerCase();e.status=raw==='active'?'ACTIVE':(raw==='draft'?'DRAFT':'CANCELLED');e.featured=!!e.featured;e.isFree=!!e.isFree||e.price===0;return e}
-const EVENT_IMAGE_FALLBACK='assets/hero-rave.png';
-function proxyImage(u){if(!u)return'';return window.__SUNSESH_PROXY_IMAGE?window.__SUNSESH_PROXY_IMAGE(u):u;}
-function resolveEventImage(raw){const value=String(raw||'').trim();if(!value)return EVENT_IMAGE_FALLBACK;return proxyImage(value)||EVENT_IMAGE_FALLBACK}
-function eventKey(evt){const id=String((evt&&evt.id)||'').trim();if(id)return `id:${id}`;const title=String((evt&&evt.title)||'').trim().toLowerCase();const date=String((evt&&evt.date)||'').trim();const place=String((evt&&(evt.venue||evt.location))||'').trim().toLowerCase();const time=String((evt&&evt.time)||'').trim().toLowerCase();return `fp:${title}|${date}|${place}|${time}`}
-function mergeEvents(apiEvents,localEvents){const map=new Map();(Array.isArray(apiEvents)?apiEvents:[]).map(normalizeEvent).forEach(evt=>{map.set(eventKey(evt),evt)});(Array.isArray(localEvents)?localEvents:[]).map(normalizeEvent).forEach(evt=>{const id=String(evt.id||'').trim();const keepLocal=!id||id.startsWith('local-')||!!evt._localDirty;const key=eventKey(evt);if(keepLocal||!map.has(key)){map.set(key,evt)}});return Array.from(map.values())}
-function badgeFromDate(str){if(!str)return '';const d=new Date(str);return d.toLocaleString('es-MX',{month:'short',day:'2-digit'}).toUpperCase()}
-function eventDateValue(evt){const d=new Date(evt&&evt.date?evt.date:'');return Number.isNaN(d.getTime())?Number.MAX_SAFE_INTEGER:d.getTime()}
-function pickHeroEventFromSettings(events,settings){
-const hero=((settings&&settings.heroEvent)||{});
-const statusRaw=String(hero.status||'inactive').toLowerCase();
-const displayRaw=hero.displayEnabled;
-const displayEnabled=!(displayRaw===false||String(displayRaw).toLowerCase()==='false');
-const hasDisplayFlag=Object.prototype.hasOwnProperty.call(hero,'displayEnabled');
-const heroEnabled=hasDisplayFlag?displayEnabled:(statusRaw==='active');
-if(!heroEnabled) return null;
-const heroTitle=String(hero.title||'').trim().toLowerCase();
-const heroDate=toInputDate(hero.date);
-const heroVenue=String(hero.location||hero.venue||'').trim().toLowerCase();
-if(!heroTitle&&!heroDate&&!heroVenue) return null;
-return events.find(evt=>{
-  const evtTitle=String(evt.title||'').trim().toLowerCase();
-  const evtDate=toInputDate(evt.date);
-  const evtVenue=String(evt.location||evt.venue||'').trim().toLowerCase();
-  const titleOk=heroTitle&&evtTitle?evtTitle===heroTitle:false;
-  const dateOk=heroDate&&evtDate?evtDate===heroDate:false;
-  const venueOk=heroVenue&&evtVenue?(evtVenue.includes(heroVenue)||heroVenue.includes(evtVenue)):false;
-  return titleOk||((heroTitle||heroDate)&&dateOk)||((heroDate||heroVenue)&&dateOk&&venueOk);
-})||null;
-}
-function pickPrimaryEvent(list,settings){
-const events=Array.isArray(list)?list.filter(Boolean):[];
-if(!events.length) return null;
-const fromHero=pickHeroEventFromSettings(events,settings);
-if(fromHero) return fromHero;
-const now=Date.now();
-const featuredFuture=events.filter(e=>e.featured&&eventDateValue(e)>=now).sort((a,b)=>eventDateValue(a)-eventDateValue(b));
-if(featuredFuture.length) return featuredFuture[0];
-const future=events.filter(e=>eventDateValue(e)>=now).sort((a,b)=>eventDateValue(a)-eventDateValue(b));
-if(future.length) return future[0];
-const featuredAny=events.filter(e=>e.featured).sort((a,b)=>eventDateValue(a)-eventDateValue(b));
-if(featuredAny.length) return featuredAny[0];
-return events.slice().sort((a,b)=>eventDateValue(a)-eventDateValue(b))[0]||null;
-}
-async function loadEventsFromApi(){try{const res=await fetch(window.__SUNSESH_API_BASE + '/api/events',{headers:{'Cache-Control':'no-cache'},cache:'no-store'});const data=await res.json();if(Array.isArray(data)){const normalized=data.map(normalizeEvent);window.__sscPublicEvents=normalized;window.__sscPublicEventsLoaded=true;const s=getStore();s.events=mergeEvents(normalized,Array.isArray(s.events)?s.events:[]);setStore(s);return normalized}}catch(_){}window.__sscPublicEventsLoaded=false;return null} 
-  function renderHomeArtistsLocal(){const s=getStore();const list=Array.isArray(s.artists)?s.artists:[];const artists=list.filter(a=>((a.status||'ACTIVE').toLowerCase()==='active')||(a.active!==false)).slice(0,3);const grid=document.getElementById('artistGrid');if(!grid)return;if(!artists.length)return;grid.innerHTML='';artists.forEach((row)=>{const a=window.__SSC_MERGE_ARTIST?window.__SSC_MERGE_ARTIST(row):row;const name=(a.name||'').toUpperCase();const genres=Array.isArray(a.genres)?a.genres.join(' | '):(a.genre||'');const ph="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='900' height='900'><rect width='100%' height='100%' fill='%23111'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%23ffffff' font-size='42' font-family='Montserrat'>DJ</text></svg>";const img=(a.image||a.profile_image||ph);const profileUrl=window.__SSC_ARTIST_PROFILE_URL?window.__SSC_ARTIST_PROFILE_URL(a):'artistas.html';const card=
-`<div class="card-hover bg-white rounded-lg overflow-hidden shadow-lg border border-gray-200"><div class="h-80 overflow-hidden"><img src="${img}" alt="${name}" class="w-full h-full object-cover object-top card-image" onerror="this.src='${ph}'"></div><div class="p-6"><h3 class="text-2xl font-bold mb-2 text-black">${name}</h3><p class="text-black mb-4">${genres}</p><div class="flex items-center justify-between"><div class="flex space-x-3">${artistSocialIcons(a)}</div><button onclick="window.location.href='${profileUrl}'" class="bg-black text-white font-semibold py-2 px-4 !rounded-button whitespace-nowrap hover:bg-primary transition-colors">VER PERFIL</button></div></div></div>`;grid.insertAdjacentHTML('beforeend',card)})}
-function renderHomeEvents(){
-const s=getStore();const apiLoaded=window.__sscPublicEventsLoaded===true;const apiList=apiLoaded&&Array.isArray(window.__sscPublicEvents)?window.__sscPublicEvents.map(normalizeEvent):[];const storeList=Array.isArray(s.events)?s.events.map(normalizeEvent):[];const list=apiLoaded?apiList:storeList;const evts=list.filter(e=>((e.status||'').toLowerCase()==='active')).slice().sort((a,b)=>new Date(a.date)-new Date(b.date));
-const primary=pickPrimaryEvent(evts,s.settings||{});
-const primaryKey=primary?eventKey(primary):'';
-if(typeof window.sscSyncFeaturedHeroFromEvent==='function'){window.sscSyncFeaturedHeroFromEvent(primary,s.settings||{})}
-const featuredGrid=document.querySelector('#featuredEventsRow');
-const regularGrid=document.querySelector('#homeEventsGrid');
-const featuredTitle=document.querySelector('#featuredEventsTitle');
-if(!featuredGrid||!regularGrid||!featuredTitle)return;
-featuredGrid.innerHTML='';
-regularGrid.innerHTML='';
-const featuredEvents=evts.filter(e=>e.featured);
-const regularEvents=(primaryKey&&evts.length>1?evts.filter(e=>!e.featured&&eventKey(e)!==primaryKey):evts.filter(e=>!e.featured));
-function createEventCard(e,isFeatured=false){
-const isFree=e.isFree||Number(e.price||0)===0;
-const priceEl=isFree?'<span class="text-primary font-bold">Abierto</span>':`<span class="text-primary font-bold">$${Number(e.price||0).toFixed(2)}</span>`;
-const imgSrc=resolveEventImage(e.image);
-const card=document.createElement('div');card.className='card-hover bg-white rounded-2xl overflow-hidden shadow-lg border border-primary/30'+(isFeatured?' ring-2 ring-yellow-400':'');
-card.innerHTML=`<div class="relative h-60 overflow-hidden"><img src="${imgSrc}" alt="${e.title||''}" class="w-full h-full object-cover object-top card-image" onerror="this.onerror=null;this.src='${EVENT_IMAGE_FALLBACK}'">${isFeatured?'<div class="absolute top-4 left-4 bg-yellow-400 text-black font-bold py-1 px-3 rounded-full text-sm">DESTACADO</div>':''}<div class="absolute top-4 right-4 bg-primary text-black font-bold py-1 px-3 rounded-full text-sm">${badgeFromDate(e.date)}</div></div><div class="p-6"><h3 class="text-2xl font-bold mb-2 text-black">${e.title||''}</h3><p class="text-black/60 mb-4">${e.artists||''}</p><div class="flex items-center space-x-2 mb-3"><div class="w-5 h-5 flex items-center justify-center text-primary"><i class="ri-map-pin-line"></i></div><span class="text-black/60">${e.location||e.venue||''}</span></div><div class="flex items-center space-x-2 mb-6"><div class="w-5 h-5 flex items-center justify-center text-primary"><i class="ri-time-line"></i></div><span class="text-black/60">${e.time||''}</span></div><div class="flex items-center justify-between"><span>${priceEl}</span><button class="bg-black text-white font-semibold py-2 px-4 !rounded-button whitespace-nowrap hover:bg-primary transition-colors">VER MÁS</button></div></div>`;
-card.dataset.eventId=e.id||'';
-const info=document.createElement('div');
-info.className='text-xs text-black/60 mt-2';
-info.dataset.ticketInfo='1';
-const content=card.querySelector('.p-6');
-if(content) content.appendChild(info);
-
-return card;
-}
-featuredTitle.style.display=featuredEvents.length>0?'block':'none';
-featuredEvents.slice(0,3).forEach(e=>{
-const card=createEventCard(e,true);
-featuredGrid.appendChild(card);
-const btn=card.querySelector('button');if(btn)btn.onclick=()=>goToEventDetails(e);
-});
-regularEvents.slice(0,featuredEvents.length>0?2:3).forEach(e=>{
-const card=createEventCard(e,false);
-regularGrid.appendChild(card);
-const btn=card.querySelector('button');if(btn)btn.onclick=()=>goToEventDetails(e);
-});
-renderTicketInfoOnCards();
-const ids=evts.map(e=>e.id).filter(Boolean);
-if(ids.length) fetchTicketSummaries(ids);
-startTicketSummaryPolling();
-window.__sscHomeEvents=evts;
-if(typeof window.sscSetPrimaryEvent==='function'){
-  window.sscSetPrimaryEvent(primary);
-}
-}
-window.addEventListener('storage',function(ev){if(ev.key===STORE_KEY){try{renderHomeEvents()}catch(_){}}});
-document.addEventListener('DOMContentLoaded',async()=>{await loadEventsFromApi();renderHomeEvents()});
+  document.querySelectorAll('.v4-tile').forEach(function(t){t.dataset.revealed='false'});
+  var observer=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){e.target.dataset.revealed='true';observer.unobserve(e.target)}
+    });
+  },{threshold:0.12});
+  document.querySelectorAll('.v4-tile').forEach(function(el){observer.observe(el)});
 })();
 </script>
 <section id="vibe" class="vibe-section">
   <div class="container mx-auto px-6">
     <div class="text-center mb-10">
       <p class="text-xs uppercase tracking-[0.28em] text-emerald-300 mb-3">La experiencia</p>
-      <h2 class="vibe-title text-white">Del sunset al after dark.</h2>
-      <p class="vibe-quote mt-3">Una atmósfera pensada para que la noche se sienta como ritual, no como evento genérico.</p>
+      <h2 class="vibe-title text-white">Siente la energía</h2>
+      <p class="vibe-quote mt-3">Esto no es solo un club. Es un movimiento.</p>
     </div>
     <article class="vibe-card ssc-parallax" data-parallax="0.2" data-parallax-range="180" data-parallax-mode="translate" data-parallax-target="img">
-      <img src="assets/tssc-mural-main.png" alt="TSSC Mural" style="width:100%;height:100%;object-fit:cover;min-height:330px;filter:saturate(1.08) contrast(1.04) brightness(0.75);">
+      <img src="assets/img/vibe-replacement.png" alt="Crowd and lights at The Sun Session Club">
       <div class="vibe-content">
-        <p class="text-white/90 font-semibold text-lg">Calor, presión, luces y comunidad. Todo empuja hacia la próxima fecha.</p>
-        <button onclick="sscGoToPrimaryTicket()" class="hero-btn-primary mt-4 whitespace-nowrap">VER PRÓXIMA FECHA</button>
+        <p class="text-white/90 font-semibold text-lg">Multitud, luces y energía total. No te pierdas el próximo evento.</p>
+        <button onclick="sscGoToPrimaryTicket()" class="hero-btn-primary mt-4 whitespace-nowrap">COMPRAR BOLETOS</button>
       </div>
     </article>
   </div>
@@ -1579,113 +1548,39 @@ document.addEventListener('DOMContentLoaded',async()=>{await loadEventsFromApi()
 <!-- Merch Section -->
 <section id="merch" class="py-20" style="background:#0b1e14;">
 <div class="container mx-auto px-6">
-<h2 class="section-title text-4xl font-bold text-center mb-3 text-white">MERCH</h2>
+<h2 class="section-title text-4xl font-bold text-center mb-3 text-white" style="color:#ffffff !important;-webkit-text-fill-color:#ffffff;">MERCH</h2>
 <div class="w-24 h-1 bg-primary mx-auto mb-12"></div>
-<p class="text-center max-w-3xl mx-auto mb-16 text-white/70">Drops y piezas para extender la identidad de Sunsesh fuera de la pista.</p>
+<p class="text-center max-w-3xl mx-auto mb-16 text-white/70" style="color:rgba(255,255,255,0.72) !important;-webkit-text-fill-color:rgba(255,255,255,0.72);">Muestra tu apoyo con nuestra colección exclusiva de mercancía de alta calidad.</p>
 <div id="merchGrid" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
-<div id="merchEmpty" class="text-center text-white/60 mt-8">Aún no hay merch destacado disponible.</div>
+<div id="merchEmpty" class="text-center text-white/60 mt-8" style="color:rgba(255,255,255,0.6) !important;-webkit-text-fill-color:rgba(255,255,255,0.6);">Aún no hay merch destacado disponible.</div>
 </div>
 </section>
 
-<!-- Videos Section -->
-<section id="video" class="py-20">
-<div class="container mx-auto px-6">
-<h2 class="section-title text-4xl font-bold text-center mb-3 dark:text-white">LIVE SETS</h2>
-<div class="w-24 h-1 bg-primary mx-auto mb-12"></div>
-<p class="text-center max-w-3xl mx-auto mb-16 text-gray-600">Fragmentos de la experiencia en video: sets, momentos y energía capturada desde dentro.</p>
-<div id="homeVideosEmpty" class="text-center text-white/70 py-10 hidden">Aún no hay videos publicados.</div>
-<div id="homeVideosGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
-<div id="homeVideosCta" class="text-center mt-12">
-<a href="videos.html">
-<button onclick="window.location.href='videos.html'" class="bg-transparent border-2 border-primary text-primary font-bold py-3 px-8 !rounded-button whitespace-nowrap hover:bg-primary hover:text-black transition-all">VER TODOS LOS VIDEOS</button>
-</a>
-</div>
-</div>
-</section>
-<script>
-(function(){
-  const grid=document.getElementById('homeVideosGrid');
-  const empty=document.getElementById('homeVideosEmpty');
-  const cta=document.getElementById('homeVideosCta');
-  if(!grid||!empty||!cta) return;
-  const API_BASE=window.__SUNSESH_API_BASE||'';
-  const VIDEO_API=`${API_BASE}/api/videos`;
-  function setEmpty(show){
-    empty.classList.toggle('hidden',!show);
-  }
-  function render(list){
-    grid.innerHTML='';
-    list.slice(0,3).forEach(v=>{
-      const card=document.createElement('div');
-      card.className='card-hover bg-white rounded-lg overflow-hidden shadow-lg border border-gray-200';
-      card.innerHTML=`
-        <div class="relative h-56 overflow-hidden">
-          <img src="${v.thumbnail||''}" class="w-full h-full object-cover" alt="${v.title||'Video set'}">
-          <div class="absolute inset-0 bg-black/40"></div>
-          <div class="absolute inset-0 flex items-center justify-center"><i class="ri-play-fill text-white text-4xl bg-primary/80 rounded-full p-3"></i></div>
-        </div>
-        <div class="p-6">
-          <h3 class="text-2xl font-bold mb-2" style="color:#111111 !important">${v.title||''}</h3>
-          <p class="mb-2" style="color:#444444 !important">${v.location||''}${v.date?('  '+v.date):''}</p>
-          <div class="flex items-center justify-between">
-            <a href="${v.youtubeLink||'#'}" target="_blank" class="bg-black text-white font-semibold py-2 px-4 !rounded-button whitespace-nowrap hover:bg-primary transition-colors flex items-center space-x-2"><i class="ri-youtube-fill"></i><span>Watch on YouTube</span></a>
-            <a href="${v.soundcloudLink||'#'}" target="_blank" class="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-primary transition-colors"><i class="ri-soundcloud-fill text-2xl"></i></a>
-          </div>
-        </div>`;
-      grid.appendChild(card);
-    });
-  }
-  async function load(){
-    try{
-      const res=await fetch(VIDEO_API,{headers:{'Cache-Control':'no-cache'},cache:'no-store'});
-      const data=await res.json();
-      if(Array.isArray(data)&&data.length){
-        setEmpty(false);
-        render(data);
-        return;
-      }
-    }catch{}
-    setEmpty(true);
-  }
-  load();
-})();
-</script>
 <!-- About Section -->
 <section id="about" class="ssc-story">
 <div class="ssc-story-hero ssc-depth ssc-parallax" data-parallax="0.24" data-parallax-range="170" style="background-image:url('https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=1600&q=80')">
   <div class="container mx-auto px-6">
     <p class="ssc-eyebrow">Sun Session Club</p>
-    <h2 class="text-white font-extrabold">Una identidad construida y pensada para cada evento</h2>
-    <p class="text-white/70 max-w-2xl mt-4">TSSC apoya el amor al arte y la cultura de nuestra comunidad y juntos forjamos la mejor experiencia sensorial y musical.</p>
+    <h2 class="text-white font-extrabold">Una plataforma viva para la cultura electrónica</h2>
+    <p class="text-white/70 max-w-2xl mt-4">Desde 2023 construimos experiencias inmersivas que conectan artistas, comunidad y noches inolvidables. Somos un estudio creativo y sello cultural para la escena del noroeste.</p>
   </div>
 </div>
 <div class="container mx-auto px-6">
   <div class="ssc-story-grid">
     <div class="ssc-story-block ssc-story-block--wide">
-      <h3 class="text-3xl font-bold text-white mb-4">Raíz local, mirada de sello cultural</h3>
-      <p class="text-white/70 mb-4">The Sun Session Club nació para abrir un espacio donde lineup, visuales y comunidad hablaran el mismo idioma.</p>
-      <p class="text-white/70">Hoy funciona como plataforma para artistas, experiencias inmersivas y una escena que quiere sentirse viva, cercana y todos conectados.</p>
+      <h3 class="text-3xl font-bold text-white mb-4">Raíces locales, visión global</h3>
+      <p class="text-white/70 mb-4">The Sun Session Club nació cuando un grupo de amigos apasionados por la música electrónica decidió crear un espacio para impulsar talento emergente.</p>
+      <p class="text-white/70">Hoy somos una comunidad que diseña noches multisensoriales, conecta generaciones y eleva la escena con una identidad clara, elegante y futurista.</p>
       <a href="https://www.instagram.com/thesunsessionclub/" target="_blank" class="ssc-btn ssc-btn--primary mt-6">ÚNETE A LA EXPERIENCIA</a>
     </div>
   </div>
 </div>
-<div class="ssc-story-break ssc-parallax" data-parallax="0.12" style="background-image:url('https://images.unsplash.com/photo-1506157786151-b8491531f063?auto=format&fit=crop&w=1600&q=80')"></div>
-<div class="container mx-auto px-6">
-  <div class="ssc-story-grid reverse">
-    <div class="ssc-story-block ssc-story-block--wide">
-<h3 class="text-3xl font-bold text-white mb-4">Energía, ritmo y atmósfera</h3>
-      <p class="text-white/90 mb-4">Cada fecha debe sentirse diseñada: desde el booking hasta la energía del espacio, el recorrido visual y la forma en que se comunica.</p>
-      <p class="text-white/90">La idea no es llenar una agenda, sino crear noches con memoria, deseo y una identidad reconocible.</p>
-    </div>
-  </div>
-</div>
-
 <div class="ssc-story-banner ssc-parallax" data-parallax="0.16" data-parallax-range="190" data-parallax-mode="bg" style="background-image:url('https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?auto=format&fit=crop&w=1800&q=80')">
   <div class="ssc-story-banner__content container mx-auto px-6">
     <p class="ssc-eyebrow">Nuestra esencia</p>
-    <h3 class="text-white text-3xl md:text-4xl font-extrabold">Comunidad, identidad y noche compartida</h3>
-    <p class="text-white/90 mt-4 font-medium">La música es el centro, pero la experiencia completa es lo que convierte una fecha en algo que la gente quiere volver a vivir.</p>
-    <p class="text-white/60 mt-3 tracking-[0.35em] uppercase text-xs">Comunidad • Identidad • Ritual</p>
+    <h3 class="text-white text-3xl md:text-4xl font-extrabold">Pasión, comunidad e identidad</h3>
+    <p class="text-white/90 mt-4 font-medium">Creamos experiencias auténticas que conectan talento, público y cultura nocturna. Cada detalle está diseñado para que la música se sienta viva.</p>
+    <p class="text-white/60 mt-3 tracking-[0.35em] uppercase text-xs">Pasión • Comunidad • Identidad</p>
     <a href="https://www.instagram.com/thesunsessionclub/" target="_blank" class="ssc-btn ssc-btn--ghost mt-6">Conoce más</a>
   </div>
 </div>
@@ -1717,8 +1612,7 @@ document.addEventListener('DOMContentLoaded',async()=>{await loadEventsFromApi()
       .gradient-text{background:linear-gradient(to right,${primary},${secondary});-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
       body{color:${text}}
       #about .ssc-story-block h3,#about .ssc-story-block p,#about .ssc-story-banner h3,#about .ssc-story-banner p,#about .ssc-story-banner .ssc-eyebrow{color:#fff!important}
-      #merch .section-title,#merch p.text-gray-600,#merch #merchEmpty,#contact .section-title,#contact p.text-gray-600,#contact .bg-white,#contact .bg-white h3,#contact .bg-white h4,#contact .bg-white p,#contact .bg-white span,#contact .bg-white a{color:#111!important}
-      #gallery .section-title,#gallery p.text-gray-600,#gallery #homeGalleryEmpty{color:#fff!important}
+      #merch .section-title,#merch p.text-gray-600,#merch #merchEmpty{color:#111!important}
       footer .text-gray-400, footer .text-gray-500, footer p, footer span, footer a, footer li{color:#ffffff!important}
       footer .bg-primary{color:${btnText}!important}
       #backToTop button{color:${btnText}!important}
@@ -1733,121 +1627,14 @@ document.addEventListener('DOMContentLoaded',async()=>{await loadEventsFromApi()
   }catch(_){}
 })();
 </script>
-<!-- Music Section -->
-<section id="music" class="py-20">
-<div class="container mx-auto px-6">
-<h2 class="section-title text-4xl font-bold text-center mb-3 dark:text-white">MÚSICA Y MIXES</h2>
-<div class="w-24 h-1 bg-primary mx-auto mb-12"></div>
-<p class="text-center max-w-3xl mx-auto mb-16 text-gray-600">Tracks, mezclas y selecciones que extienden la experiencia de Sunsesh más allá del evento.</p>
-<div id="homeMusicGrid" class="grid grid-cols-1 md:grid-cols-2 gap-8"></div>
-<div class="text-center mt-12">
-<a href="music.html">
-<button onclick="window.location.href='music.html'" class="bg-transparent border-2 border-primary text-primary font-bold py-3 px-8 !rounded-button whitespace-nowrap hover:bg-primary hover:text-black transition-all">VER TODA LA MÚSICA</button>
-</a>
-</div>
-</div>
-</section>
-<script>
-(function(){
-const STORE_KEY='ssc_store_v1';
-const grid=document.getElementById('homeMusicGrid');
-if(!grid)return;
-function parseLinks(raw){
-  const out={spotify:'',soundcloud:'',youtube:'',genre:'',genres:[]};
-  if(raw&&typeof raw==='object'){
-    out.spotify=String(raw.spotify||'').trim();
-    out.soundcloud=String(raw.soundcloud||'').trim();
-    out.youtube=String(raw.youtube||'').trim();
-    out.genre=String(raw.genre||'').trim();
-    out.genres=Array.isArray(raw.genres)?raw.genres:[];
-    return out;
-  }
-  const txt=String(raw||'').trim();
-  if(!txt)return out;
-  try{
-    const obj=JSON.parse(txt);
-    if(obj&&typeof obj==='object')return parseLinks(obj);
-  }catch{}
-  txt.split(',').map(x=>x.trim()).filter(Boolean).forEach(url=>{
-    const l=url.toLowerCase();
-    if(!out.spotify&&l.includes('spotify.com'))out.spotify=url;
-    else if(!out.soundcloud&&l.includes('soundcloud.com'))out.soundcloud=url;
-    else if(!out.youtube&&(l.includes('youtube.com')||l.includes('youtu.be')))out.youtube=url;
-  });
-  return out;
-}
-function fromApi(x){
-  const links=parseLinks(x.platform_links||'');
-  const genres=Array.isArray(links.genres)&&links.genres.length?links.genres:String(links.genre||'').split(',').map(s=>s.trim()).filter(Boolean);
-  return {
-    title:x.title||'',
-    artist:x.artist_id||'',
-    cover:x.cover_image||'https://placehold.co/600x600?text=NO+COVER',
-    genres,
-    spotify:links.spotify||'',
-    soundcloud:links.soundcloud||'',
-    youtube:links.youtube||'',
-    status:x.status||'ACTIVE'
-  };
-}
-function fromStore(x){
-  const links=parseLinks(x.platform_links||{spotify:x.spotifyLink,soundcloud:x.soundcloudLink,youtube:x.youtubeLink,genre:Array.isArray(x.genre)?x.genre.join(', '):x.genre,genres:Array.isArray(x.genre)?x.genre:[]});
-  return {
-    title:x.title||'',
-    artist:x.artist||'',
-    cover:x.cover||x.cover_image||'https://placehold.co/600x600?text=NO+COVER',
-    genres:Array.isArray(x.genre)?x.genre:[],
-    spotify:links.spotify||'',
-    soundcloud:links.soundcloud||'',
-    youtube:links.youtube||'',
-    status:x.status||'ACTIVE'
-  };
-}
-function render(list){
-  grid.innerHTML='';
-  list.filter(t=>String(t.status||'ACTIVE').toLowerCase()==='active').slice(0,2).forEach(t=>{
-    const links=[
-      t.spotify?`<a href="${t.spotify}" target="_blank" class="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-primary transition-colors"><i class="ri-spotify-fill text-2xl"></i></a>`:'',
-      t.soundcloud?`<a href="${t.soundcloud}" target="_blank" class="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-primary transition-colors"><i class="ri-soundcloud-fill text-2xl"></i></a>`:'',
-      t.youtube?`<a href="${t.youtube}" target="_blank" class="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-primary transition-colors"><i class="ri-youtube-fill text-2xl"></i></a>`:''
-    ].filter(Boolean).join('');
-    const el=document.createElement('div');
-    el.className='card-hover bg-white rounded-lg overflow-hidden shadow-lg border border-gray-200';
-    el.innerHTML=`<div class="flex flex-col md:flex-row"><div class="md:w-1/3 h-60 md:h-auto overflow-hidden"><img src="${t.cover}" alt="${t.title}" class="w-full h-full object-cover object-top card-image"></div><div class="md:w-2/3 p-6"><h3 class="text-2xl font-bold mb-2">${t.title||''}</h3><p class="text-gray-600 mb-4">${t.artist||''}</p><div class="flex items-center space-x-2 mb-4"><div class="w-5 h-5 flex items-center justify-center text-primary"><i class="ri-music-2-line"></i></div><span class="text-gray-600">${(t.genres||[]).join(' | ')}</span></div><div class="flex items-center space-x-4">${links||'<span class="text-gray-500">Sin links</span>'}</div></div></div>`;
-    grid.appendChild(el);
-  });
-}
-async function loadHomeMusic(){
-  try{
-    const res=await fetch(window.__SUNSESH_API_BASE + '/api/music',{headers:{'Cache-Control':'no-cache'},cache:'no-store'});
-    const data=await res.json();
-    if(Array.isArray(data)){render(data.map(fromApi));return;}
-  }catch{}
-  try{
-    const s=JSON.parse(localStorage.getItem(STORE_KEY)||'{}');
-    render((Array.isArray(s.tracks)?s.tracks:[]).map(fromStore));
-  }catch{
-    render([]);
-  }
-}
-window.addEventListener('storage',ev=>{
-  if(ev.key!==STORE_KEY)return;
-  try{
-    const s=JSON.parse(ev.newValue||'{}');
-    render((Array.isArray(s.tracks)?s.tracks:[]).map(fromStore));
-  }catch{}
-});
-loadHomeMusic();
-})();
-</script>
 <!-- Cart Modal -->
 <div id="cartModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
 <div id="cartContent" class="fixed top-0 right-0 h-full w-full max-w-md shadow-2xl transform transition-transform duration-300 translate-x-full" style="background:#0a0f0c;border-left:1px solid rgba(57,255,143,0.18);">
 <div class="flex flex-col h-full">
 <div class="flex justify-between items-center p-6" style="border-bottom:1px solid rgba(255,255,255,0.08);">
 <h3 class="text-2xl font-bold" style="color:#fff;">Carrito</h3>
-<button onclick="closeCart()" aria-label="Cerrar" class="text-2xl font-bold leading-none" style="color:rgba(255,255,255,0.5);">
-<span aria-hidden="true">X</span>
+<button onclick="closeCart()" style="color:rgba(255,255,255,0.5);">
+<i class="ri-close-line text-2xl"></i>
 </button>
 </div>
 <div class="flex-1 overflow-y-auto p-6" id="cartItems"></div>
@@ -1867,42 +1654,42 @@ loadHomeMusic();
 
 <!-- Checkout Form Modal -->
 <div id="checkoutFormModal" class="fixed inset-0 bg-black bg-opacity-50 z-[60] hidden">
-<div class="checkout-form-panel fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-xl w-full max-w-2xl">
+<div class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-xl w-full max-w-2xl">
 <div class="p-6">
 <div class="flex justify-between items-center mb-6">
-<h3 class="text-2xl font-bold text-black">Checkout Information</h3>
-<button onclick="closeCheckoutForm()" aria-label="Cerrar" class="text-black/40 hover:text-black text-2xl font-bold leading-none">
-<span aria-hidden="true">X</span>
+<h3 class="text-2xl font-bold">Checkout Information</h3>
+<button onclick="closeCheckoutForm()" class="text-gray-500 hover:text-gray-700">
+<i class="ri-close-line text-2xl"></i>
 </button>
 </div>
 <form id="checkoutForm" action="#" method="POST" class="space-y-6">
 <div class="grid grid-cols-2 gap-6">
 <div>
-<label class="checkout-label block mb-2">Nombre</label>
-<input id="coName" type="text" required class="checkout-input w-full px-4 py-3 border rounded focus:outline-none" placeholder="Tu nombre">
+<label class="block text-gray-700 font-medium mb-2">Nombre</label>
+<input id="coName" type="text" required class="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:border-primary">
 </div>
 <div>
-<label class="checkout-label block mb-2">Apellido</label>
-<input id="coLastName" type="text" required class="checkout-input w-full px-4 py-3 border rounded focus:outline-none" placeholder="Tu apellido">
+<label class="block text-gray-700 font-medium mb-2">Apellido</label>
+<input id="coLastName" type="text" required class="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:border-primary">
 </div>
 </div>
 <div>
-<label class="checkout-label block mb-2">Email</label>
-<input id="coEmail" type="email" required class="checkout-input w-full px-4 py-3 border rounded focus:outline-none" placeholder="tu@email.com">
+<label class="block text-gray-700 font-medium mb-2">Email</label>
+<input id="coEmail" type="email" required class="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:border-primary">
 </div>
 <div>
-<label class="checkout-label block mb-2">Telefono</label>
-<input id="coPhone" type="tel" required class="checkout-input w-full px-4 py-3 border rounded focus:outline-none" placeholder="Tu telefono">
+<label class="block text-gray-700 font-medium mb-2">Telefono</label>
+<input id="coPhone" type="tel" required class="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:border-primary">
 </div>
 <div>
-<label class="checkout-label block mb-2">Notas del pedido (opcional)</label>
-<textarea id="coNotes" rows="3" class="checkout-textarea w-full px-4 py-3 border rounded focus:outline-none" placeholder="Instrucciones extra para tu orden"></textarea>
+<label class="block text-gray-700 font-medium mb-2">Notas del pedido (opcional)</label>
+<textarea id="coNotes" rows="3" class="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:border-primary"></textarea>
 </div>
 <div>
-<label class="checkout-label block mb-2">Resumen del pedido</label>
-<div id="checkoutSummary" class="checkout-summary p-4 rounded"></div>
+<label class="block text-gray-700 font-medium mb-2">Resumen del pedido</label>
+<div id="checkoutSummary" class="bg-gray-50 p-4 rounded"></div>
 </div>
-<div class="checkout-total flex justify-between items-center font-bold text-lg">
+<div class="flex justify-between items-center font-bold text-lg">
 <span>Monto Total:</span>
 <span id="checkoutTotal" class="text-primary"></span>
 </div>
@@ -1930,8 +1717,8 @@ loadHomeMusic();
 <div id="eventDetailsModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
 <div class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl shadow-xl w-full max-w-5xl overflow-hidden">
 <div class="relative">
-<button onclick="closeEventDetails()" aria-label="Cerrar" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 z-10 text-2xl font-bold leading-none">
-<span aria-hidden="true">X</span>
+<button onclick="closeEventDetails()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 z-10">
+<i class="ri-close-line text-2xl"></i>
 </button>
 <div class="flex flex-col md:flex-row">
 <div class="md:w-2/3 relative bg-black/5">
@@ -1991,7 +1778,7 @@ loadHomeMusic();
           <h3 class="text-2xl font-extrabold text-black">Comprar boletos</h3>
           <p id="ticketEventName" class="text-black/60"></p>
         </div>
-        <button id="ticket_close" aria-label="Cerrar" class="text-black/50 hover:text-black text-2xl font-bold leading-none">X</button>
+        <button id="ticket_close" class="text-black/50 hover:text-black text-2xl">?</button>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
         <div class="bg-black/5 rounded-xl p-4">
@@ -2024,8 +1811,8 @@ loadHomeMusic();
 <!-- Line-up Modal -->
 <div id="lineupModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
 <div class="bg-white rounded-lg w-full max-w-2xl h-auto aspect-video md:h-[500px] md:aspect-auto relative opacity-0 transition-all duration-300 transform translate-y-4" id="lineupContent">
-<button onclick="closeLineup()" aria-label="Cerrar" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 z-10 text-2xl font-bold leading-none">
-<span aria-hidden="true">X</span>
+<button onclick="closeLineup()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 z-10">
+<i class="ri-close-line text-2xl"></i>
 </button>
 <img id="lineupImg" src="" alt="Festival Line-up" class="w-full h-full object-cover rounded-lg">
 </div>
@@ -2038,8 +1825,8 @@ loadHomeMusic();
 </section>
 <div id="imageModal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden flex items-center justify-center">
 <div id="imageContent" class="bg-white rounded-lg max-w-5xl w-[90vw] max-h-[85vh] relative opacity-0 transition-all duration-300 transform translate-y-4">
-<button onclick="closeImageModal()" aria-label="Cerrar" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 z-10 text-2xl font-bold leading-none">
-<span aria-hidden="true">X</span>
+<button onclick="closeImageModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 z-10">
+<i class="ri-close-line text-2xl"></i>
 </button>
 <img id="imageModalImg" src="" alt="" class="w-full h-[80vh] object-contain rounded-lg">
 <div id="imageCaption" class="absolute bottom-4 left-4 right-12 bg-black bg-opacity-60 text-white px-3 py-2 rounded"></div>
@@ -2353,296 +2140,50 @@ requestAnimationFrame(animate);
 </script>
 </div>
 </section>
-<!-- Contact Section -->
-<section id="gallery" class="py-20">
-<div class="container mx-auto px-6">
-<h2 class="section-title text-4xl font-bold text-center mb-3 dark:text-white">GALERÍA</h2>
-<div class="w-24 h-1 bg-primary mx-auto mb-12"></div>
-<p class="text-center max-w-3xl mx-auto mb-16 text-gray-600">Momentos que demuestran la atmósfera real de cada sesión: crowd, luces, energía y memoria visual.</p>
-<div id="homeGalleryEmpty" class="text-center text-white/70 py-10 hidden">Aún no hay fotos en la galería. Agrega un evento desde el panel.</div>
-<div id="homeGalleryShell" class="home-gallery-shell hidden">
-  <div class="home-gallery-lanes">
-    <div class="home-gallery-lane">
-      <div id="homeGalleryLane1" class="home-gallery-track track-x-right"></div>
-    </div>
-    <div class="home-gallery-lane">
-      <div id="homeGalleryLane2" class="home-gallery-track track-y-down"></div>
-    </div>
-    <div class="home-gallery-lane">
-      <div id="homeGalleryLane3" class="home-gallery-track track-y-up"></div>
-    </div>
-  </div>
-</div>
-<div id="homeGalleryCta" class="text-center mt-12 hidden">
-<a href="gallery.html">
-<button onclick="window.location.href='gallery.html'" class="bg-transparent border-2 border-primary text-primary font-bold py-3 px-8 !rounded-button whitespace-nowrap hover:bg-primary hover:text-black transition-all">VER MÁS FOTOS</button>
-</a>
-</div>
-</div>
-</section>
-<script>
-(function(){
-  const shell=document.getElementById('homeGalleryShell');
-  const lane1=document.getElementById('homeGalleryLane1');
-  const lane2=document.getElementById('homeGalleryLane2');
-  const lane3=document.getElementById('homeGalleryLane3');
-  const empty=document.getElementById('homeGalleryEmpty');
-  const cta=document.getElementById('homeGalleryCta');
-  if(!shell||!lane1||!lane2||!lane3||!empty||!cta) return;
-  const API_BASE=window.__SUNSESH_API_BASE||'';
-  const EVENTS_API=`${API_BASE}/api/gallery/events`;
-  const DETAIL_API=(id)=>`${API_BASE}/api/gallery/events/${encodeURIComponent(id)}`;
-  const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
-  const SLIDE_DELAY=7000;
-  const laneTimers=[];
-
-  function isAbs(url){
-    return /^https?:\/\//i.test(url||'');
-  }
-  function normalize(src){
-    const s=String(src||'').trim();
-    if(!s) return '';
-    if(isAbs(s)) return s;
-    if(s.startsWith('/')) return `${API_BASE}${s}`;
-    if(s.startsWith('uploads/')) return `${API_BASE}/${s}`;
-    return s;
-  }
-  function shuffle(arr){
-    const out=[...arr];
-    for(let i=out.length-1;i>0;i-=1){
-      const j=Math.floor(Math.random()*(i+1));
-      [out[i],out[j]]=[out[j],out[i]];
-    }
-    return out;
-  }
-  function setEmpty(show){
-    empty.classList.toggle('hidden',!show);
-    shell.classList.toggle('hidden',show);
-    cta.classList.toggle('hidden',show);
-    if(show){
-      while(laneTimers.length){
-        const t=laneTimers.pop();
-        clearInterval(t);
-      }
-      lane1.innerHTML='';
-      lane2.innerHTML='';
-      lane3.innerHTML='';
-    }
-  }
-
-  function makeSlide(src, axis, dir, idx){
-    const card=document.createElement('article');
-    card.className='home-gallery-slide';
-    const depth=(0.035 + ((idx%5)*0.008)).toFixed(3);
-    card.innerHTML=`<img src="${src}" alt="Gallery photo" class="home-gallery-image gallery-image" data-zoomable="1" data-parallax-axis="${axis}" data-parallax-dir="${dir}" data-depth="${depth}" loading="lazy">`;
-    return card;
-  }
-
-  function setSlideOffset(img, axis, dir, value){
-    if(!img) return;
-    const offset=`${value}%`;
-    if(axis==='x'){
-      img.style.setProperty('--slide-x', offset);
-      img.style.setProperty('--slide-y', '0%');
-    }else{
-      img.style.setProperty('--slide-x', '0%');
-      img.style.setProperty('--slide-y', offset);
-    }
-    img.dataset.parallaxAxis=axis;
-    img.dataset.parallaxDir=String(dir);
-  }
-
-  function initLaneSlider(el, images, axis, dir, cfg){
-    el.innerHTML='';
-    if(!images.length) return;
-    const delay=(cfg&&cfg.delay)||SLIDE_DELAY;
-    const startAfter=(cfg&&cfg.startAfter)||0;
-    let index=0;
-    const first=makeSlide(images[0], axis, dir, 0);
-    first.classList.add('is-current');
-    const firstImg=first.querySelector('.home-gallery-image');
-    setSlideOffset(firstImg, axis, dir, 0);
-    el.appendChild(first);
-    if(images.length<2) return;
-
-    const step=()=>{
-      const current=el.querySelector('.home-gallery-slide.is-current');
-      if(!current) return;
-      index=(index+1)%images.length;
-      const next=makeSlide(images[index], axis, dir, index);
-      const nextImg=next.querySelector('.home-gallery-image');
-      setSlideOffset(nextImg, axis, dir, dir===1 ? -110 : 110);
-      next.classList.add('is-next');
-      el.appendChild(next);
-      requestAnimationFrame(()=>{
-        requestAnimationFrame(()=>{
-          setSlideOffset(nextImg, axis, dir, 0);
-          current.classList.remove('is-current');
-          current.style.opacity='0';
-        });
-      });
-      setTimeout(()=>{
-        current.remove();
-        next.classList.remove('is-next');
-        next.classList.add('is-current');
-      }, 1220);
-    };
-
-    const timeoutId=setTimeout(()=>{
-      step();
-      const intervalId=setInterval(step, delay);
-      laneTimers.push(intervalId);
-    }, startAfter);
-    laneTimers.push(timeoutId);
-  }
-
-  function bindHomeGalleryParallax(){
-    if(window.__homeGalleryParallaxBound) return;
-    window.__homeGalleryParallaxBound=true;
-    let raf=0;
-    const update=()=>{
-      raf=0;
-      document.querySelectorAll('#gallery .home-gallery-image').forEach((img)=>{
-        const rect=img.getBoundingClientRect();
-        const depth=parseFloat(img.dataset.depth||'0.04');
-        const dir=parseFloat(img.dataset.parallaxDir||'1');
-        const axis=img.dataset.parallaxAxis||'y';
-        const drift=clamp(((window.innerHeight*0.5)-(rect.top+rect.height*0.5))*depth*dir,-14,14);
-        if(axis==='x'){
-          img.style.setProperty('--parallax-x', `${drift}px`);
-          img.style.setProperty('--parallax-y', '0px');
-        }else{
-          img.style.setProperty('--parallax-x', '0px');
-          img.style.setProperty('--parallax-y', `${drift}px`);
-        }
-      });
-    };
-    const request=()=>{ if(raf) return; raf=requestAnimationFrame(update); };
-    window.__refreshHomeGalleryParallax=request;
-    window.addEventListener('scroll',request,{passive:true});
-    window.addEventListener('resize',request);
-    request();
-  }
-
-  async function loadGallery(){
-    try{
-      const res=await fetch(EVENTS_API,{headers:{'Cache-Control':'no-cache'},cache:'no-store'});
-      const data=await res.json();
-      if(!Array.isArray(data)||!data.length){
-        setEmpty(true);
-        return;
-      }
-
-      const detailResponses=await Promise.all(
-        data
-          .map(ev=>ev&&ev.id)
-          .filter(Boolean)
-          .map(async(id)=>{
-            try{
-              const r=await fetch(DETAIL_API(id),{headers:{'Cache-Control':'no-cache'},cache:'no-store'});
-              if(!r.ok) return null;
-              return await r.json();
-            }catch{
-              return null;
-            }
-          })
-      );
-
-      const merged=[];
-      detailResponses.forEach((detail)=>{
-        if(!detail||!Array.isArray(detail.images)) return;
-        detail.images.forEach((img)=>{
-          const src=normalize(img?.image_path||img?.thumb_path||'');
-          if(src) merged.push(src);
-        });
-      });
-      data.forEach((ev)=>{
-        const cover=normalize(ev.cover_image||ev.cover_thumb||ev.coverImage||ev.coverThumb||'');
-        if(cover) merged.push(cover);
-      });
-
-      const unique=[...new Set(merged.filter(Boolean))];
-      if(!unique.length){
-        setEmpty(true);
-        return;
-      }
-
-      const randomized=shuffle(unique);
-      const total=Math.max(18, randomized.length);
-      const expanded=[];
-      for(let i=0;i<total;i+=1){
-        expanded.push(randomized[i%randomized.length]);
-      }
-      const col1=[],col2=[],col3=[];
-      expanded.forEach((src,idx)=>{
-        if(idx%3===0) col1.push(src);
-        else if(idx%3===1) col2.push(src);
-        else col3.push(src);
-      });
-
-      while(laneTimers.length){
-        const t=laneTimers.pop();
-        clearInterval(t);
-      }
-      initLaneSlider(lane1, col1, 'x', 1, { delay: 7000, startAfter: 0 });
-      initLaneSlider(lane2, col2, 'y', 1, { delay: 7600, startAfter: 1800 });
-      initLaneSlider(lane3, col3, 'y', -1, { delay: 8200, startAfter: 3600 });
-
-      setEmpty(false);
-      bindHomeGalleryParallax();
-      if(window.__refreshHomeGalleryParallax) window.__refreshHomeGalleryParallax();
-    }catch{
-      setEmpty(true);
-    }
-  }
-  setEmpty(true);
-  loadGallery();
-})();
-</script>
 <section id="contact" class="py-20 bg-gray-50">
 <div class="container mx-auto px-6">
-<h2 class="section-title text-4xl font-bold text-center mb-3 text-black dark:text-white">BOOKINGS Y CONTACTO</h2>
+<h2 class="section-title text-4xl font-bold text-center mb-3 text-white" style="color:#ffffff !important;-webkit-text-fill-color:#ffffff;">CONTÁCTANOS</h2>
 <div class="w-24 h-1 bg-primary mx-auto mb-12"></div>
-<p class="text-center max-w-3xl mx-auto mb-16 text-gray-600">Para colaboraciones, bookings, alianzas o dudas sobre la próxima fecha, este es el punto de entrada.</p>
+<p class="text-center max-w-3xl mx-auto mb-16 text-white/70" style="color:rgba(255,255,255,0.72) !important;-webkit-text-fill-color:rgba(255,255,255,0.72);">¿Tienes preguntas o quieres colaborar? Ponte en contacto con nosotros.</p>
 <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
 <div>
 <form action="#" method="POST" class="space-y-6" id="contactForm">
 <div>
-<label for="name" class="block text-gray-700 font-medium mb-2">Nombre</label>
+<label for="name" class="block text-white font-medium mb-2">Nombre</label>
 <input type="text" id="name" name="name" class="w-full px-4 py-3 border border-gray-300 rounded text-black placeholder:text-gray-500 focus:outline-none focus:border-primary" placeholder="Tu nombre" required>
 </div>
 <div>
-<label for="email" class="block text-gray-700 font-medium mb-2">Correo electrónico</label>
+<label for="email" class="block text-white font-medium mb-2">Correo electrónico</label>
 <input type="email" id="email" name="email" class="w-full px-4 py-3 border border-gray-300 rounded text-black placeholder:text-gray-500 focus:outline-none focus:border-primary" placeholder="Tu correo electrónico" required>
 </div>
 <div>
-<label for="subject" class="block text-gray-700 font-medium mb-2">Asunto</label>
+<label for="subject" class="block text-white font-medium mb-2">Asunto</label>
 <input type="text" id="subject" name="subject" class="w-full px-4 py-3 border border-gray-300 rounded text-black placeholder:text-gray-500 focus:outline-none focus:border-primary" placeholder="Asunto" required>
 </div>
 <div>
-<label for="message" class="block text-gray-700 font-medium mb-2">Mensaje</label>
+<label for="message" class="block text-white font-medium mb-2">Mensaje</label>
 <textarea id="message" name="message" rows="5" class="w-full px-4 py-3 border border-gray-300 rounded text-black placeholder:text-gray-500 focus:outline-none focus:border-primary" placeholder="Tu mensaje" maxlength="500" required></textarea>
-<div class="text-sm text-gray-500 mt-1"><span id="charCount">0</span>/500 caracteres</div>
+<div class="text-sm text-white/60 mt-1"><span id="charCount">0</span>/500 caracteres</div>
 </div>
 <div class="flex items-center">
 <input type="checkbox" id="consent" name="consent" class="custom-checkbox mr-3" required>
-<label for="consent" class="text-gray-600 text-sm">Acepto recibir correos electrónicos sobre próximos eventos y promociones.</label>
+<label for="consent" class="text-white/70 text-sm">Acepto recibir correos electrónicos sobre próximos eventos y promociones.</label>
 </div>
 <div id="formMessage" class="hidden rounded-lg p-4 mb-4"></div>
 <button type="submit" class="bg-primary hover:bg-opacity-90 text-black font-bold py-3 px-8 !rounded-button whitespace-nowrap transition-all">ENVIAR MENSAJE</button>
 </form>
 </div>
 <div>
-<div class="bg-white p-8 rounded-lg shadow-lg h-full">
-<h3 class="text-2xl font-bold mb-6">Ponte en contacto</h3>
+<div class="p-8 rounded-lg shadow-lg h-full" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);backdrop-filter:blur(12px);">
+<h3 class="text-2xl font-bold mb-6 text-white">Ponte en contacto</h3>
 <div class="space-y-6">
 <div class="flex items-start space-x-4">
 <div class="w-10 h-10 flex items-center justify-center text-primary bg-primary bg-opacity-10 rounded-full mt-1">
 <i class="ri-map-pin-line"></i>
 </div>
 <div>
-<h4 class="font-bold text-gray-800 mb-1">Locacion</h4>
-<p class="text-gray-600">Mexicali B.C.</p>
+<h4 class="font-bold text-white mb-1">Locacion</h4>
+<p class="text-white/70">Mexicali B.C.</p>
 </div>
 </div>
 <div class="flex items-start space-x-4">
@@ -2650,8 +2191,8 @@ requestAnimationFrame(animate);
 <i class="ri-mail-line"></i>
 </div>
 <div>
-<h4 class="font-bold text-gray-800 mb-1">Email</h4>
-<p class="text-gray-600">thesunsessionclub@gmail.com</p>
+<h4 class="font-bold text-white mb-1">Email</h4>
+<p class="text-white/70">thes<br>thesunsessionclub@gmail.com</p>
 </div>
 </div>
 <div class="flex items-start space-x-4">
@@ -2659,8 +2200,8 @@ requestAnimationFrame(animate);
 <i class="ri-phone-line"></i>
 </div>
 <div>
-<h4 class="font-bold text-gray-800 mb-1">Phone</h4>
-<p class="text-gray-600">+1 (686) 109 5015<br>
+<h4 class="font-bold text-white mb-1">Phone</h4>
+<p class="text-white/70">+1 (686) 109 5015<br>
 </div>
 </div>
 <div class="flex items-start space-x-4">
@@ -2668,27 +2209,27 @@ requestAnimationFrame(animate);
 <i class="ri-time-line"></i>
 </div>
 <div>
-<h4 class="font-bold text-gray-800 mb-1">Dias de servicio</h4>
-<p class="text-gray-600">Jueves, Viernes, Sabado, Domingo</p>
+<h4 class="font-bold text-white mb-1">Office Hours</h4>
+<p class="text-white/70">Monday - Friday: 10:00 AM - 6:00 PM<br>Saturday: 12:00 PM - 4:00 PM</p>
 </div>
 </div>
 </div>
 <div class="mt-8">
-<h4 class="font-bold text-gray-800 mb-4">Siguenos</h4>
+<h4 class="font-bold text-white mb-4">Siguenos</h4>
 <div class="flex space-x-4">
-<a href="#" class="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-primary transition-colors">
+<a href="#" class="w-10 h-10 flex items-center justify-center text-white/70 hover:text-primary transition-colors">
 <i class="ri-facebook-fill text-xl"></i>
 </a>
-<a href="#" class="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-primary transition-colors">
+<a href="#" class="w-10 h-10 flex items-center justify-center text-white/70 hover:text-primary transition-colors">
 <i class="ri-instagram-fill text-xl"></i>
 </a>
-<a href="#" class="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-primary transition-colors">
+<a href="#" class="w-10 h-10 flex items-center justify-center text-white/70 hover:text-primary transition-colors">
 <i class="ri-twitter-fill text-xl"></i>
 </a>
-<a href="#" class="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-primary transition-colors">
+<a href="#" class="w-10 h-10 flex items-center justify-center text-white/70 hover:text-primary transition-colors">
 <i class="ri-youtube-fill text-xl"></i>
 </a>
-<a href="#" class="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-primary transition-colors">
+<a href="#" class="w-10 h-10 flex items-center justify-center text-white/70 hover:text-primary transition-colors">
 <i class="ri-soundcloud-fill text-xl"></i>
 </a>
 </div>
@@ -2705,7 +2246,7 @@ requestAnimationFrame(animate);
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
 <div>
 <img id="siteLogoFooter" src="/assets/img/logo.jpg" alt="The Sun Session Club Logo" class="h-16 mb-6 object-contain" onerror="this.style.display='none'">
-<p class="text-gray-400 mb-6">The Sun Session Club conecta comunidad, lineup y cultura nocturna en una experiencia pensada para sentirse antes, durante y después de cada fecha.</p>
+<p class="text-gray-400 mb-6">The Sun Session Club es el punto de encuentro para amantes de la música electrónica. únete a la comunidad y vive los mejores sets de DJ.</p>
 <div class="flex space-x-4">
 <a href="#" class="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-primary transition-colors">
 <i class="ri-facebook-fill text-xl"></i>
@@ -2724,11 +2265,11 @@ requestAnimationFrame(animate);
 <div>
 <h3 class="text-xl font-bold mb-6">Enlaces Rápidos</h3>
 <ul class="space-y-3">
+<li><a href="#artists" class="text-gray-400 hover:text-primary transition-colors">Artistas</a></li>
 <li><a href="#events" class="text-gray-400 hover:text-primary transition-colors">Eventos</a></li>
-<li><a href="#artists" class="text-gray-400 hover:text-primary transition-colors">Lineup</a></li>
-<li><a href="#gallery" class="text-gray-400 hover:text-primary transition-colors">Galería</a></li>
-<li><a href="#music" class="text-gray-400 hover:text-primary transition-colors">Música</a></li>
-<li><a href="#about" class="text-gray-400 hover:text-primary transition-colors">Concepto</a></li>
+<li><a href="music.html" class="text-gray-400 hover:text-primary transition-colors">Música</a></li>
+<li><a href="#about" class="text-gray-400 hover:text-primary transition-colors">Nosotros</a></li>
+<li><a href="gallery.html" class="text-gray-400 hover:text-primary transition-colors">Galería</a></li>
 <li><a href="#contact" class="text-gray-400 hover:text-primary transition-colors">Contacto</a></li>
 </ul>
 </div>
@@ -2756,8 +2297,8 @@ requestAnimationFrame(animate);
 </ul>
 </div>
 <div>
-<h3 class="text-xl font-bold mb-6">Inner Circle</h3>
-<p class="text-gray-400 mb-4">Suscríbete para enterarte antes que nadie de próximas fechas, drops y accesos especiales.</p>
+<h3 class="text-xl font-bold mb-6">Noticias</h3>
+<p class="text-gray-400 mb-4">Suscríbete para recibir de primera mano los próximos eventos y ofertas especiales.</p>
 <form class="space-y-4">
 <div class="relative">
 <input type="email" placeholder="Tu correo electrónico" class="w-full px-4 py-3 bg-gray-800 border-none rounded text-white focus:outline-none focus:ring-2 focus:ring-primary">
@@ -2770,38 +2311,14 @@ requestAnimationFrame(animate);
 </form>
 </div>
 </div>
-<div class="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center"><p class="text-gray-500 text-sm mb-4 md:mb-0"> <span class="ssc-year"></span> The Sun Session Club. Todos los derechos reservados.</p><div class="flex items-center space-x-6"><a href="home.html#about" class="text-gray-500 hover:text-primary text-sm transition-colors">Nosotros</a><a href="privacy.html" class="text-gray-500 hover:text-primary text-sm transition-colors">Política de privacidad</a><a href="terms.html" class="text-gray-500 hover:text-primary text-sm transition-colors">Términos y condiciones</a><a href="login.html" class="hidden text-gray-500 hover:text-primary transition-colors flex items-center" title="Iniciar sesión"><i class="ri-user-3-line text-lg"></i></a></div></div>
+<div class="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center"><p class="text-gray-500 text-sm mb-4 md:mb-0"> 2025 The Sun Session Club. Todos los derechos reservados.</p><div class="flex items-center space-x-6"><a href="sunsessionesp_fixed_v3.html#about" class="text-gray-500 hover:text-primary text-sm transition-colors">Nosotros</a><a href="privacy.html" class="text-gray-500 hover:text-primary text-sm transition-colors">Política de privacidad</a><a href="terms.html" class="text-gray-500 hover:text-primary text-sm transition-colors">Términos y condiciones</a><a href="login.html" class="hidden text-gray-500 hover:text-primary transition-colors flex items-center" title="Iniciar sesión"><i class="ri-user-3-line text-lg"></i></a></div></div>
 </div>
 </footer>
-<div id="cookieBanner" class="fixed inset-x-0 bottom-0 z-[80] px-4 pb-4 hidden" aria-live="polite">
-<div class="mx-auto max-w-5xl rounded-3xl border border-white/10 bg-black/90 backdrop-blur-xl shadow-[0_24px_80px_rgba(0,0,0,.45)]">
-<div class="flex flex-col gap-4 p-5 md:flex-row md:items-start md:gap-6 md:p-6">
-<div class="flex-1 pr-0 md:pr-4">
-<div class="mb-2 flex items-center gap-3">
-<span class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-emerald-400/30 bg-emerald-500/10 text-emerald-300">
-<i class="ri-shield-keyhole-line text-lg"></i>
-</span>
-<div>
-<p class="text-sm font-bold uppercase tracking-[0.24em] text-emerald-300/90">Cookies</p>
-<h3 class="text-lg font-extrabold text-white">Tu experiencia, afinada con respeto</h3>
-</div>
-</div>
-<p class="text-sm leading-6 text-white/72">Usamos cookies para recordar preferencias, mejorar la navegación y entender cómo se mueve la comunidad dentro del sitio. Al seguir, aceptas nuestro uso de cookies según la <a href="privacy.html" class="font-semibold text-emerald-300 hover:text-emerald-200 transition-colors">política de privacidad</a>.</p>
-</div>
-<div class="flex shrink-0 flex-col items-stretch gap-3 sm:flex-row md:items-center">
-<button type="button" id="cookieAcceptBtn" class="min-h-[48px] rounded-button bg-primary px-6 py-3 text-sm font-bold text-black transition hover:bg-opacity-90">Aceptar</button>
-<button type="button" id="cookieDismissBtn" aria-label="Cerrar aviso de cookies" class="inline-flex min-h-[48px] items-center justify-center rounded-button border border-white/10 px-4 py-3 text-white/75 transition hover:border-white/20 hover:text-white">
-<span aria-hidden="true" class="text-xl leading-none">X</span>
-</button>
-</div>
-</div>
-</div>
-</div>
 <!-- DJ Profile Modal -->
 <div id="profileModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
 <div class="bg-white rounded-lg w-full max-w-4xl h-[80vh] md:h-[650px] relative opacity-0 transition-all duration-300 transform translate-y-4 overflow-y-auto" id="profileContent">
-<button onclick="closeProfile()" aria-label="Cerrar" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 z-10 text-2xl font-bold leading-none">
-<span aria-hidden="true">X</span>
+<button onclick="closeProfile()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 z-10">
+<i class="ri-close-line text-2xl"></i>
 </button>
 <div class="flex h-full">
 <div class="w-1/2 relative overflow-hidden rounded-l-lg">
@@ -2914,9 +2431,23 @@ phone: "+1 (213) 456-7894"
 }
 };
 function showProfile(name, genres, id) {
-const source = { name, id, genres: String(genres || '').split('|').map(s => s.trim()).filter(Boolean) };
-const target = window.__SSC_ARTIST_PROFILE_URL ? window.__SSC_ARTIST_PROFILE_URL(source) : 'artistas.html';
-window.location.href = target;
+const modal = document.getElementById('profileModal');
+const content = document.getElementById('profileContent');
+const profile = djProfiles[id];
+document.getElementById('profileName').textContent = name;
+document.getElementById('profileGenres').textContent = genres;
+document.getElementById('profileImage').src = profile.image;
+document.getElementById('profileBio').textContent = profile.bio;
+const experienceList = document.getElementById('profileExperience');
+experienceList.innerHTML = profile.experience.map(exp => `<li>${exp}</li>`).join('');
+const equipmentList = document.getElementById('profileEquipment');
+equipmentList.innerHTML = profile.equipment.map(eq => `<li>${eq}</li>`).join('');
+document.getElementById('profileEmail').textContent = profile.email;
+document.getElementById('profilePhone').textContent = profile.phone;
+modal.classList.remove('hidden');
+setTimeout(() => {
+content.classList.remove('opacity-0', 'translate-y-4');
+}, 10);
 }
 function showLineup() {
 const modal = document.getElementById('lineupModal');
@@ -2930,7 +2461,6 @@ let ticketSummaries = {};
 let ticketSettings = null;
 let activeTicketEvent = null;
 let ticketSummaryTimer = null;
-let ticketRequestInFlight = false;
 let primaryHomeEvent = null;
 let primaryCountdownTimer = null;
 
@@ -2998,6 +2528,7 @@ function sscGetStatus(event,summary){
 function sscSetStatusPill(el,status){
   if(!el) return;
   el.dataset.state=status.key;
+  el.dataset.urgency=status.key;
   el.textContent=status.label;
 }
 
@@ -3065,7 +2596,6 @@ function sscFormatMeta(event){
 
 function sscUpdatePrimaryEventUi(){
   const cta=document.getElementById('heroPrimaryCta');
-  const panel=document.getElementById('heroPrimaryPanel');
   const titleEl=document.getElementById('heroPrimaryName');
   const metaEl=document.getElementById('heroPrimaryMeta');
   const statusEl=document.getElementById('heroPrimaryStatus');
@@ -3073,22 +2603,15 @@ function sscUpdatePrimaryEventUi(){
   const progressEl=document.getElementById('heroPrimaryProgress');
 
   if(!primaryHomeEvent){
+    if(titleEl) titleEl.textContent='Boletos limitados disponibles';
+    if(metaEl) metaEl.textContent='Fecha y ubicación por confirmar';
+    if(remainingEl) remainingEl.textContent='Solo quedan -- boletos';
+    if(progressEl) progressEl.style.width='0%';
+    sscSetStatusPill(statusEl,{key:'upcoming',label:'PRÓXIMO'});
     sscStopPrimaryCountdown();
-    if(panel){
-      panel.style.display='none';
-      panel.setAttribute('aria-hidden','true');
-    }
-    if(cta){
-      cta.classList.remove('is-disabled');
-      cta.classList.remove('pulse');
-      cta.textContent='VER EVENTOS';
-    }
+    sscSetCountdownValues(0,0,0,0);
+    if(cta){cta.classList.remove('is-disabled');cta.classList.add('pulse');cta.textContent='COMPRAR BOLETOS';}
     return;
-  }
-
-  if(panel){
-    panel.style.display='';
-    panel.removeAttribute('aria-hidden');
   }
 
   const summary=getTicketSummary(primaryHomeEvent.id);
@@ -3122,7 +2645,7 @@ function sscUpdatePrimaryEventUi(){
       cta.classList.add('is-disabled');
       cta.classList.remove('pulse');
     }else{
-      cta.textContent='VER PRÓXIMA FECHA';
+      cta.textContent='COMPRAR BOLETOS';
       cta.classList.remove('is-disabled');
       cta.classList.add('pulse');
     }
@@ -3133,18 +2656,25 @@ function sscUpdatePrimaryEventUi(){
 function sscSetPrimaryEvent(event){
   primaryHomeEvent=event&&typeof event==='object'?event:null;
   sscUpdatePrimaryEventUi();
+  /* Show hero-conversion-panel only when a PAID hero event exists */
+  var panel=document.querySelector('.hero-conversion-panel');
+  if(panel){
+    var isPaid=primaryHomeEvent&&!primaryHomeEvent.isFree&&Number(primaryHomeEvent.price||0)>0;
+    if(isPaid){panel.classList.add('v4-panel-active')}else{panel.classList.remove('v4-panel-active')}
+  }
 }
 
 function sscGoToPrimaryTicket(){
-  const target=document.getElementById('events');
-  if(target){
-    const header=document.querySelector('nav');
-    const offset=header?header.offsetHeight:0;
-    const top=target.getBoundingClientRect().top + window.pageYOffset - offset;
-    window.scrollTo({ top, behavior:'smooth' });
-    return;
+  if(primaryHomeEvent){
+    const summary=getTicketSummary(primaryHomeEvent.id);
+    const soldOut=summary&&summary.limit!=null&&Number(summary.remaining||0)<=0;
+    if(!soldOut){
+      openTicketModal(primaryHomeEvent);
+      return;
+    }
   }
-  window.location.href='events.html';
+  const target=document.getElementById('events');
+  if(target) target.scrollIntoView({behavior:'smooth',block:'start'});
 }
 
 window.sscSetPrimaryEvent=sscSetPrimaryEvent;
@@ -3182,12 +2712,6 @@ async function fetchTicketSummaries(eventIds){
       renderTicketInfoOnCards();
       if(activeTicketEvent) updateHomeEventTicketInfo(activeTicketEvent);
       sscUpdatePrimaryEventUi();
-      if(typeof window.sscSyncFeaturedHeroFromEvent==='function'){
-        try{
-          const settings=((JSON.parse(localStorage.getItem('ssc_store_v1')||'{}')||{}).settings)||{};
-          window.sscSyncFeaturedHeroFromEvent(primaryHomeEvent,settings);
-        }catch(_){}
-      }
     }
   }catch(_){ }
 }
@@ -3208,12 +2732,6 @@ async function refreshEventSummary(eventId){
       renderTicketInfoOnCards();
       if(activeTicketEvent && activeTicketEvent.id===eventId) updateHomeEventTicketInfo(activeTicketEvent);
       sscUpdatePrimaryEventUi();
-      if(typeof window.sscSyncFeaturedHeroFromEvent==='function'){
-        try{
-          const settings=((JSON.parse(localStorage.getItem('ssc_store_v1')||'{}')||{}).settings)||{};
-          window.sscSyncFeaturedHeroFromEvent(primaryHomeEvent,settings);
-        }catch(_){}
-      }
     }
     return data;
   }catch(_){ return null; }
@@ -3322,10 +2840,8 @@ async function submitTicketRequest(ev){
   ev.preventDefault();
   const err=document.getElementById('ticketFormError');
   const ok=document.getElementById('ticketFormSuccess');
-  const submitBtn=ev && ev.submitter ? ev.submitter : (document.querySelector('#ticketForm button[type="submit"]'));
   if(err) err.textContent='';
   if(ok) ok.textContent='';
-  if(ticketRequestInFlight) return;
   if(!activeTicketEvent || !activeTicketEvent.id){
     if(err) err.textContent='Evento invalido.';
     return;
@@ -3349,13 +2865,6 @@ async function submitTicketRequest(ev){
     try{proofData=await readFileAsDataUrl(proofInput.files[0]);}catch(_){ }
   }
   const payload={event_id:activeTicketEvent.id,full_name:fullName.trim(),email:email.trim(),phone:phone.trim(),qty:qty,payment_proof:proofData};
-  ticketRequestInFlight=true;
-  if(submitBtn){
-    submitBtn.disabled=true;
-    submitBtn.dataset.originalText=submitBtn.dataset.originalText||submitBtn.textContent;
-    submitBtn.textContent='Enviando...';
-    submitBtn.classList.add('opacity-60');
-  }
   try{
     const res=await fetch(window.__SUNSESH_API_BASE + '/api/tickets/request',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
     const data=await res.json();
@@ -3363,18 +2872,11 @@ async function submitTicketRequest(ev){
       if(err) err.textContent=(data&&data.message)||'No se pudo enviar solicitud.';
       return;
     }
-    if(ok) ok.textContent=(data&&data.duplicate)?'Ya habiamos recibido tu solicitud. No se genero una nueva.' :'Gracias. Tus boletos seran confirmados despues de la verificacion del pago.';
+    if(ok) ok.textContent='Gracias. Tus boletos seran confirmados despues de la verificacion del pago.';
     if(document.getElementById('ticketForm')) document.getElementById('ticketForm').reset();
     refreshEventSummary(activeTicketEvent.id);
   }catch(_){
     if(err) err.textContent='No se pudo enviar solicitud.';
-  }finally{
-    ticketRequestInFlight=false;
-    if(submitBtn){
-      submitBtn.disabled=false;
-      submitBtn.textContent=submitBtn.dataset.originalText||'Enviar solicitud';
-      submitBtn.classList.remove('opacity-60');
-    }
   }
 }
 
@@ -3396,11 +2898,7 @@ function showEventDetails(e) {
   document.getElementById('eventLocation').textContent = e.location||e.venue||'';
   document.getElementById('eventTime').textContent = e.time||'';
   document.getElementById('eventDate').textContent = dateLabel;
-  const eventImage=document.getElementById('eventImage');
-  if(eventImage){
-    eventImage.onerror=function(){this.onerror=null;this.src=EVENT_IMAGE_FALLBACK;};
-    eventImage.src = resolveEventImage(e.image);
-  }
+  document.getElementById('eventImage').src = e.image||'';
   const desc=document.getElementById('eventDesc');if(desc)desc.textContent=e.description||'';
   const eventButton = document.getElementById('eventButton');
   const eventButtonIcon = document.getElementById('eventButtonIcon');
@@ -3418,24 +2916,12 @@ function showEventDetails(e) {
     eventButton.style.display='none';
   }
   if(eventBuyBtn){
-    const isFree=e.isFree||Number(e.price||0)===0;
-    if(isFree){
-      eventBuyBtn.style.display='none';
-    }else{
-      eventBuyBtn.onclick = function(){ openTicketModal(e); };
-      eventBuyBtn.style.display='flex';
-    }
+    eventBuyBtn.onclick = function(){ openTicketModal(e); };
+    eventBuyBtn.style.display='flex';
   }
   updateHomeEventTicketInfo(e);
   refreshEventSummary(e.id);
   modal.classList.remove('hidden');
-}
-function goToEventDetails(e){
-  try{
-    showEventDetails(e);
-  }catch(_){
-    window.location.href='events.html';
-  }
 }
 function closeEventDetails() {
 const modal = document.getElementById('eventDetailsModal');
@@ -3693,9 +3179,9 @@ const total = document.getElementById('checkoutTotal');
 cart = readCart();
 const totals = calcTotals(cart);
 const summaryHTML = cart.map(item => `
-<div class="checkout-summary-row flex justify-between items-center py-2">
+<div class="flex justify-between items-center py-2">
   <span>${item.title} ${item.color ? `(${item.color})` : ''} ${item.size ? `- ${item.size}` : ''} x${item.qty || 1}</span>
-  <span class="checkout-summary-price">$${(Number(item.price || 0) * Number(item.qty || 1)).toFixed(2)}</span>
+  <span>$${(Number(item.price || 0) * Number(item.qty || 1)).toFixed(2)}</span>
 </div>
 `).join('');
 summary.innerHTML = summaryHTML;
@@ -3934,23 +3420,6 @@ document.addEventListener('DOMContentLoaded', function() {
   document.documentElement.classList.add('dark');
   try { localStorage.removeItem('theme'); } catch {}
 });
-document.addEventListener('DOMContentLoaded', function() {
-const COOKIE_KEY='ssc_cookie_banner_choice_v1';
-const banner=document.getElementById('cookieBanner');
-const acceptBtn=document.getElementById('cookieAcceptBtn');
-const dismissBtn=document.getElementById('cookieDismissBtn');
-if(!banner) return;
-let choice='';
-try{choice=String(localStorage.getItem(COOKIE_KEY)||'').trim()}catch{}
-if(choice) return;
-banner.classList.remove('hidden');
-function saveCookieChoice(value){
-try{localStorage.setItem(COOKIE_KEY,value)}catch{}
-banner.classList.add('hidden');
-}
-if(acceptBtn) acceptBtn.addEventListener('click',()=>saveCookieChoice('accepted'));
-if(dismissBtn) dismissBtn.addEventListener('click',()=>saveCookieChoice('dismissed'));
-});
 function openImageModal(src, alt) {
 const modal = document.getElementById('imageModal');
 const content = document.getElementById('imageContent');
@@ -4111,40 +3580,31 @@ openImageModal(img.src, img.alt);
 // Ensure only one footer is present (remove accidental duplicates)
 document.addEventListener('DOMContentLoaded',function(){const f=document.querySelectorAll('footer');for(let i=1;i<f.length;i++){f[i].parentNode&&f[i].parentNode.removeChild(f[i])}});
 </script>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-  const heroEventSection = document.querySelector('.hero-event-section');
-  if (heroEventSection) {
-    heroEventSection.style.display = 'none';
-    heroEventSection.setAttribute('aria-hidden', 'true');
-  }
-
-  const footer = document.querySelector('footer');
-  if (!footer || !footer.parentNode) return;
-
-  const orderedSections = [
-    'events',
-    'artists',
-    'vibe',
-    'gallery',
-    'about',
-    'music',
-    'video',
-    'merch',
-    'sponsors',
-    'contact',
-  ];
-
-  orderedSections.forEach((id) => {
-    const section = document.getElementById(id);
-    if (section) {
-      footer.parentNode.insertBefore(section, footer);
-    }
-  });
-});
-</script>
-  <script src="assets/js/ssc-artists.js?v=20260402-1"></script>
   <script src="assets/js/site.js?v=20260327-3"></script>
   <script src="assets/js/ssc-ux.js" defer></script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
