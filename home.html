@@ -148,11 +148,11 @@ color: #ffffff;
 animation: flashReveal 2s ease-out forwards;
 }
 @keyframes flashReveal {
-0% { color: #ffffff; text-shadow: 0 0 80px #ffffff, 0 0 120px #ffffff, 0 0 200px rgba(0,255,170,0.8), 0 0 300px rgba(0,255,170,0.5); opacity: 0; transform: scale(1.04); }
-8% { color: #ffffff; text-shadow: 0 0 100px #ffffff, 0 0 160px #ffffff, 0 0 250px rgba(0,255,170,1), 0 0 400px rgba(0,255,170,0.7); opacity: 1; transform: scale(1.02); }
-20% { color: #ffffff; text-shadow: 0 0 60px rgba(255,255,255,0.9), 0 0 100px rgba(0,255,170,0.6), 0 0 180px rgba(0,255,170,0.3); transform: scale(1.01); }
-50% { text-shadow: 0 0 20px rgba(255,255,255,0.4), 0 0 40px rgba(0,255,170,0.2); transform: scale(1); }
-100% { color: #ffffff; text-shadow: none; transform: scale(1); }
+0% { opacity: 0; text-shadow: none; transform: translateY(18px) scale(1); }
+10% { opacity: 1; text-shadow: 0 0 120px #ffffff, 0 0 200px #ffffff, 0 0 300px rgba(0,255,170,1), 0 0 500px rgba(0,255,170,0.6); transform: translateY(0) scale(1.03); }
+15% { text-shadow: 0 0 80px #ffffff, 0 0 150px rgba(255,255,255,0.8), 0 0 250px rgba(0,255,170,0.8); transform: translateY(0) scale(1.01); }
+35% { text-shadow: 0 0 30px rgba(255,255,255,0.5), 0 0 60px rgba(0,255,170,0.3); transform: translateY(0) scale(1); }
+100% { opacity: 1; text-shadow: none; transform: translateY(0) scale(1); }
 }
 .hero-subtitle {
 font-size: clamp(1.1rem, 2.4vw, 1.6rem);
@@ -823,7 +823,7 @@ animation: pulse 2s infinite;
 <div class="container mx-auto px-6 py-20 md:py-32">
 <div class="hero-content max-w-3xl">
 <div class="hero-kicker hero-anim delay-1 display-font">Acceso Underground</div>
-<h1 class="hero-title-main hero-anim delay-1 mt-4 display-font glitch-text" data-text="THE SUN SESSION CLUB"><span class="hero-title-the">THE</span><span class="hero-title-name">SUN<br>SESSION</span><span class="hero-title-club">CLUB</span></h1>
+<h1 class="hero-title-main mt-4 display-font glitch-text" data-text="THE SUN SESSION CLUB"><span class="hero-title-the">THE</span><span class="hero-title-name">SUN<br>SESSION</span><span class="hero-title-club">CLUB</span></h1>
 <div class="hero-subtitle hero-anim delay-2 mt-4 display-font">Acceso limitado únicamente.</div>
 <div class="hero-actions flex flex-wrap gap-4 hero-anim delay-3 mt-8">
 <button id="heroPrimaryCta" onclick="sscGoToPrimaryTicket()" class="hero-btn-primary hero-cta-main whitespace-nowrap pulse">COMPRAR BOLETOS</button>
