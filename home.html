@@ -130,13 +130,13 @@ letter-spacing: 0.28em;
 text-transform: uppercase;
 font-size: 0.75rem;
 color: rgba(255,255,255,0.65);
-animation: kickerFlash 2s ease-out 0.1s forwards;
+animation: kickerFlash 1.8s ease-out 0.1s forwards;
 }
 @keyframes kickerFlash {
-0% { color: rgba(255,255,255,0); text-shadow: none; }
-8% { color: #ffffff; text-shadow: 0 0 30px rgba(0,255,170,0.8); }
-40% { text-shadow: 0 0 8px rgba(0,255,170,0.3); }
-100% { color: rgba(255,255,255,0.65); text-shadow: none; }
+0% { opacity: 0; filter: brightness(1); }
+8% { opacity: 1; filter: brightness(2.5); }
+40% { filter: brightness(1); }
+100% { opacity: 1; filter: brightness(1); }
 }
 .hero-title-main {
 font-size: clamp(2.6rem, 6vw, 5.2rem);
@@ -145,14 +145,15 @@ letter-spacing: 0.08em;
 text-transform: uppercase;
 font-weight: 800;
 color: #ffffff;
-animation: flashReveal 2s ease-out forwards;
+animation: flashReveal 1.8s ease-out forwards;
+will-change: opacity, filter;
 }
 @keyframes flashReveal {
-0% { opacity: 0; text-shadow: none; transform: translateY(18px) scale(1); }
-10% { opacity: 1; text-shadow: 0 0 120px #ffffff, 0 0 200px #ffffff, 0 0 300px rgba(0,255,170,1), 0 0 500px rgba(0,255,170,0.6); transform: translateY(0) scale(1.03); }
-15% { text-shadow: 0 0 80px #ffffff, 0 0 150px rgba(255,255,255,0.8), 0 0 250px rgba(0,255,170,0.8); transform: translateY(0) scale(1.01); }
-35% { text-shadow: 0 0 30px rgba(255,255,255,0.5), 0 0 60px rgba(0,255,170,0.3); transform: translateY(0) scale(1); }
-100% { opacity: 1; text-shadow: none; transform: translateY(0) scale(1); }
+0% { opacity: 0; filter: brightness(1); transform: translateY(18px); }
+8% { opacity: 1; filter: brightness(3); transform: translateY(0); }
+25% { filter: brightness(1.5); }
+50% { filter: brightness(1); }
+100% { opacity: 1; filter: brightness(1); transform: translateY(0); }
 }
 .hero-subtitle {
 font-size: clamp(1.1rem, 2.4vw, 1.6rem);
