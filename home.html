@@ -130,6 +130,13 @@ letter-spacing: 0.28em;
 text-transform: uppercase;
 font-size: 0.75rem;
 color: rgba(255,255,255,0.65);
+animation: kickerFlash 2s ease-out 0.1s forwards;
+}
+@keyframes kickerFlash {
+0% { color: rgba(255,255,255,0); text-shadow: none; }
+8% { color: #ffffff; text-shadow: 0 0 30px rgba(0,255,170,0.8); }
+40% { text-shadow: 0 0 8px rgba(0,255,170,0.3); }
+100% { color: rgba(255,255,255,0.65); text-shadow: none; }
 }
 .hero-title-main {
 font-size: clamp(2.6rem, 6vw, 5.2rem);
@@ -138,6 +145,14 @@ letter-spacing: 0.08em;
 text-transform: uppercase;
 font-weight: 800;
 color: #ffffff;
+animation: flashReveal 2s ease-out forwards;
+}
+@keyframes flashReveal {
+0% { color: #ffffff; text-shadow: 0 0 80px #ffffff, 0 0 120px #ffffff, 0 0 200px rgba(0,255,170,0.8), 0 0 300px rgba(0,255,170,0.5); opacity: 0; transform: scale(1.04); }
+8% { color: #ffffff; text-shadow: 0 0 100px #ffffff, 0 0 160px #ffffff, 0 0 250px rgba(0,255,170,1), 0 0 400px rgba(0,255,170,0.7); opacity: 1; transform: scale(1.02); }
+20% { color: #ffffff; text-shadow: 0 0 60px rgba(255,255,255,0.9), 0 0 100px rgba(0,255,170,0.6), 0 0 180px rgba(0,255,170,0.3); transform: scale(1.01); }
+50% { text-shadow: 0 0 20px rgba(255,255,255,0.4), 0 0 40px rgba(0,255,170,0.2); transform: scale(1); }
+100% { color: #ffffff; text-shadow: none; transform: scale(1); }
 }
 .hero-subtitle {
 font-size: clamp(1.1rem, 2.4vw, 1.6rem);
