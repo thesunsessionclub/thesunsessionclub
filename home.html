@@ -132,6 +132,23 @@ font-size: 0.75rem;
 color: rgba(255,255,255,0.65);
 animation: kickerFlash 1.8s ease-out 0.1s forwards;
 }
+.hero-flash {
+position: fixed;
+top: 0; left: 0;
+width: 100%; height: 100vh;
+background: white;
+z-index: 9999;
+pointer-events: none;
+animation: cameraFlash 1.2s ease-out forwards;
+}
+@keyframes cameraFlash {
+0% { opacity: 0; }
+5% { opacity: 0.95; }
+15% { opacity: 0.7; }
+30% { opacity: 0.3; }
+60% { opacity: 0.08; }
+100% { opacity: 0; }
+}
 @keyframes kickerFlash {
 0% { opacity: 0; filter: brightness(1); }
 8% { opacity: 1; filter: brightness(2.5); }
@@ -145,15 +162,12 @@ letter-spacing: 0.08em;
 text-transform: uppercase;
 font-weight: 800;
 color: #ffffff;
-animation: flashReveal 1.8s ease-out forwards;
-will-change: opacity, filter;
+animation: heroTitleIn 1.6s ease-out forwards;
 }
-@keyframes flashReveal {
-0% { opacity: 0; filter: brightness(1); transform: translateY(18px); }
-8% { opacity: 1; filter: brightness(3); transform: translateY(0); }
-25% { filter: brightness(1.5); }
-50% { filter: brightness(1); }
-100% { opacity: 1; filter: brightness(1); transform: translateY(0); }
+@keyframes heroTitleIn {
+0% { opacity: 0; transform: translateY(18px); }
+15% { opacity: 1; transform: translateY(0); }
+100% { opacity: 1; transform: translateY(0); }
 }
 .hero-subtitle {
 font-size: clamp(1.1rem, 2.4vw, 1.6rem);
@@ -811,6 +825,7 @@ animation: pulse 2s infinite;
 </head>
 <body class="dark bg-white text-gray-800 dark:bg-black dark:text-white">
 <!-- Hero Section -->
+<div class="hero-flash" id="heroFlash"></div>
 <div class="hero-bg min-h-[90vh] flex items-center" data-no-global-parallax="1">
   <div class="ssc-hero-media">
     <video class="ssc-hero-video" autoplay muted loop playsinline preload="metadata" crossorigin="anonymous" poster="assets/hero-rave.png" data-parallax="0.16" data-parallax-mode="translate">
