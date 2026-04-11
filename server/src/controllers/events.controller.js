@@ -2,6 +2,12 @@ import { prisma } from '../prisma.js';
 import { validationResult } from 'express-validator';
 import { generateTicketArtWithNanoBanana } from '../services/ticketArtGenerator.js';
 import { notifyNewEvent } from '../services/newsletter.service.js';
+import path from 'path';
+import fs from 'fs';
+import crypto from 'crypto';
+
+const eventUploadsDir = path.resolve(process.cwd(), 'uploads', 'events');
+function ensureDir(dir) { if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true }); }
 /**
  * Eventos CRUD
  */
@@ -69,6 +75,20 @@ export const generateTicketArt = async (req, res) => {
       return res.status(503).json({ message: 'Nano Banana no está disponible en este proyecto.', details });
     }
     return res.status(502).json({ message: 'No se pudo generar el arte del ticket.', details });
+  }
+};
+export const uploadImage = async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ message: 'No se recibió imagen' });
+    ensureDir(eventUploadsDir);
+    const ext = path.extname(req.file.originalname || '.jpg').toLowerCase() || '.jpg';
+    const filename = crypto.randomUUID() + ext;
+    const fullPath = path.join(eventUploadsDir, filename);
+    fs.writeFileSync(fullPath, req.file.buffer);
+    const relPath = '/uploads/events/' + filename;
+    res.json({ url: relPath });
+  } catch (err) {
+    res.status(500).json({ message: 'Error al subir imagen', details: err?.message });
   }
 };
 function normalizeEvent(body) {
