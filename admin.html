@@ -1015,7 +1015,13 @@ input::placeholder, textarea::placeholder{color:rgba(255,255,255,.7)}
 <option value="draft">Borrador</option>
 <option value="hidden">Oculto</option>
 </select>
-<label class="flex items-center space-x-2"><input id="ee_featured" type="checkbox"><span>Destacado</span></label>
+<label class="flex items-center space-x-2"><input id="ee_featured" type="checkbox" onchange="toggleBannerUpload()"><span>Destacado</span></label>
+<div id="ee_banner_section" class="md:col-span-2 hidden">
+<label class="block text-white/70 text-sm mb-1">Banner para Homepage (imagen ancha, se muestra grande en la home)</label>
+<div class="drag p-4 text-center" id="ee_banner_drop">Arrastra o haz clic para subir banner del evento</div>
+<img id="ee_banner_preview" class="w-full h-40 object-cover rounded mt-2" style="display:none">
+<button type="button" onclick="clearEventBanner()" class="text-red-400 text-xs mt-1 hover:underline" id="ee_banner_clear" style="display:none">Quitar banner</button>
+</div>
 <input id="ee_order" type="number" placeholder="Orden manual" class="w-full bg-muted border border-white/10 rounded px-3 py-2">
 <div id="ticketDesignSection" class="md:col-span-2 ticket-design-card p-5 space-y-5 hidden">
 <div class="flex flex-wrap items-start justify-between gap-3">
@@ -2209,10 +2215,23 @@ if(type==='event'){title.textContent=index!=null?'Editar Evento':'Agregar Evento
 }
 function openEventModal(index){showEventEditor(index)}
 let currentEventIndex=null;let currentEventImage='';
-function showEventEditor(indexOrId){let idx=null;if(typeof indexOrId==='number'){idx=indexOrId}else if(typeof indexOrId==='string'&&indexOrId){idx=(store.events||[]).findIndex(ev=>String(ev.id||'')===String(indexOrId||''))}currentEventIndex=(idx!=null&&idx>=0)?idx:null;const editor=document.getElementById('eventEditor');editor.style.display='block';initTicketDesignControls();const e=normalizeEventForStore(currentEventIndex!=null?store.events[currentEventIndex]:{title:'',artists:'',location:'',venue:'',date:'',time:'',image:'',price:0,genre:'',description:'',ticketLink:'',socialLink:'',isFree:false,status:'active',featured:false,sort_order:0,buttonText:'COMPRAR BOLETOS',ticketDesign:buildDefaultTicketDesign('')});document.getElementById('ee_title').value=e.title||'';document.getElementById('ee_artists').value=e.artists||'';document.getElementById('ee_venue').value=e.venue||'';document.getElementById('ee_location').value=e.location||'';document.getElementById('ee_date').value=toInputDate(e.date);const timeParts=(e.time||'').split(' - ');document.getElementById('ee_time_start').value=timeParts[0]||'';document.getElementById('ee_time_end').value=timeParts[1]||'';document.getElementById('ee_type').value=e.isFree?'free':'paid';document.getElementById('ee_price').value=e.price||0;document.getElementById('ee_ticket_limit').value=(e.ticket_limit==null?'':e.ticket_limit);document.getElementById('ee_ticket_link').value=e.ticketLink||'';document.getElementById('ee_social_link').value=e.socialLink||'';document.getElementById('ee_genre').value=e.genre||'';document.getElementById('ee_desc').value=e.description||'';const statusValue=((String(e.status||'').toLowerCase()==='active')?'active':(String(e.status||'').toLowerCase()==='draft'?'draft':'hidden'));document.getElementById('ee_status').value=statusValue;document.getElementById('ee_featured').checked=!!e.featured;document.getElementById('ee_order').value=e.sort_order||0;currentEventImage=e.image||'';const eePreview=document.getElementById('ee_image_preview');if(eePreview)eePreview.src=currentEventImage||'';setupDrop('ee_image_drop',url=>{currentEventImage=url;const p=document.getElementById('ee_image_preview');if(p)p.src=url;const currentDesign=readTicketDesignFromForm();currentDesign.event_flyer_image=url||'';if(currentDesign.background_mode==='flyer'&&!currentDesign.background_image){renderTicketDesignPreview()}else if(currentDesign.background_mode==='ai'&&!currentDesign.background_image){currentDesign.background_image=url||'';applyTicketDesignToForm(currentDesign)}else{renderTicketDesignPreview()}updateTicketDesignVisibility()},{serverUpload:true});applyTicketDesignToForm(e.ticketDesign||parseTicketDesignValue(e.ticket_design_json||null,currentEventImage||''));renderTicketTemplateOptions();updateTicketDesignVisibility();renderTicketDesignPreview();document.getElementById('ee_title').focus()}
+function showEventEditor(indexOrId){let idx=null;if(typeof indexOrId==='number'){idx=indexOrId}else if(typeof indexOrId==='string'&&indexOrId){idx=(store.events||[]).findIndex(ev=>String(ev.id||'')===String(indexOrId||''))}currentEventIndex=(idx!=null&&idx>=0)?idx:null;const editor=document.getElementById('eventEditor');editor.style.display='block';initTicketDesignControls();const e=normalizeEventForStore(currentEventIndex!=null?store.events[currentEventIndex]:{title:'',artists:'',location:'',venue:'',date:'',time:'',image:'',price:0,genre:'',description:'',ticketLink:'',socialLink:'',isFree:false,status:'active',featured:false,sort_order:0,buttonText:'COMPRAR BOLETOS',ticketDesign:buildDefaultTicketDesign('')});document.getElementById('ee_title').value=e.title||'';document.getElementById('ee_artists').value=e.artists||'';document.getElementById('ee_venue').value=e.venue||'';document.getElementById('ee_location').value=e.location||'';document.getElementById('ee_date').value=toInputDate(e.date);const timeParts=(e.time||'').split(' - ');document.getElementById('ee_time_start').value=timeParts[0]||'';document.getElementById('ee_time_end').value=timeParts[1]||'';document.getElementById('ee_type').value=e.isFree?'free':'paid';document.getElementById('ee_price').value=e.price||0;document.getElementById('ee_ticket_limit').value=(e.ticket_limit==null?'':e.ticket_limit);document.getElementById('ee_ticket_link').value=e.ticketLink||'';document.getElementById('ee_social_link').value=e.socialLink||'';document.getElementById('ee_genre').value=e.genre||'';document.getElementById('ee_desc').value=e.description||'';const statusValue=((String(e.status||'').toLowerCase()==='active')?'active':(String(e.status||'').toLowerCase()==='draft'?'draft':'hidden'));document.getElementById('ee_status').value=statusValue;document.getElementById('ee_featured').checked=!!e.featured;document.getElementById('ee_order').value=e.sort_order||0;currentEventImage=e.image||'';const eePreview=document.getElementById('ee_image_preview');if(eePreview)eePreview.src=currentEventImage||'';currentEventBanner=e.banner_image||'';const bnPrev=document.getElementById('ee_banner_preview');const bnClear=document.getElementById('ee_banner_clear');if(bnPrev){if(currentEventBanner){bnPrev.src=currentEventBanner;bnPrev.style.display='block';if(bnClear)bnClear.style.display='inline'}else{bnPrev.src='';bnPrev.style.display='none';if(bnClear)bnClear.style.display='none'}}toggleBannerUpload();setupDrop('ee_banner_drop',url=>{currentEventBanner=url;const bp=document.getElementById('ee_banner_preview');const bc=document.getElementById('ee_banner_clear');if(bp){bp.src=url;bp.style.display=url?'block':'none'}if(bc)bc.style.display=url?'inline':'none'},{serverUpload:true});setupDrop('ee_image_drop',url=>{currentEventImage=url;const p=document.getElementById('ee_image_preview');if(p)p.src=url;const currentDesign=readTicketDesignFromForm();currentDesign.event_flyer_image=url||'';if(currentDesign.background_mode==='flyer'&&!currentDesign.background_image){renderTicketDesignPreview()}else if(currentDesign.background_mode==='ai'&&!currentDesign.background_image){currentDesign.background_image=url||'';applyTicketDesignToForm(currentDesign)}else{renderTicketDesignPreview()}updateTicketDesignVisibility()},{serverUpload:true});applyTicketDesignToForm(e.ticketDesign||parseTicketDesignValue(e.ticket_design_json||null,currentEventImage||''));renderTicketTemplateOptions();updateTicketDesignVisibility();renderTicketDesignPreview();document.getElementById('ee_title').focus()}
 window.__realShowEventEditor=showEventEditor
 function cancelEventEditor(){document.getElementById('eventEditor').style.display='none';currentEventIndex=null;currentEventImage='';closeTicketMobilePreview()}
 function clearEventEditorImage(){currentEventImage='';const p=document.getElementById('ee_image_preview');if(p)p.src='';renderTicketDesignPreview();updateTicketDesignVisibility()}
+let currentEventBanner='';
+function toggleBannerUpload(){
+  const sec=document.getElementById('ee_banner_section');
+  const checked=document.getElementById('ee_featured').checked;
+  if(sec)sec.classList.toggle('hidden',!checked);
+}
+function clearEventBanner(){
+  currentEventBanner='';
+  const p=document.getElementById('ee_banner_preview');
+  const c=document.getElementById('ee_banner_clear');
+  if(p){p.src='';p.style.display='none';}
+  if(c)c.style.display='none';
+}
 let _savingEvent=false;
 async function saveEventEditor(){
   if(_savingEvent){return}
@@ -2244,6 +2263,7 @@ async function saveEventEditor(){
   base.featured = document.getElementById('ee_featured').checked;
   base.sort_order = Number(document.getElementById('ee_order').value || 0);
   base.image = currentEventImage || '';
+  base.banner_image = currentEventBanner || null;
   if(base.isFree){
     base.ticketDesign=buildDefaultTicketDesign(base.image||'');
     base.ticket_design_json=null;

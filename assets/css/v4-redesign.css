@@ -355,6 +355,91 @@ body {
   border-color: var(--v4-neon) !important;
 }
 
+/* ── FEATURED EVENT BANNERS ── */
+.v4-event-banner {
+  display: block;
+  text-decoration: none !important;
+  margin-bottom: 1rem;
+}
+.v4-event-banner__wrap {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 0;
+}
+.v4-event-banner__img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+.v4-event-banner:hover .v4-event-banner__img {
+  transform: scale(1.03);
+}
+.v4-event-banner__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg, rgba(7,9,10,0.85) 0%, rgba(7,9,10,0.3) 40%, transparent 70%);
+  pointer-events: none;
+}
+.v4-event-banner__info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 2rem 2.5rem;
+  z-index: 2;
+}
+.v4-event-banner__title {
+  font-family: var(--v4-font-head) !important;
+  font-size: clamp(1.6rem, 4vw, 3rem);
+  font-weight: 800;
+  color: #fff !important;
+  line-height: 1.1;
+  margin: 0 0 0.3rem;
+  text-transform: uppercase;
+}
+.v4-event-banner__artists {
+  font-family: var(--v4-font-body) !important;
+  font-size: clamp(0.85rem, 1.5vw, 1.1rem);
+  color: rgba(255,255,255,0.75) !important;
+  margin: 0 0 0.8rem;
+}
+.v4-event-banner__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.2rem;
+  font-family: var(--v4-font-mono) !important;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--v4-neon) !important;
+  margin-bottom: 0.8rem;
+}
+.v4-event-banner__cta {
+  display: inline-block;
+  font-family: var(--v4-font-mono) !important;
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #fff !important;
+  border: 1px solid rgba(255,255,255,0.3);
+  padding: 0.5rem 1.4rem;
+  border-radius: var(--v4-radius);
+  transition: all var(--v4-t);
+}
+.v4-event-banner:hover .v4-event-banner__cta {
+  background: var(--v4-neon);
+  color: #000 !important;
+  border-color: var(--v4-neon);
+}
+@media (max-width: 640px) {
+  .v4-event-banner__info { padding: 1.2rem 1rem; }
+  .v4-event-banner__meta { gap: 0.6rem; font-size: 0.6rem; }
+  .v4-event-banner__cta { font-size: 0.65rem; padding: 0.4rem 1rem; }
+}
+
 /* ── EVENTS SECTION ── */
 #events {
   background: var(--v4-surface) !important;

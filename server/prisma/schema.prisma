@@ -84,6 +84,7 @@ model Event {
   date        DateTime?
   time        String?
   image       String?
+  banner_image String?
   price       Float       @default(0)
   genre       String?
   description String?

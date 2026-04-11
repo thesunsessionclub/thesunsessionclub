@@ -1218,10 +1218,10 @@ function applyLocalSettings(){
 <div class="container mx-auto px-6">
 <h2 class="section-title text-4xl font-bold text-center mb-3" style="color:#fff !important;-webkit-text-fill-color:#fff;">PRÓXIMOS EVENTOS</h2>
 <div class="w-24 h-1 bg-primary mx-auto mb-12"></div>
-<p class="text-center max-w-3xl mx-auto mb-16" style="color:rgba(255,255,255,0.72) !important;-webkit-text-fill-color:rgba(255,255,255,0.72);">No te pierdas los eventos más exclusivos de la ciudad. Boletos limitados disponibles.</p>
-<div id="featuredEventsTitle" class="text-center mb-6" style="display:none;"><h3 class="text-2xl font-bold text-yellow-600">EVENTOS DESTACADOS</h3></div>
-<div id="featuredEventsRow" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12"></div>
-<div id="homeEventsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+</div>
+<div id="featuredBannerArea"></div>
+<div class="container mx-auto px-6">
+<div id="homeEventsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-10"></div>
 <div class="text-center mt-12">
 <a href="events.html">
 <button class="bg-transparent border-2 border-primary text-primary font-bold py-3 px-8 !rounded-button whitespace-nowrap hover:bg-primary hover:text-white transition-all">VER TODOS LOS EVENTOS</button>
@@ -1282,38 +1282,70 @@ var s=getStore();var list=Array.isArray(s.events)?s.events.map(normalizeEvent):[
 var primary=pickPrimaryEvent(evts,s.settings||{});
 var primaryKey=primary?eventKey(primary):'';
 var gridEvents=primaryKey?evts.filter(function(e){return eventKey(e)!==primaryKey}):evts.slice();
-var featuredGrid=document.querySelector('#featuredEventsRow');
+var bannerArea=document.querySelector('#featuredBannerArea');
 var regularGrid=document.querySelector('#homeEventsGrid');
-var featuredTitle=document.querySelector('#featuredEventsTitle');
-if(!featuredGrid||!regularGrid||!featuredTitle)return;
-featuredGrid.textContent='';
+if(!regularGrid)return;
+if(bannerArea)bannerArea.textContent='';
 regularGrid.textContent='';
 var featuredEvents=gridEvents.filter(function(e){return e.featured});
 var regularEvents=gridEvents.filter(function(e){return !e.featured});
-function createEventCard(e,isFeatured){
-var isFree=e.isFree||Number(e.price||0)===0;
-var priceEl=isFree?'<span class="text-primary font-bold">Abierto</span>':'<span class="text-primary font-bold">$'+Number(e.price||0).toFixed(2)+'</span>';
-var card=document.createElement('div');card.className='card-hover bg-white rounded-2xl overflow-hidden shadow-lg border border-primary/30'+(isFeatured?' ring-2 ring-yellow-400':'');
-var badgeHtml=isFeatured?'<div class="absolute top-4 left-4 bg-yellow-400 text-black font-bold py-1 px-3 rounded-full text-sm">DESTACADO</div>':'';
-card.innerHTML='<div class="relative h-60 overflow-hidden"><img src="'+(e.image||'')+'" alt="'+(e.title||'')+'" class="w-full h-full object-cover object-top card-image">'+badgeHtml+'<div class="absolute top-4 right-4 bg-primary text-black font-bold py-1 px-3 rounded-full text-sm">'+badgeFromDate(e.date)+'</div></div><div class="p-6"><h3 class="text-2xl font-bold mb-2 text-black">'+(e.title||'')+'</h3><p class="text-black/60 mb-4">'+(e.artists||'')+'</p><div class="flex items-center space-x-2 mb-3"><div class="w-5 h-5 flex items-center justify-center text-primary"><i class="ri-map-pin-line"></i></div><span class="text-black/60">'+(e.location||e.venue||'')+'</span></div><div class="flex items-center space-x-2 mb-6"><div class="w-5 h-5 flex items-center justify-center text-primary"><i class="ri-time-line"></i></div><span class="text-black/60">'+(e.time||'')+'</span></div><div class="flex items-center justify-between"><span>'+priceEl+'</span><button class="bg-black text-white font-semibold py-2 px-4 !rounded-button whitespace-nowrap hover:bg-primary transition-colors">VER MÁS</button></div></div>';
-card.dataset.eventId=e.id||'';
-var info=document.createElement('div');
-info.className='text-xs text-black/60 mt-2';
-info.dataset.ticketInfo='1';
-var content=card.querySelector('.p-6');
-if(content) content.appendChild(info);
-return card;
+function createFeaturedBanner(e){
+  var banner=document.createElement('a');
+  banner.href='events.html';
+  banner.className='v4-event-banner';
+  var imgSrc=e.banner_image||e.image||'';
+  if(imgSrc&&window.__SUNSESH_API_BASE&&imgSrc.startsWith('/uploads/')){imgSrc=window.__SUNSESH_API_BASE+imgSrc}
+  var wrap=document.createElement('div');wrap.className='v4-event-banner__wrap';
+  var img=document.createElement('img');img.className='v4-event-banner__img';img.src=imgSrc;img.alt=e.title||'';
+  var overlay=document.createElement('div');overlay.className='v4-event-banner__overlay';
+  var info=document.createElement('div');info.className='v4-event-banner__info';
+  var h3=document.createElement('h3');h3.className='v4-event-banner__title';h3.textContent=e.title||'';
+  var artists=document.createElement('p');artists.className='v4-event-banner__artists';artists.textContent=e.artists||'';
+  var meta=document.createElement('div');meta.className='v4-event-banner__meta';
+  var s1=document.createElement('span');s1.textContent=badgeFromDate(e.date);
+  var s2=document.createElement('span');s2.textContent=e.location||e.venue||'';
+  var s3=document.createElement('span');s3.textContent=e.time||'';
+  meta.appendChild(s1);meta.appendChild(s2);meta.appendChild(s3);
+  var cta=document.createElement('span');cta.className='v4-event-banner__cta';cta.textContent='Ver más →';
+  info.appendChild(h3);info.appendChild(artists);info.appendChild(meta);info.appendChild(cta);
+  wrap.appendChild(img);wrap.appendChild(overlay);wrap.appendChild(info);
+  banner.appendChild(wrap);
+  return banner;
 }
-featuredTitle.style.display=featuredEvents.length>0?'block':'none';
-featuredEvents.slice(0,3).forEach(function(e){
-var card=createEventCard(e,true);
-featuredGrid.appendChild(card);
-var btn=card.querySelector('button');if(btn)btn.onclick=function(){showEventDetails(e)};
-});
-regularEvents.slice(0,featuredEvents.length>0?2:3).forEach(function(e){
-var card=createEventCard(e,false);
-regularGrid.appendChild(card);
-var btn=card.querySelector('button');if(btn)btn.onclick=function(){showEventDetails(e)};
+function createEventCard(e){
+  var isFree=e.isFree||Number(e.price||0)===0;
+  var card=document.createElement('div');card.className='card-hover bg-white rounded-2xl overflow-hidden shadow-lg border border-primary/30';
+  card.dataset.eventId=e.id||'';
+  var imgWrap=document.createElement('div');imgWrap.className='relative h-60 overflow-hidden';
+  var img=document.createElement('img');img.src=e.image||'';img.alt=e.title||'';img.className='w-full h-full object-cover object-top card-image';
+  var badge=document.createElement('div');badge.className='absolute top-4 right-4 bg-primary text-black font-bold py-1 px-3 rounded-full text-sm';badge.textContent=badgeFromDate(e.date);
+  imgWrap.appendChild(img);imgWrap.appendChild(badge);
+  var body=document.createElement('div');body.className='p-6';
+  var h3=document.createElement('h3');h3.className='text-2xl font-bold mb-2 text-black';h3.textContent=e.title||'';
+  var art=document.createElement('p');art.className='text-black/60 mb-4';art.textContent=e.artists||'';
+  var loc=document.createElement('div');loc.className='flex items-center space-x-2 mb-3';
+  var locIcon=document.createElement('div');locIcon.className='w-5 h-5 flex items-center justify-center text-primary';locIcon.innerHTML='<i class="ri-map-pin-line"></i>';
+  var locText=document.createElement('span');locText.className='text-black/60';locText.textContent=e.location||e.venue||'';
+  loc.appendChild(locIcon);loc.appendChild(locText);
+  var timeRow=document.createElement('div');timeRow.className='flex items-center space-x-2 mb-6';
+  var timeIcon=document.createElement('div');timeIcon.className='w-5 h-5 flex items-center justify-center text-primary';timeIcon.innerHTML='<i class="ri-time-line"></i>';
+  var timeText=document.createElement('span');timeText.className='text-black/60';timeText.textContent=e.time||'';
+  timeRow.appendChild(timeIcon);timeRow.appendChild(timeText);
+  var footer=document.createElement('div');footer.className='flex items-center justify-between';
+  var price=document.createElement('span');price.className='text-primary font-bold';price.textContent=isFree?'Abierto':'$'+Number(e.price||0).toFixed(2);
+  var btn=document.createElement('a');btn.href='events.html';btn.className='bg-black text-white font-semibold py-2 px-4 !rounded-button whitespace-nowrap hover:bg-primary transition-colors';btn.textContent='VER MÁS';
+  footer.appendChild(price);footer.appendChild(btn);
+  body.appendChild(h3);body.appendChild(art);body.appendChild(loc);body.appendChild(timeRow);body.appendChild(footer);
+  card.appendChild(imgWrap);card.appendChild(body);
+  return card;
+}
+if(bannerArea){
+  featuredEvents.slice(0,3).forEach(function(e){
+    bannerArea.appendChild(createFeaturedBanner(e));
+  });
+}
+regularEvents.slice(0,featuredEvents.length>0?3:6).forEach(function(e){
+  regularGrid.appendChild(createEventCard(e));
 });
 if(typeof renderTicketInfoOnCards==='function') renderTicketInfoOnCards();
 var ids=evts.map(function(e){return e.id}).filter(Boolean);
