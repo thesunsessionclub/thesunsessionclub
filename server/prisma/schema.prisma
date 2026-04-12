@@ -83,8 +83,9 @@ model Event {
   venue       String?
   date        DateTime?
   time        String?
-  image       String?
-  price       Float       @default(0)
+  image        String?
+  banner_image String?
+  price        Float       @default(0)
   genre       String?
   description String?
   ticketLink  String?
