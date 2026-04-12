@@ -574,9 +574,12 @@ function openEventModal(e){
       cta.href='#';cta.style.display='none';
     }
   }
+  const isFree=e.isFree||Number(e.price||0)===0;
+  const ticketBlock=document.getElementById('em_ticket_block');
+  if(ticketBlock) ticketBlock.style.display=isFree?'none':'';
   if(buy){
     buy.onclick=function(){openTicketModal(e)};
-    buy.style.display='inline-flex';
+    buy.style.display=isFree?'none':'inline-flex';
   }
   updateEventTicketInfo(e);
   refreshEventSummary(e.id);
