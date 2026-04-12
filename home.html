@@ -1430,6 +1430,8 @@ function createSlideshow(events){
   shell.addEventListener('touchstart',function(ev){_ssSx=ev.changedTouches[0].screenX},{passive:true});
   shell.addEventListener('touchend',function(ev){var dx=_ssSx-ev.changedTouches[0].screenX;if(Math.abs(dx)>50){dx>0?_ssNext():_ssPrev()}},{passive:true});
   shell.addEventListener('keydown',function(ev){if(ev.key==='ArrowLeft')_ssPrev();if(ev.key==='ArrowRight')_ssNext()});
+  /* Kick off the first slide's progress bar animation */
+  (function(){var cb=_ssBars[0],cf=cb&&cb.querySelector('.v4-slideshow__bar-fill');if(cf){void cf.offsetWidth;cf.style.transition='';cb.classList.add('v4-slideshow__bar--active')}})();
   _ssReset();
   return shell;
 }
