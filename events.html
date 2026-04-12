@@ -466,21 +466,67 @@ regularGrid.innerHTML='';
 const featuredEvents=evts.filter(e=>e.featured);
 const regularEvents=evts.filter(e=>!e.featured);
 function createEventCard(e,isFeatured=false){
-const isFree = e.isFree || Number(e.price||0)===0;
-const card=document.createElement('div');card.className='card-hover bg-white rounded-2xl overflow-hidden shadow-lg border border-primary/30'+(isFeatured?' ring-2 ring-yellow-400':'');
-const rightBadge = `<div class="absolute top-4 right-4 badge px-3 py-1 rounded-full text-xs font-bold">${badgeFromDate(e.date)}</div>`;
-const leftBadge = isFeatured?'<div class="absolute top-4 left-4 bg-yellow-400 text-black font-bold py-1 px-3 rounded-full text-xs">DESTACADO</div>':'';
-const bottomLeft = isFree ? `<span class="text-primary font-bold">Abierto</span>` : `<span class="text-primary font-bold">$${Number(e.price||0).toFixed(2)}</span>`;
-const bottomRight = `<button class="bg-black text-white font-semibold py-2 px-4 !rounded-button whitespace-nowrap hover:bg-primary transition-colors">VER MÁS</button>`;
-card.innerHTML=`<div class="relative h-56 overflow-hidden"><img loading="lazy" src="${proxyImage(e.image||'')}" alt="${e.title||''}" class="w-full h-full object-cover" onerror="this.src='/assets/hero-rave.png'">${leftBadge}${rightBadge}</div><div class="p-6"><h3 class="text-2xl font-bold mb-1 text-black">${e.title||''}</h3><p class="text-black/60 mb-4">${e.artists||''}</p><div class="flex items-center gap-2 text-black/60 mb-2"><i class="ri-map-pin-line text-primary"></i><span>${e.location||e.venue||''}</span></div><div class="flex items-center gap-2 text-black/60 mb-4"><i class="ri-time-line text-primary"></i><span>${e.time||''}</span></div><div class="flex items-center justify-between">${bottomLeft}${bottomRight}</div></div>`;
-card.dataset.eventId=e.id||'';
-const info=document.createElement('div');
-info.className='text-xs text-black/60 mt-2';
-info.dataset.ticketInfo='1';
-const content=card.querySelector('.p-6');
-if(content) content.appendChild(info);
+  const isFree=e.isFree||Number(e.price||0)===0;
+  const card=document.createElement('div');
+  card.className='ssc-event-card'+(isFeatured?' ssc-event-card--featured':'');
+  card.dataset.eventId=e.id||'';
 
-return card;
+  /* ── Image wrap ── */
+  const imgWrap=document.createElement('div');imgWrap.className='ssc-card__img-wrap';
+  const img=document.createElement('img');img.className='ssc-card__img';img.loading='lazy';
+  img.src=proxyImage(e.image||'');img.alt=e.title||'';
+  img.onerror=function(){this.src='/assets/hero-rave.png'};
+  const overlay=document.createElement('div');overlay.className='ssc-card__img-overlay';
+  const grain=document.createElement('div');grain.className='ssc-card__grain';
+  const dateBadge=document.createElement('div');dateBadge.className='ssc-card__date-badge';
+  dateBadge.textContent=badgeFromDate(e.date);
+  imgWrap.appendChild(img);imgWrap.appendChild(overlay);imgWrap.appendChild(grain);
+  if(isFeatured){
+    const fl=document.createElement('div');fl.className='ssc-card__featured-label';
+    const star=document.createElement('span');star.textContent='★ ';
+    fl.appendChild(star);fl.appendChild(document.createTextNode('DESTACADO'));
+    imgWrap.appendChild(fl);
+  }
+  imgWrap.appendChild(dateBadge);
+
+  /* ── Body ── */
+  const body=document.createElement('div');body.className='ssc-card__body';
+
+  const topLine=document.createElement('div');topLine.className='ssc-card__top-line';
+  const genre=document.createElement('span');genre.className='ssc-card__genre';genre.textContent=e.genre||'ELECTRONIC';
+  const price=document.createElement('span');price.className='ssc-card__price'+(isFree?' ssc-card__price--free':'');
+  price.textContent=isFree?'ENTRADA LIBRE':'$'+Number(e.price||0).toFixed(0);
+  topLine.appendChild(genre);topLine.appendChild(price);
+
+  const title=document.createElement('h3');title.className='ssc-card__title';title.textContent=e.title||'';
+
+  const artists=document.createElement('p');artists.className='ssc-card__artists';artists.textContent=e.artists||'';
+
+  const meta=document.createElement('div');meta.className='ssc-card__meta';
+  if(e.location||e.venue){
+    const loc=document.createElement('span');loc.className='ssc-card__meta-item';
+    const icon=document.createElement('i');icon.className='ri-map-pin-2-fill';
+    loc.appendChild(icon);loc.appendChild(document.createTextNode(e.location||e.venue||''));
+    meta.appendChild(loc);
+  }
+  if(e.time){
+    const tm=document.createElement('span');tm.className='ssc-card__meta-item';
+    const icon=document.createElement('i');icon.className='ri-time-fill';
+    tm.appendChild(icon);tm.appendChild(document.createTextNode(e.time));
+    meta.appendChild(tm);
+  }
+
+  const footer=document.createElement('div');footer.className='ssc-card__footer';
+  const ticketInfo=document.createElement('div');ticketInfo.className='ssc-card__ticket-info';ticketInfo.dataset.ticketInfo='1';
+  const cta=document.createElement('button');cta.className='ssc-card__cta';
+  const ctaText=document.createTextNode('VER MÁS ');
+  const ctaIcon=document.createElement('i');ctaIcon.className='ri-arrow-right-up-line';
+  cta.appendChild(ctaText);cta.appendChild(ctaIcon);
+  footer.appendChild(ticketInfo);footer.appendChild(cta);
+
+  body.appendChild(topLine);body.appendChild(title);body.appendChild(artists);body.appendChild(meta);body.appendChild(footer);
+  card.appendChild(imgWrap);card.appendChild(body);
+  return card;
 }
 featuredTitle.style.display=featuredEvents.length>0?'block':'none';
 if(!evts.length){empty.classList.remove('hidden');count.textContent='0 events found';featuredTitle.style.display='none';}else{empty.classList.add('hidden');count.textContent=`${evts.length} events found`}
