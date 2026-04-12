@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es-MX">
 <head>
 <script>
@@ -6,7 +6,7 @@
   const explicit = (window.SUNSESH_API || '').trim();
  const currentPort = String(location.port || '');
  const hasLikelyDevPort = !!currentPort && !['80', '443', '4000'].includes(currentPort);
- const isLanIp = /^(127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.)/.test(location.hostname);
+ const isLanIp = /^\d{1,3}(?:\.\d{1,3}){3}$/.test(location.hostname);
  const preferLocalApi = isLanIp || location.hostname === 'localhost' || location.hostname === '127.0.0.1' || hasLikelyDevPort;
   const origin = (location.origin && location.origin !== 'null') ? location.origin : '';
  const base = explicit || (preferLocalApi ? (location.protocol + '//' + location.hostname + ':4000') : origin);
@@ -16,32 +16,30 @@
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" type="image/jpeg" href="/assets/img/logo.jpg">
 <title>Todos los Eventos</title>
   <link href="assets/css/site.css?v=20260329-01" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com/3.4.16"></script>
-<script>tailwind.config={darkMode:'class',theme:{extend:{colors:{primary:'#006400',secondary:'#00FFAA'},borderRadius:{'button':'16px'}}}};</script>
+<script>tailwind.config={darkMode:'class',theme:{extend:{colors:{primary:'#006400',secondary:'#00FFAA'},borderRadius:{'button':'8px'}}}};</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
 <style>
 .gradient-hero{
 --ssc-hero-image: url('https://images.unsplash.com/photo-1571266028243-2eb2f5f1f2d6?auto=format&fit=crop&w=2000&q=80');
 --ssc-hero-position: center 40%;
 }
-.green-shadow{box-shadow:var(--shadow)}
-.glow:hover{box-shadow:0 18px 46px rgba(0,0,0,0.45),0 0 24px rgba(0,255,170,0.18)}
-.badge{background:var(--primary);color:var(--badge-text,#07110c);border-radius:9999px;padding:.2rem .6rem;font-weight:700;font-size:.75rem}
-.btn{background:var(--primary);color:#07110c}
+.green-shadow{box-shadow:0 10px 24px rgba(0,100,0,0.25)}
+.glow:hover{box-shadow:0 12px 28px rgba(0,255,170,0.35)}
+.badge{background:#006400;color:#fff}
+.btn{background:#00FFAA;color:#000}
 .btn:hover{filter:brightness(1.1)}
-.btn-outline{border:2px solid var(--primary);color:var(--primary)}
-.btn-outline:hover{background:var(--primary);color:#07110c}
-.card{background:var(--card-bg,rgba(12,21,17,0.82));border:1px solid var(--card-border,rgba(255,255,255,0.08))}
-.card:hover{transform:translateY(-6px);box-shadow:0 18px 46px rgba(0,0,0,0.45),0 0 24px rgba(0,255,170,0.18);border-color:rgba(0,255,170,0.35)}
-.input{background:var(--input-bg,rgba(12,21,17,0.65));border:1px solid var(--input-border,rgba(255,255,255,0.12));color:var(--text)}
-.input:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--input-focus,rgba(0,255,170,0.25))}
-.select{background:var(--input-bg,rgba(12,21,17,0.65));border:1px solid var(--input-border,rgba(255,255,255,0.12));color:var(--text)}
+.btn-outline{border:2px solid #00FFAA;color:#00FFAA}
+.btn-outline:hover{background:#00FFAA;color:#000}
+.card{background:#0d1b13;border:1px solid rgba(0,100,0,0.15)}
+.card:hover{transform:translateY(-6px);box-shadow:0 16px 36px rgba(0,100,0,0.25);border-color:#006400}
+.input{background:#0f2016;border:1px solid rgba(0,255,170,0.2);color:#e6ffe6}
+.select{background:#0f2016;border:1px solid rgba(0,255,170,0.2);color:#e6ffe6}
 body{font-family:'Montserrat',sans-serif;background:#0b1e14}
 </style>
 </head>
@@ -50,16 +48,16 @@ body{font-family:'Montserrat',sans-serif;background:#0b1e14}
 <div class="container mx-auto px-6 py-4">
 <div class="flex justify-between items-center">
 <div class="flex items-center">
-<img src="/assets/img/logo.jpg" alt="The Sun Session Club Logo" class="h-12 mr-8 cursor-pointer object-contain" onclick="window.location.href='home.html'">
+<img src="/assets/img/logo.jpg" alt="The Sun Session Club Logo" class="h-12 mr-8 cursor-pointer object-contain" onclick="window.location.href='sunsessionesp_fixed_v3.html'">
 <ul class="hidden md:flex space-x-8">
-<li><a href="home.html#artists" class="text-white hover:text-secondary font-medium uppercase text-sm nav-link">Artistas</a></li>
+<li><a href="sunsessionesp_fixed_v3.html#artists" class="text-white hover:text-secondary font-medium uppercase text-sm nav-link">Artistas</a></li>
 <li><a href="events.html" class="text-secondary font-bold uppercase text-sm nav-link">Eventos</a></li>
 <li><a href="music.html" class="text-white hover:text-secondary font-medium uppercase text-sm nav-link">Música</a></li>
-<li><a href="home.html#video" class="text-white hover:text-secondary font-medium uppercase text-sm nav-link">Videos</a></li>
-<li><a href="home.html#about" class="text-white hover:text-secondary font-medium uppercase text-sm nav-link">Nosotros</a></li>
+<li><a href="sunsessionesp_fixed_v3.html#video" class="text-white hover:text-secondary font-medium uppercase text-sm nav-link">Videos</a></li>
+<li><a href="sunsessionesp_fixed_v3.html#about" class="text-white hover:text-secondary font-medium uppercase text-sm nav-link">Nosotros</a></li>
 <li><a href="gallery.html" class="text-white hover:text-secondary font-medium uppercase text-sm nav-link">Galería</a></li>
           <li><a href="merch.html" class="text-white hover:text-secondary font-medium uppercase text-sm nav-link">MERCH</a></li>
-<li><a href="home.html#contact" class="text-white hover:text-secondary font-medium uppercase text-sm nav-link">Contacto</a></li>
+<li><a href="sunsessionesp_fixed_v3.html#contact" class="text-white hover:text-secondary font-medium uppercase text-sm nav-link">Contacto</a></li>
 </ul>
 </div>
 </div>
@@ -67,7 +65,7 @@ body{font-family:'Montserrat',sans-serif;background:#0b1e14}
 </nav>
 <header class="ssc-page-hero gradient-hero py-16 green-shadow" data-parallax="0.14" data-parallax-mode="bg">
 <div class="container mx-auto px-6">
-<nav class="ssc-nav text-sm text-white/70 mb-6"><a href="home.html" class="text-secondary">Inicio</a> / <span>Eventos</span></nav>
+<nav class="ssc-nav text-sm text-white/70 mb-6"><a href="sunsessionesp_fixed_v3.html" class="text-secondary">Inicio</a> / <span>Eventos</span></nav>
 <h1 class="text-5xl font-extrabold text-white text-center">EVENTOS DE ACCESO LIMITADO</h1>
 <p class="text-center text-white/80 mt-4">No hay repetición ni segunda vuelta. Asegura tu lugar antes de que se cierre la línea.</p>
 </div>
@@ -131,7 +129,7 @@ body{font-family:'Montserrat',sans-serif;background:#0b1e14}
 <p id="em_artists" class="text-black/60 mb-2"></p>
 <p id="em_desc" class="text-black/60 text-sm mb-4"></p>
 </div>
-<button id="em_close" class="text-black/50 hover:text-black text-2xl">&times;</button>
+<button id="em_close" class="text-black/50 hover:text-black text-2xl">?</button>
 </div>
 <div class="flex items-center gap-2 text-black/70 mb-2"><i class="ri-map-pin-line text-[#006400]"></i><span id="em_location"></span></div>
 <div class="flex items-center gap-2 text-black/70 mb-6"><i class="ri-time-line text-[#006400]"></i><span id="em_time"></span></div>
@@ -576,14 +574,12 @@ function openEventModal(e){
       cta.href='#';cta.style.display='none';
     }
   }
+  const isFree=e.isFree||Number(e.price||0)===0;
+  const ticketBlock=document.getElementById('em_ticket_block');
+  if(ticketBlock) ticketBlock.style.display=isFree?'none':'';
   if(buy){
-    const isFree=e.isFree||Number(e.price||0)===0;
-    if(isFree){
-      buy.style.display='none';
-    }else{
-      buy.onclick=function(){openTicketModal(e)};
-      buy.style.display='inline-flex';
-    }
+    buy.onclick=function(){openTicketModal(e)};
+    buy.style.display=isFree?'none':'inline-flex';
   }
   updateEventTicketInfo(e);
   refreshEventSummary(e.id);
@@ -634,7 +630,7 @@ function proxyImage(u){if(!u)return'';if(/^https?:\/\//.test(u))return `${window
 </script>
 
 <script>
-(function(){if(document.querySelector('footer'))return;fetch('home.html').then(r=>r.text()).then(html=>{const doc=new DOMParser().parseFromString(html,'text/html');const f=doc.querySelector('footer');if(f){document.body.appendChild(f)}}).catch(()=>{})})();
+(function(){if(document.querySelector('footer'))return;fetch('sunsessionesp_fixed_v3.html').then(r=>r.text()).then(html=>{const doc=new DOMParser().parseFromString(html,'text/html');const f=doc.querySelector('footer');if(f){document.body.appendChild(f)}}).catch(()=>{})})();
 </script>
   <script src="assets/js/site.js?v=20260327-3"></script>
   <script src="assets/js/ssc-ux.js" defer></script>
