@@ -1,15 +1,5 @@
 import { prisma } from '../prisma.js';
 import { validationResult } from 'express-validator';
-import { generateTicketArtWithNanoBanana } from '../services/ticketArtGenerator.js';
-import path from 'path';
-import fs from 'fs';
-import crypto from 'crypto';
-
-const eventUploadsDir = path.resolve(process.cwd(), 'uploads', 'events');
-
-function ensureDir(dir) {
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-}
 /**
  * Eventos CRUD
  */
@@ -57,37 +47,22 @@ export const remove = async (req, res) => {
   }
 };
 export const generateTicketArt = async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) return res.status(400).json({ message: 'Validacion fallida', errors: errors.array() });
-
-  try {
-    const result = await generateTicketArtWithNanoBanana(req.body || {});
-    res.status(201).json(result);
-  } catch (err) {
-    const details = String(err?.message || '').trim();
-    const lowered = details.toLowerCase();
-    if (lowered.includes('api key')) {
-      return res.status(503).json({ message: 'Falta configurar la API key de Gemini para Nano Banana.', details });
-    }
-    if (lowered.includes('not installed') || lowered.includes('no esta instalado')) {
-      return res.status(503).json({ message: 'Nano Banana no esta disponible en este proyecto.', details });
-    }
-    return res.status(502).json({ message: 'No se pudo generar el arte del ticket.', details });
-  }
+  res.status(501).json({ message: 'generateTicketArt not implemented' });
 };
 export const uploadImage = async (req, res) => {
-  try {
-    if (!req.file) return res.status(400).json({ message: 'No se recibio imagen' });
-    ensureDir(eventUploadsDir);
-    const ext = path.extname(req.file.originalname || '.jpg').toLowerCase() || '.jpg';
-    const filename = crypto.randomUUID() + ext;
-    const fullPath = path.join(eventUploadsDir, filename);
-    fs.writeFileSync(fullPath, req.file.buffer);
-    const relPath = '/uploads/events/' + filename;
-    res.json({ url: relPath });
-  } catch (err) {
-    res.status(500).json({ message: 'Error al subir imagen', details: err?.message });
-  }
+  if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
+  const { writeFile } = await import('fs/promises');
+  const { join } = await import('path');
+  const { fileURLToPath } = await import('url');
+  const __dirname = join(fileURLToPath(import.meta.url), '../../..');
+  const uploadsDir = join(__dirname, 'uploads');
+  const { mkdirSync } = await import('fs');
+  try { mkdirSync(uploadsDir, { recursive: true }); } catch {}
+  const ext = req.file.originalname.split('.').pop() || 'jpg';
+  const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+  const filepath = join(uploadsDir, filename);
+  await writeFile(filepath, req.file.buffer);
+  res.json({ url: `/uploads/${filename}` });
 };
 function normalizeEvent(body) {
   const {
@@ -109,7 +84,6 @@ function normalizeEvent(body) {
     status = 'ACTIVE',
     featured = false,
     sort_order = 0,
-    ticket_design_json = null,
   } = body || {};
   return {
     title,
@@ -130,6 +104,5 @@ function normalizeEvent(body) {
     status,
     featured: !!featured,
     sort_order: Number(sort_order || 0),
-    ticket_design_json: ticket_design_json == null || ticket_design_json === '' ? null : String(ticket_design_json),
   };
 }
