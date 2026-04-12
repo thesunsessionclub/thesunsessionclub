@@ -262,55 +262,6 @@ input::placeholder, textarea::placeholder{color:rgba(255,255,255,.7)}
 </div>
 </section>
 <section id="events" class="space-y-6 hidden">
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-<div class="card p-6 space-y-4">
-<div class="flex items-center justify-between"><h2 class="text-xl font-bold">Evento Principal</h2><div class="flex items-center gap-4"><label class="toggle text-sm text-white/70"><input id="heroDisplayToggle" type="checkbox"><span class="toggle-track"><span class="toggle-thumb"></span></span><span>Mostrar en portada</span></label><button class="bg-accent text-black font-bold px-4 py-2 rounded-button" onclick="saveHeroEvent()">Guardar</button></div></div>
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-<div class="md:col-span-2">
-<div id="heroImageDrop" class="drag p-6 text-center">Arrastra y suelta imagen</div>
-<div class="relative mt-3">
-<img id="heroImagePreview" class="w-full h-48 object-cover rounded" data-default="/assets/hero-rave.png">
-<button type="button" onclick="clearPreviewImage('heroImagePreview')" class="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/70 hover:bg-red-600 text-white font-bold">X</button>
-</div>
-</div>
-<div class="md:col-span-2 flex items-center space-x-2"><input id="heroLineupEnabled" type="checkbox" class="mr-2"><label>Mostrar cartel</label></div>
-<div id="heroLineupBlock" class="md:col-span-2">
-<div id="heroLineupDrop" class="drag p-6 text-center">Arrastra y suelta imagen del cartel</div>
-<div class="relative mt-3">
-<img id="heroLineupPreview" class="w-full h-48 object-cover rounded">
-<button type="button" onclick="clearPreviewImage('heroLineupPreview')" class="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/70 hover:bg-red-600 text-white font-bold">X</button>
-</div>
-</div>
-<div class="md:col-span-2 flex items-center space-x-2"><input id="heroIsFree" type="checkbox" class="mr-2"><label>Evento gratuito</label></div>
-<div><label class="block text-white/70 mb-2">Enlace del evento (redes)</label><input id="heroSocialLink" class="w-full bg-muted border border-white/10 rounded px-3 py-2" placeholder="https://instagram.com/..."></div>
-<div><label class="block text-white/70 mb-2">Etiqueta</label><input id="heroBadge" class="w-full bg-muted border border-white/10 rounded px-3 py-2"></div>
-<div><label class="block text-white/70 mb-2">Título</label><input id="heroTitle" class="w-full bg-muted border border-white/10 rounded px-3 py-2"></div>
-<div><label class="block text-white/70 mb-2">Fecha</label><input id="heroDate" type="date" class="w-full bg-muted border border-white/10 rounded px-3 py-2"></div>
-<div><label class="block text-white/70 mb-2">Horario</label><input id="heroTime" class="w-full bg-muted border border-white/10 rounded px-3 py-2"></div>
-<div class="md:col-span-2"><label class="block text-white/70 mb-2">Descripción</label><textarea id="heroDesc" class="w-full bg-muted border border-white/10 rounded px-3 py-2"></textarea></div>
-<div><label class="block text-white/70 mb-2">Texto del botón 1</label><input id="heroBtn1Text" class="w-full bg-muted border border-white/10 rounded px-3 py-2"></div>
-<div><label class="block text-white/70 mb-2">Enlace del botón 1</label><input id="heroBtn1Link" class="w-full bg-muted border border-white/10 rounded px-3 py-2"></div>
-<div><label class="block text-white/70 mb-2">Proveedor de boletos</label><input id="heroTicketProvider" class="w-full bg-muted border border-white/10 rounded px-3 py-2" placeholder="Ej. Ticketmaster, Boletia"></div>
-<div><label class="block text-white/70 mb-2">Texto del botón 2</label><input id="heroBtn2Text" class="w-full bg-muted border border-white/10 rounded px-3 py-2"></div>
-<div><label class="block text-white/70 mb-2">Enlace del botón 2</label><input id="heroBtn2Link" class="w-full bg-muted border border-white/10 rounded px-3 py-2"></div>
-<div class="md:col-span-2 flex items-center space-x-2"><input id="heroActive" type="checkbox" class="mr-2"><label>Activo</label></div>
-<div class="md:col-span-2">
-  <span class="text-white/60 text-sm">Usa el switch superior de "Mostrar en portada" para ocultar/mostrar el bloque en el sitio.</span>
-</div>
-</div>
-<div class="mt-4">
-<div class="text-white/60 text-sm mb-2">Vista previa</div>
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-<div>
-<div class="bg-white/10 inline-block px-3 py-1 rounded-full text-sm font-bold mb-3" id="heroPreviewBadge"></div>
-<div class="text-3xl font-extrabold mb-3" id="heroPreviewTitle"></div>
-<div class="text-white/80 mb-2" id="heroPreviewMeta"></div>
-<p class="text-white/70 text-sm" id="heroPreviewDesc"></p>
-</div>
-<img id="heroPreviewImage" class="w-full h-48 object-cover rounded" data-default="/assets/hero-rave.png">
-</div>
-</div>
-</div>
 <div class="card p-6 space-y-4">
 <div class="flex items-center justify-between"><h2 class="text-xl font-bold">Lista de Eventos</h2><button id="addEventBtn" class="bg-accent text-black font-bold px-4 py-2 rounded-button" onclick="window.showEventEditor&&window.showEventEditor();">Agregar Evento</button></div>
 <div class="grid grid-cols-1 md:grid-cols-4 gap-2 mb-2">
@@ -329,7 +280,6 @@ input::placeholder, textarea::placeholder{color:rgba(255,255,255,.7)}
 <thead><tr class="text-white/60"><th class="p-2">Imagen</th><th class="p-2">Título</th><th class="p-2">Fecha</th><th class="p-2">Ubicación</th><th class="p-2">Horario</th><th class="p-2">Tipo</th><th class="p-2">Estado</th><th class="p-2">Acciones</th></tr></thead>
 <tbody id="eventRows"></tbody>
 </table>
-</div>
 </div>
 </div>
 </section>
@@ -1378,9 +1328,6 @@ function renderAll(){
   renderEvents();
   postFilterEvents();
   renderDashboardEvents();
-  populateHeroEventForm();
-  renderHeroPreview();
-  updateHeroLineupVisibility();
 }
 function renderArtists(){const tbody=document.getElementById('artistRows');if(!tbody)return;tbody.innerHTML='';const q=(filters.artists||'').toLowerCase();const st=(filters.artistsStatus||'').toLowerCase();(store.artists||[]).forEach((a,i)=>{const n=(a.name||'').toLowerCase();const g=((a.genre||((a.genres||[]).join(', ')))||'').toLowerCase();const isActive=((a.status||'ACTIVE').toLowerCase()==='active')||(a.active!==false);const statusPass=!st||(st==='active'?isActive:!isActive);const pass=(!q||n.includes(q)||g.includes(q))&&statusPass;if(!pass)return;const tr=document.createElement('tr');tr.innerHTML=`<td class="p-2"><img src="${a.profile_image||a.image||''}" class="w-12 h-12 rounded object-cover"></td><td class="p-2">${a.name||''}</td><td class="p-2">${a.genre||((a.genres||[]).join(', '))}</td><td class="p-2"><span class="px-2 py-1 rounded ${((a.status||'ACTIVE').toLowerCase()==='active')?'bg-green-600':'bg-gray-600'} text-xs">${((a.status||'ACTIVE').toLowerCase()==='active')?'Activo':'Inactivo'}</span></td><td class="p-2"><button class="px-3 py-1 bg-white/10 rounded mr-2" onclick="editArtist(${i})">Editar</button><button class="px-3 py-1 bg-red-600 rounded" onclick="confirmDeleteArtist(${i})">Eliminar</button></td>`;tbody.appendChild(tr)})}
 function renderTracks(){const tbody=document.getElementById('trackRows');if(!tbody)return;tbody.innerHTML='';const q=(filters.tracks||'').toLowerCase();const st=(filters.tracksStatus||'').toLowerCase();store.tracks.filter(t=>{const ttl=(t.title||'').toLowerCase();const art=(t.artist||'').toLowerCase();const gen=((t.genre||[]).join(', ')||'').toLowerCase();const isActive=((t.status||'ACTIVE').toLowerCase()==='active');const statusPass=!st||(st==='active'?isActive:!isActive);return (!q||ttl.includes(q)||art.includes(q)||gen.includes(q))&&statusPass}).forEach((t,i)=>{const tr=document.createElement('tr');tr.innerHTML=`<td class="p-2"><img src="${t.cover||''}" class="w-12 h-12 rounded object-cover"></td><td class="p-2">${t.title||''}</td><td class="p-2">${t.artist||''}</td><td class="p-2">${(t.genre||[]).join(', ')}</td><td class="p-2"><button class="px-3 py-1 bg-white/10 rounded mr-2" onclick="editTrack(${i})">Editar</button><button class="px-3 py-1 bg-red-600 rounded" onclick="deleteTrack(${i})">Eliminar</button></td>`;tbody.appendChild(tr)})}
@@ -1851,10 +1798,6 @@ async function deleteEvent(idOrIndex){
 }
 function readImgValue(id,fallback){const el=document.getElementById(id);if(!el)return fallback||'';const attr=(el.getAttribute('src')||'').trim();const def=(el.getAttribute('data-default')||'').trim();if(attr){if(def&&attr===def)return fallback||'';return attr}const prop=(el.src||'').trim();if(!prop)return fallback||'';const here=location.href;const base=location.origin+location.pathname;const clean=(prop===here||prop===base)?'':prop;return (def&&clean===def)?(fallback||''):clean}
 function clearPreviewImage(id){const el=document.getElementById(id);if(!el)return;const def=(el.getAttribute('data-default')||'').trim();el.src=def||'';el.setAttribute('data-cleared','1')}
-function saveHeroEvent(){const he=store.settings.heroEvent||{};const heroEl=document.getElementById('heroImagePreview');const lineupEl=document.getElementById('heroLineupPreview');const heroImg=readImgValue('heroImagePreview','');const lineupImg=readImgValue('heroLineupPreview','');const heroCleared=heroEl&&heroEl.getAttribute('data-cleared')==='1';const lineupCleared=lineupEl&&lineupEl.getAttribute('data-cleared')==='1';if(heroCleared){he.image=''}else if(heroImg){he.image=heroImg}else{he.image=he.image||''}he.badge=document.getElementById('heroBadge').value;he.title=document.getElementById('heroTitle').value;he.date=document.getElementById('heroDate').value;he.time=document.getElementById('heroTime').value;he.description=document.getElementById('heroDesc').value;he.isFree=document.getElementById('heroIsFree').checked;he.socialLink=document.getElementById('heroSocialLink').value;he.button1Text=document.getElementById('heroBtn1Text').value;he.button1Link=document.getElementById('heroBtn1Link').value;he.ticketProvider=document.getElementById('heroTicketProvider').value;he.button2Text=document.getElementById('heroBtn2Text').value;he.button2Link=document.getElementById('heroBtn2Link').value;he.lineupEnabled=document.getElementById('heroLineupEnabled').checked;if(lineupCleared){he.lineupImage=''}else{he.lineupImage=lineupImg||he.lineupImage||''}if(he.lineupEnabled&&!he.lineupImage){alert('Debes agregar la imagen del cartel o desactivar el interruptor.');return}he.status=document.getElementById('heroActive').checked?'active':'inactive';he.displayEnabled=document.getElementById('heroDisplayToggle').checked;if(heroEl)heroEl.setAttribute('data-cleared','0');if(lineupEl)lineupEl.setAttribute('data-cleared','0');store.settings.heroEvent=he;saveStore();renderHeroPreview();updateHeroLineupVisibility();showToast('Evento principal guardado')}
-function updateHeroLineupVisibility(){const toggle=document.getElementById('heroLineupEnabled');const block=document.getElementById('heroLineupBlock');const he=(store.settings&&store.settings.heroEvent)||{};const hasHeroImg=!!(he.image||'').trim();const show=!!(toggle&&toggle.checked)||hasHeroImg;block.style.display=show?'':'none'}
-function populateHeroEventForm(){const he=(store.settings&&store.settings.heroEvent)||{};const legacyBtn2=String(he.button2Text||'').trim().toUpperCase();if(legacyBtn2==='CARTEL COMPLETO'||legacyBtn2==='LINEUP COMPLETO'){he.button2Text='VER LINEUP';store.settings.heroEvent=he;saveStore()}document.getElementById('heroBadge').value=he.badge||'';document.getElementById('heroTitle').value=he.title||'';document.getElementById('heroDate').value=he.date||'';document.getElementById('heroTime').value=he.time||'';document.getElementById('heroDesc').value=he.description||'';document.getElementById('heroIsFree').checked=!!he.isFree;document.getElementById('heroSocialLink').value=he.socialLink||'';document.getElementById('heroBtn1Text').value=he.button1Text||'BOLETOS PREVENTA';document.getElementById('heroBtn1Link').value=he.button1Link||'';document.getElementById('heroTicketProvider').value=he.ticketProvider||'';document.getElementById('heroBtn2Text').value=he.button2Text||'VER LINEUP';document.getElementById('heroBtn2Link').value=he.button2Link||'';document.getElementById('heroLineupEnabled').checked=!!he.lineupEnabled;document.getElementById('heroLineupPreview').src=he.lineupImage||'';document.getElementById('heroActive').checked=(he.status||'inactive')==='active';document.getElementById('heroDisplayToggle').checked=he.displayEnabled!==false;const heroImg=document.getElementById('heroImagePreview');const heroPreview=document.getElementById('heroPreviewImage');const lineupPreview=document.getElementById('heroLineupPreview');const sb=(store.settings&&store.settings.sectionBackgrounds)||{};const fallback=heroImg.getAttribute('data-default')||'';const heroSrc=he.image||sb.hero||fallback||'';heroImg.src=heroSrc;heroPreview.src=heroSrc;heroImg.setAttribute('data-cleared','0');if(lineupPreview)lineupPreview.setAttribute('data-cleared','0');setupDrop('heroImageDrop',url=>{heroImg.src=url;heroImg.setAttribute('data-cleared','0');heroPreview.src=url;updateHeroLineupVisibility()});setupDrop('heroLineupDrop',url=>{const el=document.getElementById('heroLineupPreview');el.src=url;el.setAttribute('data-cleared','0')});document.getElementById('heroLineupEnabled').onchange=updateHeroLineupVisibility;updateHeroLineupVisibility()}
-function renderHeroPreview(){const b=document.getElementById('heroBadge').value;const t=document.getElementById('heroTitle').value;const d=document.getElementById('heroDate').value;const tm=document.getElementById('heroTime').value;const desc=document.getElementById('heroDesc').value;document.getElementById('heroPreviewBadge').textContent=b||'';document.getElementById('heroPreviewTitle').textContent=t||'';document.getElementById('heroPreviewMeta').textContent=[d,tm].filter(Boolean).join(' ? ');document.getElementById('heroPreviewDesc').textContent=desc||''}
 let confirmHandler=null;
 function openConfirm(message,onYes){const m=document.getElementById('confirmModal');const body=document.getElementById('confirmBody');const ok=document.getElementById('confirmOk');confirmHandler=typeof onYes==='function'?onYes:null;if(body)body.textContent=message||'';if(ok)ok.onclick=function(){const handler=confirmHandler;closeConfirm();if(handler)handler()};if(m)m.classList.add('active')}
 function closeConfirm(){const m=document.getElementById('confirmModal');if(m)m.classList.remove('active');confirmHandler=null}
@@ -2384,7 +2327,7 @@ fetchArtistsIntoStore();
 async function applySettingsFromApi(){try{const res=await fetch(window.__SUNSESH_API_BASE + '/api/settings',{headers:{'Cache-Control':'no-cache'},cache:'no-store'});if(!res.ok)return;const s=await res.json();const styleId='dynamic-theme';let style=document.getElementById(styleId);if(!style){style=document.createElement('style');style.id=styleId;document.head.appendChild(style)}var primary=s.primary_color||'#006400';var secondary=s.secondary_color||'#00FFAA';var bg=s.background_color||'#0b1e14';var text=s.global_text_color||'#ffffff';var card=s.card_background||'#0d1b13';var font=s.font_family||"'Montserrat',sans-serif";style.textContent=':root{--primary:'+primary+';--secondary:'+secondary+';--bg:'+bg+';--text:'+text+';--card:'+card+';--font:'+font+'} .badge{background:var(--primary)!important;color:#000} .btn{background:var(--secondary)!important;color:#000} body{background:var(--bg)!important;color:var(--text)!important;font-family:var(--font)!important}';const logo=document.getElementById('siteLogoPreview');if(logo&&s.site_logo){logo.src=s.site_logo}const bh=document.getElementById('bgHeroPreview');if(bh&&s.hero_section_background_image){bh.src=s.hero_section_background_image}const ba=document.getElementById('bgAboutPreview');if(ba&&s.about_background_image){ba.src=s.about_background_image}const bgp=document.getElementById('bgGalleryPreview');if(bgp&&s.gallery_background_image){bgp.src=s.gallery_background_image}if(!store.settings)store.settings={};store.settings.order_notification_email=s.order_notification_email||'';store.settings.bank_name=s.bank_name||'';store.settings.bank_account_holder=s.bank_account_holder||'';store.settings.bank_clabe=s.bank_clabe||'';store.settings.bank_card=s.bank_card||'';let friends=[];if(s.friends_json){try{const parsed=JSON.parse(s.friends_json);if(Array.isArray(parsed))friends=parsed}catch{}}store.settings.friends=friends;localStorage.setItem(STORE_KEY,JSON.stringify(store));renderFriendsAdmin()}catch{}}
 applySettingsFromApi();
 fetchEventsIntoStore();
-function renderAll(){document.getElementById('stat-artists').textContent=(store.artists||[]).filter(a=>a.active!==false).length;document.getElementById('stat-tracks').textContent=(store.tracks||[]).length;document.getElementById('stat-videos').textContent=(store.videos||[]).length;document.getElementById('stat-vinyl').textContent=(store.vinyl||[]).filter(v=>v.active!==false).length;document.getElementById('stat-products').textContent=(store.products||[]).filter(p=>p.active!==false).length;document.getElementById('stat-orders').textContent=(store.orders||[]).length;renderArtists();renderTracks();renderVideos();renderVinyl();renderProducts();renderMedia();renderFriendsAdmin();populateSettings();renderEvents();populateHeroEventForm();renderHeroPreview()}
+function renderAll(){document.getElementById('stat-artists').textContent=(store.artists||[]).filter(a=>a.active!==false).length;document.getElementById('stat-tracks').textContent=(store.tracks||[]).length;document.getElementById('stat-videos').textContent=(store.videos||[]).length;document.getElementById('stat-vinyl').textContent=(store.vinyl||[]).filter(v=>v.active!==false).length;document.getElementById('stat-products').textContent=(store.products||[]).filter(p=>p.active!==false).length;document.getElementById('stat-orders').textContent=(store.orders||[]).length;renderArtists();renderTracks();renderVideos();renderVinyl();renderProducts();renderMedia();renderFriendsAdmin();populateSettings();renderEvents()}
 
 /* === SSC Overrides: panel events + music/vinyl/video forms === */
 function parseTrackPlatformLinks(raw){
@@ -2504,9 +2447,6 @@ function renderAll(){
   renderEvents();
   postFilterEvents();
   renderDashboardEvents();
-  populateHeroEventForm();
-  renderHeroPreview();
-  updateHeroLineupVisibility();
 }
 
 async function fetchMusicIntoStore(){
@@ -3843,9 +3783,6 @@ function renderAll(){
   renderEvents();
   postFilterEvents();
   renderDashboardEvents();
-  populateHeroEventForm();
-  renderHeroPreview();
-  updateHeroLineupVisibility();
 }
 
 window.renderAll=renderAll;
