@@ -1358,3 +1358,306 @@ footer .text-primary { color: var(--v4-neon) !important; }
   }
   .v4-tile__arrow { opacity: 1; transform: none; }
 }
+
+/* ══════════════════════════════════════════════════════════════
+   UNDERGROUND EVENT CARDS — events.html
+   Aesthetic: Boiler Room × Resident Advisor × Fabric London
+   Dark editorial, grain, neon accents, cinematic overlays
+   ══════════════════════════════════════════════════════════════ */
+
+.ssc-event-card {
+  position: relative;
+  background: #0a0b0d;
+  border: 1px solid rgba(255,255,255,0.07);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  transition: border-color 0.3s ease, transform 0.35s cubic-bezier(0.22,1,0.36,1);
+  will-change: transform;
+}
+.ssc-event-card:hover {
+  border-color: var(--v4-neon, #00FFB3);
+  transform: translateY(-4px);
+}
+.ssc-event-card--featured {
+  border-color: var(--v4-neon, #00FFB3);
+  box-shadow: 0 0 0 1px var(--v4-neon, #00FFB3), 0 8px 40px rgba(0,255,179,0.10);
+}
+
+/* ── Image area ── */
+.ssc-card__img-wrap {
+  position: relative;
+  width: 100%;
+  height: 220px;
+  overflow: hidden;
+}
+.ssc-event-card--featured .ssc-card__img-wrap {
+  height: 260px;
+}
+.ssc-card__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.7s cubic-bezier(0.22,1,0.36,1), filter 0.4s ease;
+  filter: saturate(0.85) contrast(1.05);
+}
+.ssc-event-card:hover .ssc-card__img {
+  transform: scale(1.06);
+  filter: saturate(1) contrast(1.1);
+}
+
+/* Cinematic gradient overlay */
+.ssc-card__img-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    160deg,
+    rgba(0,0,0,0.1) 0%,
+    rgba(0,0,0,0.05) 30%,
+    rgba(0,0,0,0.55) 75%,
+    rgba(0,0,0,0.88) 100%
+  );
+  z-index: 1;
+}
+
+/* Film grain on image */
+.ssc-card__grain {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  opacity: 0.18;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size: 140px 140px;
+  pointer-events: none;
+}
+
+/* Featured label */
+.ssc-card__featured-label {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--v4-neon, #00FFB3);
+  color: #000;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  padding: 4px 10px;
+  text-transform: uppercase;
+}
+
+/* Date badge — top right */
+.ssc-card__date-badge {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 3;
+  background: rgba(0,0,0,0.75);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: #fff;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  padding: 4px 10px;
+  backdrop-filter: blur(4px);
+}
+
+/* ── Body ── */
+.ssc-card__body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 20px 20px 16px;
+  gap: 10px;
+  background: #0a0b0d;
+}
+
+/* Top line: genre + price */
+.ssc-card__top-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.ssc-card__genre {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: rgba(255,255,255,0.35);
+  text-transform: uppercase;
+}
+.ssc-card__price {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: rgba(255,255,255,0.6);
+  text-transform: uppercase;
+  border: 1px solid rgba(255,255,255,0.12);
+  padding: 3px 8px;
+}
+.ssc-card__price--free {
+  color: var(--v4-neon, #00FFB3);
+  border-color: rgba(0,255,179,0.3);
+}
+
+/* Title */
+.ssc-card__title {
+  font-family: 'Bebas Neue', 'Syne', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  line-height: 1.0;
+  letter-spacing: 0.01em;
+  color: #fff;
+  text-transform: uppercase;
+  margin: 0;
+  transition: color 0.25s ease;
+}
+.ssc-event-card:hover .ssc-card__title {
+  color: var(--v4-neon, #00FFB3);
+}
+.ssc-event-card--featured .ssc-card__title {
+  font-size: 1.85rem;
+}
+
+/* Artists */
+.ssc-card__artists {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.45);
+  letter-spacing: 0.04em;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Meta: location + time */
+.ssc-card__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 2px;
+}
+.ssc-card__meta-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.38);
+  letter-spacing: 0.03em;
+}
+.ssc-card__meta-item i {
+  font-size: 0.7rem;
+  color: var(--v4-neon, #00FFB3);
+  flex-shrink: 0;
+}
+
+/* Footer: ticket info + CTA */
+.ssc-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+.ssc-card__ticket-info {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.58rem;
+  color: rgba(255,255,255,0.3);
+  letter-spacing: 0.06em;
+}
+
+/* CTA button */
+.ssc-card__cta {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+.ssc-card__cta i { font-size: 0.8rem; transition: transform 0.2s ease; }
+.ssc-card__cta:hover {
+  background: var(--v4-neon, #00FFB3);
+  border-color: var(--v4-neon, #00FFB3);
+  color: #000;
+}
+.ssc-card__cta:hover i { transform: translate(2px, -2px); }
+
+/* ── Glitch hover effect on featured ── */
+.ssc-event-card--featured::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(0,255,179,0.03) 50%, transparent 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 0;
+}
+.ssc-event-card--featured:hover::before { opacity: 1; }
+
+/* ── Grids ── */
+#featuredEventsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.06);
+  margin-bottom: 0;
+}
+#featuredEventsGrid .ssc-event-card {
+  border: none;
+}
+#eventsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+#eventsGrid .ssc-event-card {
+  border: none;
+}
+
+/* ── Section title override for events page ── */
+#featuredEventsTitle {
+  font-family: 'Bebas Neue', sans-serif !important;
+  font-size: 0.7rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.25em !important;
+  color: var(--v4-neon, #00FFB3) !important;
+  text-transform: uppercase !important;
+  margin-bottom: 1px !important;
+  padding: 0 !important;
+  border: none !important;
+}
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .ssc-card__img-wrap { height: 180px; }
+  .ssc-event-card--featured .ssc-card__img-wrap { height: 200px; }
+  .ssc-card__title { font-size: 1.35rem; }
+  .ssc-event-card--featured .ssc-card__title { font-size: 1.55rem; }
+  #featuredEventsGrid,
+  #eventsGrid { grid-template-columns: 1fr; gap: 1px; }
+}
