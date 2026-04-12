@@ -46,6 +46,24 @@ export const remove = async (req, res) => {
     res.status(204).send();
   }
 };
+export const generateTicketArt = async (req, res) => {
+  res.status(501).json({ message: 'generateTicketArt not implemented' });
+};
+export const uploadImage = async (req, res) => {
+  if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
+  const { writeFile } = await import('fs/promises');
+  const { join } = await import('path');
+  const { fileURLToPath } = await import('url');
+  const __dirname = join(fileURLToPath(import.meta.url), '../../..');
+  const uploadsDir = join(__dirname, 'uploads');
+  const { mkdirSync } = await import('fs');
+  try { mkdirSync(uploadsDir, { recursive: true }); } catch {}
+  const ext = req.file.originalname.split('.').pop() || 'jpg';
+  const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+  const filepath = join(uploadsDir, filename);
+  await writeFile(filepath, req.file.buffer);
+  res.json({ url: `/uploads/${filename}` });
+};
 function normalizeEvent(body) {
   const {
     title = '',
