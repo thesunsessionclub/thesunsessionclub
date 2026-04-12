@@ -1414,7 +1414,7 @@ function createSlideshow(events){
   var total=events.length;
   pv.addEventListener('click',function(ev){ev.preventDefault();_ssPrev()});
   nx.addEventListener('click',function(ev){ev.preventDefault();_ssNext()});
-  _ssBars.forEach(function(b){b.addEventListener('click',function(){_ssGo(parseInt(b.dataset.index))})});
+  _ssBars.forEach(function(b){b.addEventListener('click',function(ev){ev.preventDefault();_ssGo(parseInt(b.dataset.index))})});
   shell.addEventListener('mouseenter',function(){
     _ssPaused=true;clearTimeout(_ssTimer);
     var af=shell.querySelector('.v4-slideshow__bar--active .v4-slideshow__bar-fill');
