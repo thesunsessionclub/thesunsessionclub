@@ -424,22 +424,22 @@ function mergeEvents(apiEvents,localEvents){const map=new Map();(Array.isArray(a
 function readLocalStoreEvents(){const s=getStore();return Array.isArray(s.events)?s.events.map(normalizeEvent):[]}
 function readLocalEvents(){return readLocalStoreEvents().filter(e=>((e.status||'').toLowerCase()==='active'))}
 async function fetchEvents(){
-  const localEvents=readLocalStoreEvents();
   try{
     const res=await fetch(window.__SUNSESH_API_BASE + '/api/events',{headers:{'Cache-Control':'no-cache'},cache:'no-store'});
     const data=await res.json();
     if(Array.isArray(data)){
-      const merged=mergeEvents(data,localEvents);
+      const normalized=data.map(normalizeEvent);
       const s=getStore();
-      s.events=merged;
+      s.events=normalized;
       setStore(s);
-      __eventsCache=merged.filter(e=>((e.status||'').toLowerCase()==='active'));
+      __eventsCache=normalized.filter(e=>((e.status||'').toLowerCase()==='active'));
       const ids=__eventsCache.map(e=>e.id).filter(Boolean);
       if(ids.length) await fetchTicketSummaries(ids);
       startTicketSummaryPolling();
       return;
     }
   }catch(_){ }
+  const localEvents=readLocalStoreEvents();
   __eventsCache=localEvents.filter(e=>((e.status||'').toLowerCase()==='active'));
   const ids=__eventsCache.map(e=>e.id).filter(Boolean);
   if(ids.length) await fetchTicketSummaries(ids);

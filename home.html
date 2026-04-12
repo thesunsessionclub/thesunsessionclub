@@ -1276,7 +1276,7 @@ var featuredAny=events.filter(function(e){return e.featured}).sort(function(a,b)
 if(featuredAny.length) return featuredAny[0];
 return events.slice().sort(function(a,b){return eventDateValue(a)-eventDateValue(b)})[0]||null;
 }
-async function loadEventsFromApi(){try{var res=await fetch(window.__SUNSESH_API_BASE + '/api/events',{headers:{'Cache-Control':'no-cache'},cache:'no-store'});var data=await res.json();if(Array.isArray(data)){var s=getStore();s.events=mergeEvents(data,Array.isArray(s.events)?s.events:[]);setStore(s)}}catch(_){}}
+async function loadEventsFromApi(){try{var res=await fetch(window.__SUNSESH_API_BASE + '/api/events',{headers:{'Cache-Control':'no-cache'},cache:'no-store'});var data=await res.json();if(Array.isArray(data)){var s=getStore();s.events=data.map(normalizeEvent);setStore(s)}}catch(_){}}
 function renderHomeEvents(){
 var s=getStore();var list=Array.isArray(s.events)?s.events.map(normalizeEvent):[];var evts=list.filter(function(e){return (e.status||'').toLowerCase()==='active'}).slice().sort(function(a,b){return new Date(a.date)-new Date(b.date)});
 var primary=pickPrimaryEvent(evts,s.settings||{});
