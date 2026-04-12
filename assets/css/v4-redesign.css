@@ -458,7 +458,7 @@ body {
 .v4-slideshow__viewport {
   position: relative;
   width: 100%;
-  height: clamp(420px, 72vh, 750px);
+  height: clamp(480px, 78vh, 850px);
   overflow: hidden;
 }
 /* Film grain overlay — matches hero section grain for cohesion */
