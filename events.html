@@ -431,6 +431,7 @@ async function fetchEvents(){
       const normalized=data.map(normalizeEvent);
       const s=getStore();
       s.events=normalized;
+      delete s._localDirty;
       setStore(s);
       __eventsCache=normalized.filter(e=>((e.status||'').toLowerCase()==='active'));
       const ids=__eventsCache.map(e=>e.id).filter(Boolean);
