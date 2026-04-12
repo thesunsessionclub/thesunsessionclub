@@ -1339,10 +1339,106 @@ function createEventCard(e){
   card.appendChild(imgWrap);card.appendChild(body);
   return card;
 }
-if(bannerArea){
-  featuredEvents.slice(0,3).forEach(function(e){
-    bannerArea.appendChild(createFeaturedBanner(e));
+/* ── Cinematic Slideshow (2+ featured events) ── */
+function createSlideshow(events){
+  var shell=document.createElement('div');
+  shell.className='v4-slideshow';
+  shell.setAttribute('tabindex','0');
+  var vp=document.createElement('div');
+  vp.className='v4-slideshow__viewport';
+  var kbVars=[{x:'-1%',y:'-0.4%'},{x:'1%',y:'0.3%'},{x:'0.6%',y:'-0.7%'},{x:'-0.5%',y:'0.6%'},{x:'0.8%',y:'-0.3%'}];
+  events.forEach(function(e,i){
+    var slide=document.createElement('div');
+    slide.className='v4-slide';
+    if(i===0)slide.classList.add('v4-slide--active');
+    var kb=kbVars[i%kbVars.length];
+    slide.style.setProperty('--kb-x',kb.x);
+    slide.style.setProperty('--kb-y',kb.y);
+    var imgSrc=e.banner_image||e.image||'';
+    if(imgSrc&&window.__SUNSESH_API_BASE&&imgSrc.startsWith('/uploads/'))imgSrc=window.__SUNSESH_API_BASE+imgSrc;
+    var img=document.createElement('img');img.className='v4-slide__img';img.src=imgSrc;img.alt=e.title||'';
+    var ov=document.createElement('div');ov.className='v4-slide__overlay';
+    var ct=document.createElement('div');ct.className='v4-slide__content';
+    var ey=document.createElement('span');ey.className='v4-slide__eyebrow';ey.textContent='EVENTO DESTACADO';
+    var ti=document.createElement('h3');ti.className='v4-slide__title';ti.textContent=e.title||'';
+    var ar=document.createElement('p');ar.className='v4-slide__artists';ar.textContent=e.artists||'';
+    var me=document.createElement('div');me.className='v4-slide__meta';
+    var s1=document.createElement('span');s1.textContent=badgeFromDate(e.date);
+    var s2=document.createElement('span');s2.textContent=e.location||e.venue||'';
+    var s3=document.createElement('span');s3.textContent=e.time||'';
+    me.appendChild(s1);me.appendChild(s2);me.appendChild(s3);
+    var ca=document.createElement('a');ca.className='v4-slide__cta';ca.href='events.html';ca.textContent='VER DETALLES \u2192';
+    ct.appendChild(ey);ct.appendChild(ti);ct.appendChild(ar);ct.appendChild(me);ct.appendChild(ca);
+    slide.appendChild(img);slide.appendChild(ov);slide.appendChild(ct);
+    vp.appendChild(slide);
   });
+  var pv=document.createElement('button');pv.className='v4-slideshow__arrow v4-slideshow__arrow--prev';pv.setAttribute('aria-label','Anterior');
+  var pvI=document.createElement('i');pvI.className='ri-arrow-left-s-line';pv.appendChild(pvI);
+  var nx=document.createElement('button');nx.className='v4-slideshow__arrow v4-slideshow__arrow--next';nx.setAttribute('aria-label','Siguiente');
+  var nxI=document.createElement('i');nxI.className='ri-arrow-right-s-line';nx.appendChild(nxI);
+  var ctr=document.createElement('div');ctr.className='v4-slideshow__counter';
+  var cC=document.createElement('span');cC.className='v4-slideshow__counter-current';cC.textContent='01';
+  ctr.appendChild(cC);ctr.appendChild(document.createTextNode(' \u2044 '));
+  var cT=document.createElement('span');cT.textContent=String(events.length).padStart(2,'0');ctr.appendChild(cT);
+  var prog=document.createElement('div');prog.className='v4-slideshow__progress';
+  events.forEach(function(_,i){
+    var bar=document.createElement('div');bar.className='v4-slideshow__bar';bar.dataset.index=String(i);
+    if(i===0)bar.classList.add('v4-slideshow__bar--active');
+    var fill=document.createElement('div');fill.className='v4-slideshow__bar-fill';
+    bar.appendChild(fill);prog.appendChild(bar);
+  });
+  shell.appendChild(vp);shell.appendChild(pv);shell.appendChild(nx);shell.appendChild(ctr);shell.appendChild(prog);
+  /* ── Slideshow controller — bound directly to shell refs ── */
+  var _ssIdx=0,_ssDur=6000,_ssPaused=false,_ssTimer=null;
+  var _ssSlides=vp.querySelectorAll('.v4-slide');
+  var _ssBars=prog.querySelectorAll('.v4-slideshow__bar');
+  function _ssGo(n){
+    _ssSlides[_ssIdx].classList.remove('v4-slide--active');
+    _ssIdx=(((n%total)+total)%total);
+    _ssBars.forEach(function(b,i){
+      b.classList.remove('v4-slideshow__bar--active','v4-slideshow__bar--done');
+      var f=b.querySelector('.v4-slideshow__bar-fill');
+      f.style.transition='none';f.style.width=(i<_ssIdx)?'100%':'0%';
+      if(i<_ssIdx)b.classList.add('v4-slideshow__bar--done');
+    });
+    _ssSlides[_ssIdx].classList.add('v4-slide--active');
+    cC.textContent=String(_ssIdx+1).padStart(2,'0');
+    void shell.offsetWidth;
+    var cb=_ssBars[_ssIdx],cf=cb.querySelector('.v4-slideshow__bar-fill');
+    cf.style.transition='';cb.classList.add('v4-slideshow__bar--active');
+    _ssReset();
+  }
+  function _ssNext(){_ssGo(_ssIdx+1)}
+  function _ssPrev(){_ssGo(_ssIdx-1)}
+  function _ssReset(){clearTimeout(_ssTimer);if(!_ssPaused)_ssTimer=setTimeout(_ssNext,_ssDur)}
+  var total=events.length;
+  pv.addEventListener('click',function(ev){ev.preventDefault();_ssPrev()});
+  nx.addEventListener('click',function(ev){ev.preventDefault();_ssNext()});
+  _ssBars.forEach(function(b){b.addEventListener('click',function(){_ssGo(parseInt(b.dataset.index))})});
+  shell.addEventListener('mouseenter',function(){
+    _ssPaused=true;clearTimeout(_ssTimer);
+    var af=shell.querySelector('.v4-slideshow__bar--active .v4-slideshow__bar-fill');
+    if(af){var w=getComputedStyle(af).width;af.style.transition='none';af.style.width=w}
+  });
+  shell.addEventListener('mouseleave',function(){
+    _ssPaused=false;
+    var af=shell.querySelector('.v4-slideshow__bar--active .v4-slideshow__bar-fill');
+    if(af){void af.offsetWidth;af.style.transition='';af.style.width='100%'}
+    _ssReset();
+  });
+  var _ssSx=0;
+  shell.addEventListener('touchstart',function(ev){_ssSx=ev.changedTouches[0].screenX},{passive:true});
+  shell.addEventListener('touchend',function(ev){var dx=_ssSx-ev.changedTouches[0].screenX;if(Math.abs(dx)>50){dx>0?_ssNext():_ssPrev()}},{passive:true});
+  shell.addEventListener('keydown',function(ev){if(ev.key==='ArrowLeft')_ssPrev();if(ev.key==='ArrowRight')_ssNext()});
+  _ssReset();
+  return shell;
+}
+if(bannerArea){
+  if(featuredEvents.length>=2){
+    bannerArea.appendChild(createSlideshow(featuredEvents.slice(0,5)));
+  }else if(featuredEvents.length===1){
+    bannerArea.appendChild(createFeaturedBanner(featuredEvents[0]));
+  }
 }
 regularEvents.slice(0,featuredEvents.length>0?3:6).forEach(function(e){
   regularGrid.appendChild(createEventCard(e));
