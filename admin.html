@@ -1,13 +1,12 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es-MX">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" type="image/jpeg" href="/assets/img/logo.jpg">
 <title>Panel de Administración | Sun Session Club</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
@@ -16,7 +15,7 @@
   const origin = (location.origin && location.origin !== 'null') ? location.origin : '';
   const currentPort = String(location.port || '');
   const hasLikelyDevPort = !!currentPort && !['80', '443', '4000'].includes(currentPort);
-  const isLanIp = /^(127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.)/.test(location.hostname);
+  const isLanIp = /^\d{1,3}(?:\.\d{1,3}){3}$/.test(location.hostname);
   const preferLocalApi = isLanIp || location.hostname === 'localhost' || location.hostname === '127.0.0.1' || hasLikelyDevPort;
   const base = explicit || (preferLocalApi ? (location.protocol + '//' + location.hostname + ':4000') : origin);
   window.__SUNSESH_API_BASE = String(base || '').replace(/\/$/, '');
@@ -155,7 +154,7 @@ window.showEventEditor = function(index){
 </script>
 <style>
 body{font-family:'Montserrat',sans-serif}
-.rounded-button{border-radius:16px}
+.rounded-button{border-radius:8px}
 .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.8);z-index:50;padding:24px}
 .modal.active{display:flex}
 .modal .card{max-height:90vh;display:flex;flex-direction:column}
@@ -194,37 +193,11 @@ input::placeholder, textarea::placeholder{color:rgba(255,255,255,.7)}
 .settings-panel{animation:spFade .18s ease}
 @keyframes spFade{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
 .section-badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#00FFAA;margin-bottom:16px}
-.ticket-design-card{background:linear-gradient(180deg,rgba(8,18,14,.96),rgba(10,10,12,.96));border:1px solid rgba(0,255,170,.16);border-radius:18px}
-.ticket-preview-frame{position:relative;width:100%;max-width:360px;aspect-ratio:9/16;border-radius:28px;overflow:hidden;background:#050707;border:1px solid rgba(255,255,255,.08);box-shadow:0 24px 80px rgba(0,0,0,.45)}
-.ticket-preview-canvas{position:absolute;inset:0;color:#fff;display:flex;align-items:stretch;justify-content:stretch;overflow:hidden}
-.ticket-preview-bg{position:absolute;inset:0;background-size:cover;background-position:center;filter:saturate(1.05) contrast(1.02)}
-.ticket-preview-overlay{position:absolute;inset:0}
-.ticket-preview-inner{position:relative;z-index:2;width:100%;height:100%;padding:28px 24px}
-.ticket-preview-chip{position:absolute;top:28px;left:24px;z-index:3;display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase}
-.ticket-preview-title,.ticket-preview-details,.ticket-preview-qr-wrap,.ticket-preview-footer{position:absolute;left:24px;right:24px}
-.ticket-preview-title{font-size:34px;line-height:1.03;font-weight:800;letter-spacing:.02em;max-width:100%;text-align:center;text-wrap:balance}
-.ticket-preview-meta{display:grid;gap:8px;font-size:14px;text-align:center}
-.ticket-preview-qr-wrap{display:flex;justify-content:center}
-.ticket-preview-qr-box{width:168px;height:168px;border-radius:28px;background:rgba(255,255,255,.94);display:grid;place-items:center;box-shadow:0 12px 32px rgba(0,0,0,.24)}
-.ticket-preview-qr-svg{width:128px;height:128px}
-.ticket-preview-footer{bottom:28px;text-align:center;font-size:11px;letter-spacing:.18em;text-transform:uppercase;opacity:.72}
-.ticket-preview-title.pos-top{top:138px}
-.ticket-preview-title.pos-center{top:30%;transform:translateY(-50%)}
-.ticket-preview-title.pos-bottom{bottom:640px}
-.ticket-preview-details.pos-top{top:308px}
-.ticket-preview-details.pos-center{top:52%;transform:translateY(-50%)}
-.ticket-preview-details.pos-bottom{bottom:408px}
-.ticket-preview-qr-wrap.pos-top{top:520px}
-.ticket-preview-qr-wrap.pos-center{top:66%;transform:translateY(-50%)}
-.ticket-preview-qr-wrap.pos-bottom{bottom:112px}
-.ticket-mobile-shell{width:min(420px,92vw);height:min(860px,92vh);background:#050607;border:1px solid rgba(255,255,255,.1);border-radius:34px;padding:14px;box-shadow:0 28px 90px rgba(0,0,0,.55)}
-.ticket-mobile-screen{width:100%;height:100%;border-radius:26px;overflow:hidden;background:#000}
-.ticket-template-select option{color:#111}
 </style>
 </head>
 <body data-no-anim class="bg-panel text-white">
 <script>
-(()=>{const STORE_KEY='ssc_store_v1';const ROLE_KEY='ssc_admin_role';const USER_KEY='ssc_admin_user';window.addEventListener('keydown',function(e){if(e.key==='Escape'){window.location.href='home.html'}if((e.key==='R'||e.key==='r')&&e.shiftKey){try{localStorage.removeItem(STORE_KEY);localStorage.removeItem(ROLE_KEY);localStorage.removeItem(USER_KEY)}catch{}location.reload()}})})();
+(()=>{const STORE_KEY='ssc_store_v1';const ROLE_KEY='ssc_admin_role';const USER_KEY='ssc_admin_user';window.addEventListener('keydown',function(e){if(e.key==='Escape'){window.location.href='sunsessionesp_fixed_v3.html'}if((e.key==='R'||e.key==='r')&&e.shiftKey){try{localStorage.removeItem(STORE_KEY);localStorage.removeItem(ROLE_KEY);localStorage.removeItem(USER_KEY)}catch{}location.reload()}})})();
 </script>
 <div id="adminLayout" class="grid grid-cols-[260px_1fr] min-h-screen">
 <aside class="sidebar bg-muted border-r border-white/10 p-4 sticky top-0 h-screen">
@@ -256,7 +229,7 @@ input::placeholder, textarea::placeholder{color:rgba(255,255,255,.7)}
 <h1 class="text-2xl font-extrabold">Panel de Administración</h1>
 <div class="flex items-center space-x-3">
 <span id="roleBadge" class="px-3 py-1 rounded bg-accent text-black font-bold">Administrador</span>
-<a href="home.html" class="px-3 py-2 rounded-button bg-white/10 hover:bg-white/20">Ver Sitio</a>
+<a href="sunsessionesp_fixed_v3.html" class="px-3 py-2 rounded-button bg-white/10 hover:bg-white/20">Ver Sitio</a>
 </div>
 </header>
 <section id="dashboard" class="space-y-6">
@@ -289,55 +262,6 @@ input::placeholder, textarea::placeholder{color:rgba(255,255,255,.7)}
 </div>
 </section>
 <section id="events" class="space-y-6 hidden">
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-<div class="card p-6 space-y-4">
-<div class="flex items-center justify-between"><h2 class="text-xl font-bold">Evento Principal</h2><div class="flex items-center gap-4"><label class="toggle text-sm text-white/70"><input id="heroDisplayToggle" type="checkbox"><span class="toggle-track"><span class="toggle-thumb"></span></span><span>Mostrar en portada</span></label><button class="bg-accent text-black font-bold px-4 py-2 rounded-button" onclick="saveHeroEvent()">Guardar</button></div></div>
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-<div class="md:col-span-2">
-<div id="heroImageDrop" class="drag p-6 text-center">Arrastra y suelta imagen</div>
-<div class="relative mt-3">
-<img id="heroImagePreview" class="w-full h-48 object-cover rounded" data-default="/assets/hero-rave.png">
-<button type="button" onclick="clearPreviewImage('heroImagePreview')" class="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/70 hover:bg-red-600 text-white font-bold">X</button>
-</div>
-</div>
-<div class="md:col-span-2 flex items-center space-x-2"><input id="heroLineupEnabled" type="checkbox" class="mr-2"><label>Mostrar cartel</label></div>
-<div id="heroLineupBlock" class="md:col-span-2">
-<div id="heroLineupDrop" class="drag p-6 text-center">Arrastra y suelta imagen del cartel</div>
-<div class="relative mt-3">
-<img id="heroLineupPreview" class="w-full h-48 object-cover rounded">
-<button type="button" onclick="clearPreviewImage('heroLineupPreview')" class="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/70 hover:bg-red-600 text-white font-bold">X</button>
-</div>
-</div>
-<div class="md:col-span-2 flex items-center space-x-2"><input id="heroIsFree" type="checkbox" class="mr-2"><label>Evento gratuito</label></div>
-<div><label class="block text-white/70 mb-2">Enlace del evento (redes)</label><input id="heroSocialLink" class="w-full bg-muted border border-white/10 rounded px-3 py-2" placeholder="https://instagram.com/..."></div>
-<div><label class="block text-white/70 mb-2">Etiqueta</label><input id="heroBadge" class="w-full bg-muted border border-white/10 rounded px-3 py-2"></div>
-<div><label class="block text-white/70 mb-2">Título</label><input id="heroTitle" class="w-full bg-muted border border-white/10 rounded px-3 py-2"></div>
-<div><label class="block text-white/70 mb-2">Fecha</label><input id="heroDate" type="date" class="w-full bg-muted border border-white/10 rounded px-3 py-2"></div>
-<div><label class="block text-white/70 mb-2">Horario</label><input id="heroTime" class="w-full bg-muted border border-white/10 rounded px-3 py-2"></div>
-<div class="md:col-span-2"><label class="block text-white/70 mb-2">Descripción</label><textarea id="heroDesc" class="w-full bg-muted border border-white/10 rounded px-3 py-2"></textarea></div>
-<div><label class="block text-white/70 mb-2">Texto del botón 1</label><input id="heroBtn1Text" class="w-full bg-muted border border-white/10 rounded px-3 py-2"></div>
-<div><label class="block text-white/70 mb-2">Enlace del botón 1</label><input id="heroBtn1Link" class="w-full bg-muted border border-white/10 rounded px-3 py-2"></div>
-<div><label class="block text-white/70 mb-2">Proveedor de boletos</label><input id="heroTicketProvider" class="w-full bg-muted border border-white/10 rounded px-3 py-2" placeholder="Ej. Ticketmaster, Boletia"></div>
-<div><label class="block text-white/70 mb-2">Texto del botón 2</label><input id="heroBtn2Text" class="w-full bg-muted border border-white/10 rounded px-3 py-2"></div>
-<div><label class="block text-white/70 mb-2">Enlace del botón 2</label><input id="heroBtn2Link" class="w-full bg-muted border border-white/10 rounded px-3 py-2"></div>
-<div class="md:col-span-2 flex items-center space-x-2"><input id="heroActive" type="checkbox" class="mr-2"><label>Activo</label></div>
-<div class="md:col-span-2">
-  <span class="text-white/60 text-sm">Usa el switch superior de "Mostrar en portada" para ocultar/mostrar el bloque en el sitio.</span>
-</div>
-</div>
-<div class="mt-4">
-<div class="text-white/60 text-sm mb-2">Vista previa</div>
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-<div>
-<div class="bg-white/10 inline-block px-3 py-1 rounded-full text-sm font-bold mb-3" id="heroPreviewBadge"></div>
-<div class="text-3xl font-extrabold mb-3" id="heroPreviewTitle"></div>
-<div class="text-white/80 mb-2" id="heroPreviewMeta"></div>
-<p class="text-white/70 text-sm" id="heroPreviewDesc"></p>
-</div>
-<img id="heroPreviewImage" class="w-full h-48 object-cover rounded" data-default="/assets/hero-rave.png">
-</div>
-</div>
-</div>
 <div class="card p-6 space-y-4">
 <div class="flex items-center justify-between"><h2 class="text-xl font-bold">Lista de Eventos</h2><button id="addEventBtn" class="bg-accent text-black font-bold px-4 py-2 rounded-button" onclick="window.showEventEditor&&window.showEventEditor();">Agregar Evento</button></div>
 <div class="grid grid-cols-1 md:grid-cols-4 gap-2 mb-2">
@@ -356,7 +280,6 @@ input::placeholder, textarea::placeholder{color:rgba(255,255,255,.7)}
 <thead><tr class="text-white/60"><th class="p-2">Imagen</th><th class="p-2">Título</th><th class="p-2">Fecha</th><th class="p-2">Ubicación</th><th class="p-2">Horario</th><th class="p-2">Tipo</th><th class="p-2">Estado</th><th class="p-2">Acciones</th></tr></thead>
 <tbody id="eventRows"></tbody>
 </table>
-</div>
 </div>
 </div>
 </section>
@@ -1015,183 +938,13 @@ input::placeholder, textarea::placeholder{color:rgba(255,255,255,.7)}
 <option value="draft">Borrador</option>
 <option value="hidden">Oculto</option>
 </select>
-<label class="flex items-center space-x-2"><input id="ee_featured" type="checkbox" onchange="toggleBannerUpload()"><span>Destacado</span></label>
-<div id="ee_banner_section" class="md:col-span-2 hidden">
-<label class="block text-white/70 text-sm mb-1">Banner para Homepage (imagen ancha, se muestra grande en la home)</label>
-<div class="drag p-4 text-center" id="ee_banner_drop">Arrastra o haz clic para subir banner del evento</div>
-<img id="ee_banner_preview" class="w-full h-40 object-cover rounded mt-2" style="display:none">
-<button type="button" onclick="clearEventBanner()" class="text-red-400 text-xs mt-1 hover:underline" id="ee_banner_clear" style="display:none">Quitar banner</button>
-</div>
+<label class="flex items-center space-x-2"><input id="ee_featured" type="checkbox"><span>Destacado</span></label>
+<label class="flex items-center space-x-2"><input id="ee_hero" type="checkbox"><span class="text-amber-300 font-semibold">Evento Hero (portada)</span></label>
 <input id="ee_order" type="number" placeholder="Orden manual" class="w-full bg-muted border border-white/10 rounded px-3 py-2">
-<div id="ticketDesignSection" class="md:col-span-2 ticket-design-card p-5 space-y-5 hidden">
-<div class="flex flex-wrap items-start justify-between gap-3">
-<div>
-<div class="section-badge"><span>Ticket Design Settings</span></div>
-<h3 class="text-lg font-extrabold">Identidad visual del ticket</h3>
-<p class="text-white/60 text-sm mt-1">Controla fondo, overlay, paleta, tipografía, layout y preview en vivo para tickets de eventos de cobro.</p>
-</div>
-<div class="flex flex-wrap gap-2">
-<button type="button" id="tdSaveTemplateBtn" class="px-4 py-2 rounded-button bg-white/10 hover:bg-white/20">Guardar plantilla</button>
-<button type="button" id="tdMobilePreviewBtn" class="px-4 py-2 rounded-button bg-accent text-black font-bold">Preview on Mobile</button>
-</div>
-</div>
-<div class="grid grid-cols-1 xl:grid-cols-[minmax(0,1.2fr)_380px] gap-6">
-<div class="space-y-5">
-<div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-<div>
-<label class="block text-white/70 mb-2">Base visual</label>
-<select id="td_background_mode" class="w-full bg-muted border border-white/10 rounded px-3 py-2">
-<option value="flyer">Usar flyer del evento</option>
-<option value="custom">Imagen personalizada</option>
-<option value="ai">Arte AI</option>
-</select>
-</div>
-<div>
-<label class="block text-white/70 mb-2">Overlay</label>
-<select id="td_overlay_style" class="w-full bg-muted border border-white/10 rounded px-3 py-2">
-<option value="dark-gradient">Dark gradient</option>
-<option value="neon-glow">Neon glow</option>
-<option value="minimal-clean">Minimal clean</option>
-</select>
-</div>
-<div>
-<label class="block text-white/70 mb-2">Tipografía</label>
-<select id="td_font_preset" class="w-full bg-muted border border-white/10 rounded px-3 py-2">
-<option value="montserrat">Montserrat Clean</option>
-<option value="display">Display Bold</option>
-<option value="condensed">Condensed Club</option>
-<option value="editorial">Editorial Serif</option>
-<option value="mono">Mono Code</option>
-<option value="flyer-inspired">Inspirado en flyer</option>
-</select>
-</div>
-</div>
-<div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-<div>
-<label class="block text-white/70 mb-2">Color primario</label>
-<input id="td_primary_color" type="color" class="w-full h-11 bg-muted border border-white/10 rounded px-2 py-2">
-</div>
-<div>
-<label class="block text-white/70 mb-2">Color secundario</label>
-<input id="td_secondary_color" type="color" class="w-full h-11 bg-muted border border-white/10 rounded px-2 py-2">
-</div>
-<div>
-<label class="block text-white/70 mb-2">Color de texto</label>
-<input id="td_text_color" type="color" class="w-full h-11 bg-muted border border-white/10 rounded px-2 py-2">
-</div>
-</div>
-<div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-<div>
-<label class="block text-white/70 mb-2">Título</label>
-<select id="td_title_position" class="w-full bg-muted border border-white/10 rounded px-3 py-2">
-<option value="top">Top</option>
-<option value="center">Center</option>
-<option value="bottom">Bottom</option>
-</select>
-</div>
-<div>
-<label class="block text-white/70 mb-2">Detalles</label>
-<select id="td_details_position" class="w-full bg-muted border border-white/10 rounded px-3 py-2">
-<option value="top">Top</option>
-<option value="center">Center</option>
-<option value="bottom">Bottom</option>
-</select>
-</div>
-<div>
-<label class="block text-white/70 mb-2">QR</label>
-<select id="td_qr_position" class="w-full bg-muted border border-white/10 rounded px-3 py-2">
-<option value="top">Top</option>
-<option value="center">Center</option>
-<option value="bottom">Bottom</option>
-</select>
-</div>
-</div>
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-<div class="space-y-3">
-<div class="flex items-center justify-between">
-<label class="block text-white/70">Fondo personalizado</label>
-<button type="button" id="tdUseFlyerBtn" class="text-xs px-3 py-2 rounded-button bg-white/10 hover:bg-white/20">Usar flyer del evento</button>
-</div>
-<div class="drag p-4 text-center" id="td_background_drop">Arrastra o haz click para subir fondo</div>
-<div class="relative">
-<img id="td_background_preview" class="w-full h-40 object-cover rounded border border-white/10 hidden" src="">
-<button type="button" id="td_background_clear" class="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/70 hover:bg-red-600 text-white font-bold hidden">X</button>
-</div>
-</div>
-<div class="space-y-3">
-<label class="block text-white/70">Plantillas</label>
-<select id="td_template_select" class="ticket-template-select w-full bg-muted border border-white/10 rounded px-3 py-2">
-<option value="">Selecciona una plantilla guardada</option>
-</select>
-<div>
-<label class="block text-white/70 mb-2 text-sm">Dirección creativa AI</label>
-<textarea id="td_ai_prompt" rows="3" class="w-full bg-muted border border-white/10 rounded px-3 py-2 text-sm" placeholder="Ej. industrial premium, haze esmeralda, sin texto, más abstracto, menos crowd..."></textarea>
-</div>
-<div class="flex flex-wrap gap-2">
-<button type="button" id="tdApplyTemplateBtn" class="px-4 py-2 rounded-button bg-white/10 hover:bg-white/20">Aplicar plantilla</button>
-<button type="button" id="tdDeleteTemplateBtn" class="px-4 py-2 rounded-button bg-red-600/20 hover:bg-red-600/30 text-red-200">Eliminar plantilla</button>
-<button type="button" id="tdGenerateFromFlyerBtn" class="px-4 py-2 rounded-button bg-accent text-black font-bold">Generar arte con Nano Banana</button>
-</div>
-<p id="tdAiNote" class="text-xs text-white/60">Genera un fondo vertical original para el ticket. Si hay flyer, se usa como referencia visual; si no, se compone desde los datos del evento.</p>
-</div>
-</div>
-</div>
-<div class="space-y-3">
-<div class="text-white/70 text-sm">Live Preview 1080x1920</div>
-<div class="ticket-preview-frame mx-auto">
-<div id="ticketPreviewCanvas" class="ticket-preview-canvas">
-<div id="ticketPreviewBg" class="ticket-preview-bg"></div>
-<div id="ticketPreviewOverlay" class="ticket-preview-overlay"></div>
-<div class="ticket-preview-inner">
-<div id="ticketPreviewBadge" class="ticket-preview-chip">Sun Session Club</div>
-<div id="ticketPreviewTitle" class="ticket-preview-title pos-top">EVENTO</div>
-<div id="ticketPreviewDetails" class="ticket-preview-details pos-center">
-<div id="ticketPreviewDate" class="text-base font-semibold"></div>
-<div id="ticketPreviewLocation" class="text-sm opacity-80"></div>
-</div>
-<div id="ticketPreviewQrWrap" class="ticket-preview-qr-wrap pos-bottom">
-<div class="ticket-preview-qr-box">
-<svg class="ticket-preview-qr-svg" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
-<rect width="120" height="120" fill="#fff"/>
-<rect x="8" y="8" width="28" height="28" fill="#000"/>
-<rect x="84" y="8" width="28" height="28" fill="#000"/>
-<rect x="8" y="84" width="28" height="28" fill="#000"/>
-<rect x="48" y="16" width="8" height="8" fill="#000"/>
-<rect x="64" y="16" width="8" height="8" fill="#000"/>
-<rect x="48" y="32" width="8" height="8" fill="#000"/>
-<rect x="56" y="40" width="8" height="8" fill="#000"/>
-<rect x="72" y="40" width="8" height="8" fill="#000"/>
-<rect x="40" y="56" width="8" height="8" fill="#000"/>
-<rect x="56" y="56" width="8" height="8" fill="#000"/>
-<rect x="72" y="56" width="8" height="8" fill="#000"/>
-<rect x="48" y="72" width="8" height="8" fill="#000"/>
-<rect x="64" y="72" width="8" height="8" fill="#000"/>
-<rect x="80" y="72" width="8" height="8" fill="#000"/>
-<rect x="48" y="88" width="8" height="8" fill="#000"/>
-<rect x="64" y="88" width="8" height="8" fill="#000"/>
-</svg>
-</div>
-</div>
-<div class="ticket-preview-footer">Collectible Ticket Preview</div>
-</div>
-</div>
-</div>
-<div class="text-xs text-white/50">Preview aproximado. El generador final usa estas mismas decisiones al crear los PNG reales.</div>
-</div>
-</div>
-</div>
 </div>
 <div class="flex items-center gap-3">
 <button class="bg-accent text-black font-bold px-4 py-2 rounded-button" onclick="saveEventEditor()">Guardar</button>
 <button class="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-button" onclick="cancelEventEditor()">Cancelar</button>
-</div>
-</div>
-<div id="ticketMobilePreviewModal" class="modal">
-<div class="ticket-mobile-shell">
-<div class="ticket-mobile-screen relative">
-<button type="button" onclick="closeTicketMobilePreview()" class="absolute top-4 right-4 z-10 text-white/70 hover:text-white text-2xl font-bold leading-none">X</button>
-<div id="ticketMobilePreviewMount" class="w-full h-full"></div>
-</div>
 </div>
 </div>
 <div id="modal" class="modal">
@@ -1222,54 +975,13 @@ input::placeholder, textarea::placeholder{color:rgba(255,255,255,.7)}
 </div>
 <script>
 const STORE_KEY='ssc_store_v1';const ROLE_KEY='ssc_admin_role';const USER_KEY='ssc_admin_user';
-const DEFAULT_STORE={artists:[{name:'RUBZZ',image:'/assets/img/rubzz.png',genres:['Techno','Underground','Minimal'],active:true},{name:'MERME',image:'/assets/img/merme.png',genres:['House','Deep Tech','Progressive'],active:true},{name:'DRACK',image:'/assets/img/drack.png',genres:['Tech House','Melodic','Tribal'],active:true}],tracks:[],videos:[],events:[],vinyl:[],products:[],orders:[],media:[],settings:{heroEvent:{badge:'EVENTO ESPECIAL',title:'PRÓXIMAMENTE',date:'',time:'',description:'',image:'',button1Text:'BOLETOS PREVENTA',button1Link:'',ticketProvider:'',isFree:false,socialLink:'',button2Text:'VER LINEUP',button2Link:'',lineupEnabled:false,lineupImage:'',status:'inactive'},users:[{username:'admin',hash:'admin',role:'admin'}]}};
+const DEFAULT_STORE={artists:[{name:'RUBZZ',image:'/assets/img/rubzz.png',genres:['Techno','Underground','Minimal'],active:true},{name:'MERME',image:'/assets/img/merme.png',genres:['House','Deep Tech','Progressive'],active:true},{name:'DRACK',image:'/assets/img/drack.png',genres:['Tech House','Melodic','Tribal'],active:true}],tracks:[],videos:[],events:[{title:'SUMMER VIBES',artists:'DJ ALEX & EMMA BEATS',location:'Skyline Club, Downtown',venue:'Skyline Club',date:'2025-06-15',time:'22:00 - 04:00',image:'/assets/hero-rave.png',price:0,genre:'House',status:'active',featured:false,sort_order:1,ticketLink:'#',socialLink:'https://instagram.com/sunsessionclub',isFree:true,buttonText:'VER MÁS'},{title:'TECHNO UNDERGROUND',artists:'MARCUS DEEP & GUESTS',location:'Warehouse 33, Industrial District',venue:'Warehouse 33',date:'2025-06-22',time:'23:00 - 06:00',image:'/assets/hero-rave.png',price:30,genre:'Techno',status:'active',featured:false,sort_order:2,ticketLink:'#',socialLink:'#',isFree:false,buttonText:'COMPRAR BOLETOS'},{title:'SUNSET SESSIONS',artists:'ALL RESIDENT DJs',location:'Rooftop Lounge, City Center',venue:'Rooftop Lounge',date:'2025-07-01',time:'18:00 - 00:00',image:'/assets/hero-rave.png',price:0,genre:'House',status:'active',featured:false,sort_order:3,ticketLink:'#',socialLink:'https://instagram.com/sunsessionclub',isFree:true,buttonText:'VER MÁS'}],vinyl:[],products:[],orders:[],media:[],settings:{heroEvent:{badge:'EVENTO ESPECIAL',title:'PRÓXIMAMENTE',date:'',time:'',description:'',image:'',button1Text:'BOLETOS PREVENTA',button1Link:'',ticketProvider:'',isFree:false,socialLink:'',button2Text:'VER LINEUP',button2Link:'',lineupEnabled:false,lineupImage:'',status:'inactive'},users:[{username:'admin',hash:'admin',role:'admin'}]}};
 function loadStore(){try{const raw=localStorage.getItem(STORE_KEY);if(raw){return JSON.parse(raw)}return JSON.parse(JSON.stringify(DEFAULT_STORE))}catch(e){return JSON.parse(JSON.stringify(DEFAULT_STORE))}}
 function saveStore(){localStorage.setItem(STORE_KEY,JSON.stringify(store));renderAll()}
 async function sha256(s){const enc=new TextEncoder();const d=await crypto.subtle.digest('SHA-256',enc.encode(s));return Array.from(new Uint8Array(d)).map(b=>b.toString(16).padStart(2,'0')).join('')}
 async function verifyPass(p,h){try{if(h===p)return true;if(window.crypto&&crypto.subtle){return (await sha256(p))===h}return h===p}catch(e){return h===p}}
-function normalizeStore(s){const out=(s&&typeof s==='object')?s:{};out.artists=Array.isArray(out.artists)?out.artists:[];out.tracks=Array.isArray(out.tracks)?out.tracks:[];out.videos=Array.isArray(out.videos)?out.videos:[];out.events=Array.isArray(out.events)?out.events:[];out.vinyl=Array.isArray(out.vinyl)?out.vinyl:[];out.products=Array.isArray(out.products)?out.products:[];out.orders=Array.isArray(out.orders)?out.orders:[];out.media=Array.isArray(out.media)?out.media:[];out.settings=(out.settings&&typeof out.settings==='object')?out.settings:{};out.settings.users=Array.isArray(out.settings.users)?out.settings.users:[];out.settings.friends=Array.isArray(out.settings.friends)?out.settings.friends:[];out.settings.ticketTemplates=Array.isArray(out.settings.ticketTemplates)?out.settings.ticketTemplates:[];return out}
+function normalizeStore(s){const out=(s&&typeof s==='object')?s:{};out.artists=Array.isArray(out.artists)?out.artists:[];out.tracks=Array.isArray(out.tracks)?out.tracks:[];out.videos=Array.isArray(out.videos)?out.videos:[];out.events=Array.isArray(out.events)?out.events:[];out.vinyl=Array.isArray(out.vinyl)?out.vinyl:[];out.products=Array.isArray(out.products)?out.products:[];out.orders=Array.isArray(out.orders)?out.orders:[];out.media=Array.isArray(out.media)?out.media:[];out.settings=(out.settings&&typeof out.settings==='object')?out.settings:{};out.settings.users=Array.isArray(out.settings.users)?out.settings.users:[];out.settings.friends=Array.isArray(out.settings.friends)?out.settings.friends:[];return out}
 let store=normalizeStore(loadStore());
-const DEFAULT_TICKET_DESIGN={background_mode:'flyer',background_image:'',overlay_style:'dark-gradient',primary_color:'#00ffaa',secondary_color:'#006400',text_color:'#ffffff',font_preset:'montserrat',font_style:'preset',title_position:'top',details_position:'center',qr_position:'bottom',ai_prompt:''};
-let currentTicketDesignBackground='';
-let ticketDesignControlsReady=false;
-function cloneJson(value){return JSON.parse(JSON.stringify(value))}
-function safeParseObject(raw,fallback){try{const parsed=typeof raw==='string'?JSON.parse(raw||'{}'):raw;return(parsed&&typeof parsed==='object')?parsed:cloneJson(fallback)}catch{return cloneJson(fallback)}}
-function normalizeHexColor(value,fallback){const raw=String(value||'').trim();if(/^#[0-9a-f]{6}$/i.test(raw))return raw.toLowerCase();if(/^#[0-9a-f]{3}$/i.test(raw))return('#'+raw.slice(1).split('').map(ch=>ch+ch).join('')).toLowerCase();return fallback}
-function buildDefaultTicketDesign(eventImage){return{...DEFAULT_TICKET_DESIGN,background_image:'',event_flyer_image:eventImage||''}}
-function parseTicketDesignValue(raw,eventImage){const base=buildDefaultTicketDesign(eventImage);const next={...base,...safeParseObject(raw,base)};next.primary_color=normalizeHexColor(next.primary_color,base.primary_color);next.secondary_color=normalizeHexColor(next.secondary_color,base.secondary_color);next.text_color=normalizeHexColor(next.text_color,base.text_color);next.event_flyer_image=eventImage||next.event_flyer_image||'';return next}
-function mapTicketPreviewFont(preset){const key=String(preset||'montserrat').trim().toLowerCase();if(key==='display'||key==='flyer-inspired')return "'Impact','Arial Black',sans-serif";if(key==='condensed')return "'Arial Narrow','Arial',sans-serif";if(key==='editorial')return "Georgia,'Times New Roman',serif";if(key==='mono')return "'Courier New',monospace";return "'Montserrat',sans-serif"}
-function colorWithAlpha(color,alpha){const hex=normalizeHexColor(color,'');if(!hex)return `rgba(255,255,255,${alpha})`;const expanded=hex.slice(1);const r=parseInt(expanded.slice(0,2),16);const g=parseInt(expanded.slice(2,4),16);const b=parseInt(expanded.slice(4,6),16);return `rgba(${r},${g},${b},${alpha})`}
-function getTicketTemplateList(){if(!store.settings)store.settings={};store.settings.ticketTemplates=Array.isArray(store.settings.ticketTemplates)?store.settings.ticketTemplates:[];return store.settings.ticketTemplates}
-function persistStoreLight(){localStorage.setItem(STORE_KEY,JSON.stringify(store))}
-function hexToRgb(color){const hex=normalizeHexColor(color,'');if(!hex)return{r:255,g:255,b:255};const raw=hex.slice(1);return{r:parseInt(raw.slice(0,2),16),g:parseInt(raw.slice(2,4),16),b:parseInt(raw.slice(4,6),16)}}
-function rgbToHex(r,g,b){const toHex=v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0');return`#${toHex(r)}${toHex(g)}${toHex(b)}`}
-function getRelativeLuminance(color){const {r,g,b}=hexToRgb(color);const map=[r,g,b].map(v=>{const c=v/255;return c<=.03928?c/12.92:Math.pow((c+.055)/1.055,2.4)});return .2126*map[0]+.7152*map[1]+.0722*map[2]}
-function getContrastTextColor(color){return getRelativeLuminance(color)>.46?'#111111':'#ffffff'}
-function formatPreviewDate(value){if(!value)return'Select a date';try{const dt=new Date(`${value}T12:00:00`);if(Number.isNaN(dt.getTime()))return value;return dt.toLocaleDateString('es-MX',{day:'2-digit',month:'short',year:'numeric'}).replace('.','').toUpperCase()}catch{return value}}
-function ticketPreviewOverlayCss(design){const primary=normalizeHexColor(design.primary_color,DEFAULT_TICKET_DESIGN.primary_color);const secondary=normalizeHexColor(design.secondary_color,DEFAULT_TICKET_DESIGN.secondary_color);const mode=String(design.overlay_style||'dark-gradient').toLowerCase();if(mode==='minimal-clean'){return`linear-gradient(180deg,rgba(255,255,255,.12) 0%,rgba(255,255,255,.02) 34%,rgba(10,10,10,.36) 100%),linear-gradient(135deg,${colorWithAlpha(primary,.18)} 0%,transparent 48%,${colorWithAlpha(secondary,.18)} 100%)`}if(mode==='neon-glow'){return`radial-gradient(circle at 20% 18%,${colorWithAlpha(primary,.42)} 0%,transparent 42%),radial-gradient(circle at 80% 76%,${colorWithAlpha(secondary,.38)} 0%,transparent 38%),linear-gradient(180deg,rgba(3,8,8,.18) 0%,rgba(2,5,5,.50) 100%)`}return`linear-gradient(180deg,rgba(0,0,0,.40) 0%,rgba(0,0,0,.10) 35%,rgba(0,0,0,.56) 100%),radial-gradient(circle at 22% 18%,${colorWithAlpha(primary,.24)} 0%,transparent 44%),radial-gradient(circle at 78% 78%,${colorWithAlpha(secondary,.20)} 0%,transparent 40%)`}
-function ticketPreviewFallbackBackground(design){const primary=normalizeHexColor(design.primary_color,DEFAULT_TICKET_DESIGN.primary_color);const secondary=normalizeHexColor(design.secondary_color,DEFAULT_TICKET_DESIGN.secondary_color);return`radial-gradient(circle at 20% 20%,${colorWithAlpha(primary,.48)} 0%,transparent 38%),radial-gradient(circle at 82% 78%,${colorWithAlpha(secondary,.42)} 0%,transparent 34%),linear-gradient(160deg,#03110d 0%,#071b16 45%,#010504 100%)`}
-function getEventEditorSnapshot(){const venue=(document.getElementById('ee_venue')?.value||'').trim();const location=(document.getElementById('ee_location')?.value||'').trim();const start=(document.getElementById('ee_time_start')?.value||'').trim();const end=(document.getElementById('ee_time_end')?.value||'').trim();return{title:(document.getElementById('ee_title')?.value||'').trim(),date:(document.getElementById('ee_date')?.value||'').trim(),time:start&&end?`${start} - ${end}`:(start||end||''),location:location||venue,type:(document.getElementById('ee_type')?.value||'paid').trim()}}
-function getTicketPreviewSource(design){const flyer=(currentEventImage||design.event_flyer_image||'').trim();const custom=(currentTicketDesignBackground||design.background_image||'').trim();const mode=String(design.background_mode||'flyer').toLowerCase();if(mode==='custom')return custom||flyer;if(mode==='ai')return custom||flyer;return flyer||custom}
-function updateTicketDesignVisibility(){const section=document.getElementById('ticketDesignSection');const typeField=document.getElementById('ee_type');const linkWrap=document.getElementById('ticketLinkContainer');if(linkWrap)linkWrap.style.display=typeField&&typeField.value==='free'?'none':'block';if(!section||!typeField)return;const isPaid=typeField.value!=='free';section.classList.toggle('hidden',!isPaid);const note=document.getElementById('tdAiNote');if(note){note.textContent=currentEventImage?'Genera arte AI usando tu flyer como referencia visual, o afina el mood con la dirección creativa.' :'Genera arte AI desde el contexto del evento o sube un flyer para usarlo como referencia visual.'}}
-function setTicketDesignBackground(url){currentTicketDesignBackground=String(url||'').trim();const preview=document.getElementById('td_background_preview');const clear=document.getElementById('td_background_clear');if(preview){preview.src=currentTicketDesignBackground||'';preview.classList.toggle('hidden',!currentTicketDesignBackground)}if(clear)clear.classList.toggle('hidden',!currentTicketDesignBackground);renderTicketDesignPreview()}
-function applyTicketDesignToForm(design){const next=parseTicketDesignValue(design,currentEventImage||'');const setValue=(id,value)=>{const el=document.getElementById(id);if(el)el.value=value||''};setValue('td_background_mode',next.background_mode);setValue('td_overlay_style',next.overlay_style);setValue('td_font_preset',next.font_preset);setValue('td_primary_color',normalizeHexColor(next.primary_color,DEFAULT_TICKET_DESIGN.primary_color));setValue('td_secondary_color',normalizeHexColor(next.secondary_color,DEFAULT_TICKET_DESIGN.secondary_color));setValue('td_text_color',normalizeHexColor(next.text_color,DEFAULT_TICKET_DESIGN.text_color));setValue('td_title_position',next.title_position);setValue('td_details_position',next.details_position);setValue('td_qr_position',next.qr_position);setValue('td_ai_prompt',next.ai_prompt||'');setTicketDesignBackground(next.background_image||'')}
-function readTicketDesignFromForm(){const raw={background_mode:(document.getElementById('td_background_mode')?.value||DEFAULT_TICKET_DESIGN.background_mode).trim(),background_image:currentTicketDesignBackground||'',overlay_style:(document.getElementById('td_overlay_style')?.value||DEFAULT_TICKET_DESIGN.overlay_style).trim(),primary_color:(document.getElementById('td_primary_color')?.value||DEFAULT_TICKET_DESIGN.primary_color).trim(),secondary_color:(document.getElementById('td_secondary_color')?.value||DEFAULT_TICKET_DESIGN.secondary_color).trim(),text_color:(document.getElementById('td_text_color')?.value||DEFAULT_TICKET_DESIGN.text_color).trim(),font_preset:(document.getElementById('td_font_preset')?.value||DEFAULT_TICKET_DESIGN.font_preset).trim(),font_style:'preset',title_position:(document.getElementById('td_title_position')?.value||DEFAULT_TICKET_DESIGN.title_position).trim(),details_position:(document.getElementById('td_details_position')?.value||DEFAULT_TICKET_DESIGN.details_position).trim(),qr_position:(document.getElementById('td_qr_position')?.value||DEFAULT_TICKET_DESIGN.qr_position).trim(),event_flyer_image:currentEventImage||'',ai_prompt:(document.getElementById('td_ai_prompt')?.value||'').trim()};return parseTicketDesignValue(raw,currentEventImage||'')}
-function renderTicketDesignPreview(){const canvas=document.getElementById('ticketPreviewCanvas');if(!canvas)return;const design=readTicketDesignFromForm();const snapshot=getEventEditorSnapshot();const bg=document.getElementById('ticketPreviewBg');const overlay=document.getElementById('ticketPreviewOverlay');const badge=document.getElementById('ticketPreviewBadge');const title=document.getElementById('ticketPreviewTitle');const details=document.getElementById('ticketPreviewDetails');const date=document.getElementById('ticketPreviewDate');const location=document.getElementById('ticketPreviewLocation');const qr=document.getElementById('ticketPreviewQrWrap');const source=getTicketPreviewSource(design);const primary=normalizeHexColor(design.primary_color,DEFAULT_TICKET_DESIGN.primary_color);const text=normalizeHexColor(design.text_color,DEFAULT_TICKET_DESIGN.text_color);const textSoft=getContrastTextColor(text)==='#111111'?'rgba(17,17,17,.72)':'rgba(255,255,255,.78)';canvas.style.fontFamily=mapTicketPreviewFont(design.font_preset);canvas.style.color=text;canvas.style.boxShadow=`inset 0 0 0 1px ${colorWithAlpha(primary,.14)}`;if(bg){bg.style.backgroundImage=source?`url("${source.replace(/"/g,'\\"')}")`:ticketPreviewFallbackBackground(design);bg.style.backgroundColor=source?'#030706':'transparent'}if(overlay){overlay.style.background=ticketPreviewOverlayCss(design)}if(badge){badge.textContent=snapshot.type==='free'?'FREE ACCESS':'PAID EVENT';badge.style.background=primary;badge.style.color=getContrastTextColor(primary);badge.style.boxShadow=`0 12px 26px ${colorWithAlpha(primary,.28)}`}if(title){title.textContent=snapshot.title||'EVENT TITLE';title.className=`ticket-preview-title pos-${design.title_position}`;title.style.color=text;title.style.textShadow=text==='#111111'?'0 2px 18px rgba(255,255,255,.28)':'0 4px 20px rgba(0,0,0,.36)'}if(details){details.className=`ticket-preview-details ticket-preview-meta pos-${design.details_position}`;details.style.color=textSoft}if(date){date.textContent=[formatPreviewDate(snapshot.date),snapshot.time].filter(Boolean).join(' • ')||'DATE • TIME';date.style.color=text}if(location){location.textContent=snapshot.location||'Venue / Location';location.style.color=textSoft}if(qr){qr.className=`ticket-preview-qr-wrap pos-${design.qr_position}`}}
-function renderTicketTemplateOptions(){const select=document.getElementById('td_template_select');if(!select)return;const current=select.value;const list=getTicketTemplateList();select.innerHTML='<option value="">Selecciona una plantilla guardada</option>';list.forEach(item=>{const option=document.createElement('option');option.value=item.id;option.textContent=item.name||'Plantilla';select.appendChild(option)});if(list.some(item=>item.id===current))select.value=current}
-async function persistTicketTemplatesToApi(){const payload={ticket_templates_json:JSON.stringify(getTicketTemplateList())};persistStoreLight();try{const res=await fetch(window.__SUNSESH_API_BASE + '/api/settings',{method:'PUT',headers:{'Content-Type':'application/json','Cache-Control':'no-cache'},cache:'no-store',body:JSON.stringify(payload)});if(!res.ok)throw new Error('save failed');await applySettingsFromApi();renderTicketTemplateOptions();return true}catch{renderTicketTemplateOptions();showToast('Plantillas guardadas solo en este navegador','error');return false}}
-async function saveTicketDesignTemplate(){const design=readTicketDesignFromForm();const defaultName=((document.getElementById('ee_title')?.value||'').trim()||'Ticket Premium')+' Template';const name=(window.prompt('Nombre de la plantilla',defaultName)||'').trim();if(!name)return;const list=getTicketTemplateList();const template={id:`tpl-${Date.now()}`,name,design,updatedAt:new Date().toISOString()};list.push(template);store.settings.ticketTemplates=list;renderTicketTemplateOptions();document.getElementById('td_template_select').value=template.id;const synced=await persistTicketTemplatesToApi();if(synced)showToast('Plantilla guardada')}
-function applySelectedTicketTemplate(){const select=document.getElementById('td_template_select');const item=getTicketTemplateList().find(template=>template.id===select?.value);if(!item){showToast('Selecciona una plantilla','error');return}applyTicketDesignToForm(item.design||item);renderTicketDesignPreview();showToast('Plantilla aplicada')}
-async function deleteSelectedTicketTemplate(){const select=document.getElementById('td_template_select');const id=(select?.value||'').trim();if(!id){showToast('Selecciona una plantilla','error');return}const list=getTicketTemplateList();const item=list.find(template=>template.id===id);if(!item)return;const proceed=window.confirm(`Eliminar la plantilla "${item.name||'sin nombre'}"?`);if(!proceed)return;store.settings.ticketTemplates=list.filter(template=>template.id!==id);renderTicketTemplateOptions();select.value='';const synced=await persistTicketTemplatesToApi();if(synced)showToast('Plantilla eliminada')}
-async function extractPaletteFromImage(url){return await new Promise((resolve,reject)=>{if(!url)return reject(new Error('missing image'));const img=new Image();img.crossOrigin='anonymous';img.onload=()=>{const canvas=document.createElement('canvas');canvas.width=48;canvas.height=48;const ctx=canvas.getContext('2d',{willReadFrequently:true});if(!ctx)return reject(new Error('no canvas'));ctx.drawImage(img,0,0,48,48);const pixels=ctx.getImageData(0,0,48,48).data;let totalR=0,totalG=0,totalB=0,total=0,satTotal=0;let bestPrimary={score:-1,color:'#00ffaa'};let bestSecondary={score:-1,color:'#006400'};for(let i=0;i<pixels.length;i+=4){const alpha=pixels[i+3];if(alpha<180)continue;const r=pixels[i],g=pixels[i+1],b=pixels[i+2];const max=Math.max(r,g,b);const min=Math.min(r,g,b);const sat=max===0?0:(max-min)/max;const brightness=(r+g+b)/3;const vivid=sat*brightness;const darkVivid=sat*(255-brightness);if(vivid>bestPrimary.score)bestPrimary={score:vivid,color:rgbToHex(r,g,b)};if(darkVivid>bestSecondary.score)bestSecondary={score:darkVivid,color:rgbToHex(r,g,b)};totalR+=r;totalG+=g;totalB+=b;satTotal+=sat*255;total+=1}if(!total)return reject(new Error('empty image'));resolve({primary:bestPrimary.color,secondary:bestSecondary.color,average:rgbToHex(totalR/total,totalG/total,totalB/total),brightness:(totalR+totalG+totalB)/(total*3),saturation:satTotal/total})};img.onerror=()=>reject(new Error('load failed'));img.src=url})}
-async function buildTicketDesignSuggestionFromFlyer(flyer){const palette=await extractPaletteFromImage(flyer);const overlay=palette.brightness>170?'minimal-clean':(palette.saturation>122?'neon-glow':'dark-gradient');const font=palette.saturation>118?'display':(palette.brightness>170?'editorial':'condensed');const textColor=overlay==='minimal-clean'?getContrastTextColor(palette.average):'#ffffff';return{overlay_style:overlay,primary_color:palette.primary,secondary_color:palette.secondary,text_color:textColor,font_preset:font,note:`Paleta sugerida: ${palette.primary} / ${palette.secondary} con overlay ${overlay}.`}}
-async function compressDataUrlImage(dataUrl,maxSide=1600,quality=.86){return await new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>{try{const width=img.naturalWidth||img.width||0;const height=img.naturalHeight||img.height||0;if(!width||!height){resolve(dataUrl);return}const scale=Math.min(1,maxSide/Math.max(width,height));const targetW=Math.max(1,Math.round(width*scale));const targetH=Math.max(1,Math.round(height*scale));const canvas=document.createElement('canvas');canvas.width=targetW;canvas.height=targetH;const ctx=canvas.getContext('2d');if(!ctx){resolve(dataUrl);return}ctx.drawImage(img,0,0,targetW,targetH);resolve(canvas.toDataURL('image/jpeg',quality))}catch(err){reject(err)}};img.onerror=()=>reject(new Error('image load failed'));img.src=dataUrl})}
-async function getTicketAiFlyerReference(flyer){const value=String(flyer||'').trim();if(!value)return'';if(!/^data:/i.test(value))return value;try{return await compressDataUrlImage(value)}catch{return value}}
-function getTicketAiRequestPayload(flyer){const snapshot=getEventEditorSnapshot();const design=readTicketDesignFromForm();return{flyer_image:flyer,event:{title:snapshot.title||'',date:snapshot.date||'',time:snapshot.time||'',location:snapshot.location||'',venue:(document.getElementById('ee_venue')?.value||'').trim(),artists:(document.getElementById('ee_artists')?.value||'').trim(),genre:(document.getElementById('ee_genre')?.value||'').trim(),description:(document.getElementById('ee_desc')?.value||'').trim(),type:snapshot.type||'paid'},ticket_design:{primary_color:design.primary_color||'',secondary_color:design.secondary_color||'',overlay_style:design.overlay_style||'',font_preset:design.font_preset||''},prompt_hint:(document.getElementById('td_ai_prompt')?.value||'').trim()}}
-async function requestTicketAiArtwork(flyer){const payload=getTicketAiRequestPayload(await getTicketAiFlyerReference(flyer));const res=await fetch(window.__SUNSESH_API_BASE + '/api/events/generate-ticket-art',{method:'POST',headers:{'Content-Type':'application/json','Cache-Control':'no-cache'},cache:'no-store',body:JSON.stringify(payload)});const raw=await res.text();let data={};try{data=raw?JSON.parse(raw):{}}catch{data={message:raw||''}}if(!res.ok)throw new Error(data.message||data.details||'No se pudo generar el arte');return data}
-async function generateTicketDesignFromFlyer(){const button=document.getElementById('tdGenerateFromFlyerBtn');const note=document.getElementById('tdAiNote');const flyer=(currentEventImage||'').trim();const title=(document.getElementById('ee_title')?.value||'').trim();if(!flyer&&!title){showToast('Agrega al menos el título o un flyer para generar arte','error');return}let suggestion=null;try{if(button){button.disabled=true;button.textContent='Generando arte...'}if(note)note.textContent=flyer?'Nano Banana está generando un fondo vertical usando tu flyer como referencia...':'Nano Banana está generando un fondo vertical desde el contexto del evento...';if(flyer){try{suggestion=await buildTicketDesignSuggestionFromFlyer(flyer)}catch{suggestion=null}}const generated=await requestTicketAiArtwork(flyer);applyTicketDesignToForm({...readTicketDesignFromForm(),...(suggestion||{}),background_mode:'ai',background_image:(generated.imageUrl||generated.image_url||'').trim(),event_flyer_image:flyer,ai_prompt:(document.getElementById('td_ai_prompt')?.value||'').trim()});if(note)note.textContent=`Arte generado con Nano Banana${generated.referenceUsed||generated.reference_used?' usando tu flyer como referencia.':' desde el contexto del evento.'}${suggestion&&suggestion.note?` ${suggestion.note}`:''}`;showToast('Arte AI listo para el ticket')}catch(err){if(suggestion){applyTicketDesignToForm({...readTicketDesignFromForm(),...suggestion,background_mode:'ai',background_image:flyer,event_flyer_image:flyer,ai_prompt:(document.getElementById('td_ai_prompt')?.value||'').trim()});if(note)note.textContent=`No se pudo generar arte AI real. Dejé aplicada una dirección visual basada en el flyer. ${suggestion.note||''}`;showToast(String(err?.message||'No se pudo generar el arte real'),'error')}else{if(note)note.textContent='No se pudo generar el arte AI en este momento.';showToast(String(err?.message||'No se pudo generar el arte'),'error')}}finally{if(button){button.disabled=false;button.textContent='Generar arte con Nano Banana'}}}
-function openTicketMobilePreview(){renderTicketDesignPreview();const modal=document.getElementById('ticketMobilePreviewModal');const mount=document.getElementById('ticketMobilePreviewMount');const source=document.getElementById('ticketPreviewCanvas');if(!modal||!mount||!source)return;mount.innerHTML='';const clone=source.cloneNode(true);clone.removeAttribute('id');clone.style.position='relative';clone.style.inset='auto';clone.style.width='100%';clone.style.height='100%';clone.querySelectorAll('[id]').forEach(node=>node.removeAttribute('id'));mount.appendChild(clone);modal.classList.add('active')}
-function closeTicketMobilePreview(){const modal=document.getElementById('ticketMobilePreviewModal');const mount=document.getElementById('ticketMobilePreviewMount');if(mount)mount.innerHTML='';if(modal)modal.classList.remove('active')}
-function initTicketDesignControls(){if(ticketDesignControlsReady)return;ticketDesignControlsReady=true;['td_background_mode','td_overlay_style','td_font_preset','td_primary_color','td_secondary_color','td_text_color','td_title_position','td_details_position','td_qr_position','ee_title','ee_date','ee_venue','ee_location','ee_time_start','ee_time_end'].forEach(id=>{const el=document.getElementById(id);if(!el)return;el.addEventListener('input',()=>{if(id==='td_background_mode')updateTicketDesignVisibility();renderTicketDesignPreview()});el.addEventListener('change',()=>{if(id==='td_background_mode')updateTicketDesignVisibility();renderTicketDesignPreview()})});const typeField=document.getElementById('ee_type');if(typeField){typeField.addEventListener('change',()=>{updateTicketDesignVisibility();renderTicketDesignPreview()})}setupDrop('td_background_drop',url=>{document.getElementById('td_background_mode').value='custom';setTicketDesignBackground(url);updateTicketDesignVisibility()});const clear=document.getElementById('td_background_clear');if(clear)clear.onclick=()=>setTicketDesignBackground('');const useFlyer=document.getElementById('tdUseFlyerBtn');if(useFlyer)useFlyer.onclick=()=>{const design=readTicketDesignFromForm();design.background_mode='flyer';design.background_image='';applyTicketDesignToForm(design);showToast('El ticket usará el flyer del evento')};const saveTemplate=document.getElementById('tdSaveTemplateBtn');if(saveTemplate)saveTemplate.onclick=saveTicketDesignTemplate;const applyTemplate=document.getElementById('tdApplyTemplateBtn');if(applyTemplate)applyTemplate.onclick=applySelectedTicketTemplate;const deleteTemplate=document.getElementById('tdDeleteTemplateBtn');if(deleteTemplate)deleteTemplate.onclick=deleteSelectedTicketTemplate;const generateBtn=document.getElementById('tdGenerateFromFlyerBtn');if(generateBtn)generateBtn.onclick=generateTicketDesignFromFlyer;const mobileBtn=document.getElementById('tdMobilePreviewBtn');if(mobileBtn)mobileBtn.onclick=openTicketMobilePreview;const mobileModal=document.getElementById('ticketMobilePreviewModal');if(mobileModal){mobileModal.addEventListener('click',e=>{if(e.target===mobileModal)closeTicketMobilePreview()})}renderTicketTemplateOptions();updateTicketDesignVisibility();renderTicketDesignPreview()}
 let filters={artists:'',tracks:'',videos:'',vinyl:'',products:'',events:''};
 const FALLBACK_GENRES=['Techno','House','Deep Tech','Minimal','Progressive','Tech House','Melodic','Tribal'];
 async function fetchGenreList(){
@@ -1306,8 +1018,6 @@ function normalizeEventForStore(evt){
   else{e.status='DRAFT'}
   e.featured=!!e.featured;
   e.isFree=!!e.isFree||e.price===0;
-  e.ticketDesign=parseTicketDesignValue(e.ticketDesign||e.ticket_design_json||null,e.image||'');
-  e.ticket_design_json=JSON.stringify(e.ticketDesign);
   return e;
 }
 function eventFingerprint(evt){
@@ -1374,7 +1084,6 @@ saveStore();
 // === Ticketing Admin ===
 var ticketOrdersCache = [];
 var ticketSummaryCache = null;
-var pendingTicketApprovals = new Set();
 
 function ticketStatusLabel(status){
   const s=String(status||'').toLowerCase();
@@ -1514,8 +1223,6 @@ async function updateTicketOrderStatus(id,status){
 }
 
 async function approveTicketOrder(id){
-  if(pendingTicketApprovals.has(id)) return;
-  pendingTicketApprovals.add(id);
   try{
     const res=await fetch(window.__SUNSESH_API_BASE + '/api/tickets/'+id+'/approve',{method:'POST'});
     if(!res.ok){
@@ -1523,15 +1230,9 @@ async function approveTicketOrder(id){
       showToast((msg&&msg.message)||'No se pudo confirmar','error');
       return;
     }
-    const payload=await res.json().catch(()=>null);
-    if(payload && payload.duplicate){
-      showToast('La solicitud ya estaba confirmada. No se duplicaron tickets ni correos.');
-    }else{
-      showToast('Boletos confirmados');
-    }
+    showToast('Boletos confirmados');
     fetchTicketOrders();
   }catch(_){showToast('No se pudo confirmar','error')}
-  finally{pendingTicketApprovals.delete(id)}
 }
 
 async function rejectTicketOrder(id){
@@ -1627,9 +1328,6 @@ function renderAll(){
   renderEvents();
   postFilterEvents();
   renderDashboardEvents();
-  populateHeroEventForm();
-  renderHeroPreview();
-  updateHeroLineupVisibility();
 }
 function renderArtists(){const tbody=document.getElementById('artistRows');if(!tbody)return;tbody.innerHTML='';const q=(filters.artists||'').toLowerCase();const st=(filters.artistsStatus||'').toLowerCase();(store.artists||[]).forEach((a,i)=>{const n=(a.name||'').toLowerCase();const g=((a.genre||((a.genres||[]).join(', ')))||'').toLowerCase();const isActive=((a.status||'ACTIVE').toLowerCase()==='active')||(a.active!==false);const statusPass=!st||(st==='active'?isActive:!isActive);const pass=(!q||n.includes(q)||g.includes(q))&&statusPass;if(!pass)return;const tr=document.createElement('tr');tr.innerHTML=`<td class="p-2"><img src="${a.profile_image||a.image||''}" class="w-12 h-12 rounded object-cover"></td><td class="p-2">${a.name||''}</td><td class="p-2">${a.genre||((a.genres||[]).join(', '))}</td><td class="p-2"><span class="px-2 py-1 rounded ${((a.status||'ACTIVE').toLowerCase()==='active')?'bg-green-600':'bg-gray-600'} text-xs">${((a.status||'ACTIVE').toLowerCase()==='active')?'Activo':'Inactivo'}</span></td><td class="p-2"><button class="px-3 py-1 bg-white/10 rounded mr-2" onclick="editArtist(${i})">Editar</button><button class="px-3 py-1 bg-red-600 rounded" onclick="confirmDeleteArtist(${i})">Eliminar</button></td>`;tbody.appendChild(tr)})}
 function renderTracks(){const tbody=document.getElementById('trackRows');if(!tbody)return;tbody.innerHTML='';const q=(filters.tracks||'').toLowerCase();const st=(filters.tracksStatus||'').toLowerCase();store.tracks.filter(t=>{const ttl=(t.title||'').toLowerCase();const art=(t.artist||'').toLowerCase();const gen=((t.genre||[]).join(', ')||'').toLowerCase();const isActive=((t.status||'ACTIVE').toLowerCase()==='active');const statusPass=!st||(st==='active'?isActive:!isActive);return (!q||ttl.includes(q)||art.includes(q)||gen.includes(q))&&statusPass}).forEach((t,i)=>{const tr=document.createElement('tr');tr.innerHTML=`<td class="p-2"><img src="${t.cover||''}" class="w-12 h-12 rounded object-cover"></td><td class="p-2">${t.title||''}</td><td class="p-2">${t.artist||''}</td><td class="p-2">${(t.genre||[]).join(', ')}</td><td class="p-2"><button class="px-3 py-1 bg-white/10 rounded mr-2" onclick="editTrack(${i})">Editar</button><button class="px-3 py-1 bg-red-600 rounded" onclick="deleteTrack(${i})">Eliminar</button></td>`;tbody.appendChild(tr)})}
@@ -2100,10 +1798,6 @@ async function deleteEvent(idOrIndex){
 }
 function readImgValue(id,fallback){const el=document.getElementById(id);if(!el)return fallback||'';const attr=(el.getAttribute('src')||'').trim();const def=(el.getAttribute('data-default')||'').trim();if(attr){if(def&&attr===def)return fallback||'';return attr}const prop=(el.src||'').trim();if(!prop)return fallback||'';const here=location.href;const base=location.origin+location.pathname;const clean=(prop===here||prop===base)?'':prop;return (def&&clean===def)?(fallback||''):clean}
 function clearPreviewImage(id){const el=document.getElementById(id);if(!el)return;const def=(el.getAttribute('data-default')||'').trim();el.src=def||'';el.setAttribute('data-cleared','1')}
-async function saveHeroEvent(){const he=store.settings.heroEvent||{};const heroEl=document.getElementById('heroImagePreview');const lineupEl=document.getElementById('heroLineupPreview');const heroImg=readImgValue('heroImagePreview','');const lineupImg=readImgValue('heroLineupPreview','');const heroCleared=heroEl&&heroEl.getAttribute('data-cleared')==='1';const lineupCleared=lineupEl&&lineupEl.getAttribute('data-cleared')==='1';if(heroCleared){he.image=''}else if(heroImg){he.image=heroImg}else{he.image=he.image||''}he.badge=document.getElementById('heroBadge').value;he.title=document.getElementById('heroTitle').value;he.date=document.getElementById('heroDate').value;he.time=document.getElementById('heroTime').value;he.description=document.getElementById('heroDesc').value;he.isFree=document.getElementById('heroIsFree').checked;he.socialLink=document.getElementById('heroSocialLink').value;he.button1Text=document.getElementById('heroBtn1Text').value;he.button1Link=document.getElementById('heroBtn1Link').value;he.ticketProvider=document.getElementById('heroTicketProvider').value;he.button2Text=document.getElementById('heroBtn2Text').value;he.button2Link=document.getElementById('heroBtn2Link').value;he.lineupEnabled=document.getElementById('heroLineupEnabled').checked;if(lineupCleared){he.lineupImage=''}else{he.lineupImage=lineupImg||he.lineupImage||''}if(he.lineupEnabled&&!he.lineupImage){alert('Debes agregar la imagen del cartel o desactivar el interruptor.');return}he.status=document.getElementById('heroActive').checked?'active':'inactive';he.displayEnabled=document.getElementById('heroDisplayToggle').checked;if(heroEl)heroEl.setAttribute('data-cleared','0');if(lineupEl)lineupEl.setAttribute('data-cleared','0');store.settings.heroEvent=he;saveStore();renderHeroPreview();updateHeroLineupVisibility();try{const res=await fetch(window.__SUNSESH_API_BASE + '/api/settings',{method:'PUT',headers:{'Content-Type':'application/json','Cache-Control':'no-cache'},cache:'no-store',body:JSON.stringify({hero_event_json:JSON.stringify(he)})});if(!res.ok){showToast('Evento principal guardado solo en este navegador','error');return}await applySettingsFromApi();showToast('Evento principal guardado')}catch(_){showToast('Evento principal guardado localmente (sin conexión al servidor)','error')}}
-function updateHeroLineupVisibility(){const toggle=document.getElementById('heroLineupEnabled');const block=document.getElementById('heroLineupBlock');const he=(store.settings&&store.settings.heroEvent)||{};const hasHeroImg=!!(he.image||'').trim();const show=!!(toggle&&toggle.checked)||hasHeroImg;block.style.display=show?'':'none'}
-function populateHeroEventForm(){const he=(store.settings&&store.settings.heroEvent)||{};const legacyBtn2=String(he.button2Text||'').trim().toUpperCase();if(legacyBtn2==='CARTEL COMPLETO'||legacyBtn2==='LINEUP COMPLETO'){he.button2Text='VER LINEUP';store.settings.heroEvent=he;saveStore()}document.getElementById('heroBadge').value=he.badge||'';document.getElementById('heroTitle').value=he.title||'';document.getElementById('heroDate').value=he.date||'';document.getElementById('heroTime').value=he.time||'';document.getElementById('heroDesc').value=he.description||'';document.getElementById('heroIsFree').checked=!!he.isFree;document.getElementById('heroSocialLink').value=he.socialLink||'';document.getElementById('heroBtn1Text').value=he.button1Text||'BOLETOS PREVENTA';document.getElementById('heroBtn1Link').value=he.button1Link||'';document.getElementById('heroTicketProvider').value=he.ticketProvider||'';document.getElementById('heroBtn2Text').value=he.button2Text||'VER LINEUP';document.getElementById('heroBtn2Link').value=he.button2Link||'';document.getElementById('heroLineupEnabled').checked=!!he.lineupEnabled;document.getElementById('heroLineupPreview').src=he.lineupImage||'';document.getElementById('heroActive').checked=(he.status||'inactive')==='active';document.getElementById('heroDisplayToggle').checked=he.displayEnabled!==false;const heroImg=document.getElementById('heroImagePreview');const heroPreview=document.getElementById('heroPreviewImage');const lineupPreview=document.getElementById('heroLineupPreview');const sb=(store.settings&&store.settings.sectionBackgrounds)||{};const fallback=heroImg.getAttribute('data-default')||'';const heroSrc=he.image||sb.hero||fallback||'';heroImg.src=heroSrc;heroPreview.src=heroSrc;heroImg.setAttribute('data-cleared','0');if(lineupPreview)lineupPreview.setAttribute('data-cleared','0');setupDrop('heroImageDrop',url=>{heroImg.src=url;heroImg.setAttribute('data-cleared','0');heroPreview.src=url;updateHeroLineupVisibility()});setupDrop('heroLineupDrop',url=>{const el=document.getElementById('heroLineupPreview');el.src=url;el.setAttribute('data-cleared','0')});document.getElementById('heroLineupEnabled').onchange=updateHeroLineupVisibility;updateHeroLineupVisibility()}
-function renderHeroPreview(){const b=document.getElementById('heroBadge').value;const t=document.getElementById('heroTitle').value;const d=document.getElementById('heroDate').value;const tm=document.getElementById('heroTime').value;const desc=document.getElementById('heroDesc').value;document.getElementById('heroPreviewBadge').textContent=b||'';document.getElementById('heroPreviewTitle').textContent=t||'';document.getElementById('heroPreviewMeta').textContent=[d,tm].filter(Boolean).join(' ? ');document.getElementById('heroPreviewDesc').textContent=desc||''}
 let confirmHandler=null;
 function openConfirm(message,onYes){const m=document.getElementById('confirmModal');const body=document.getElementById('confirmBody');const ok=document.getElementById('confirmOk');confirmHandler=typeof onYes==='function'?onYes:null;if(body)body.textContent=message||'';if(ok)ok.onclick=function(){const handler=confirmHandler;closeConfirm();if(handler)handler()};if(m)m.classList.add('active')}
 function closeConfirm(){const m=document.getElementById('confirmModal');if(m)m.classList.remove('active');confirmHandler=null}
@@ -2215,29 +1909,33 @@ if(type==='event'){title.textContent=index!=null?'Editar Evento':'Agregar Evento
 }
 function openEventModal(index){showEventEditor(index)}
 let currentEventIndex=null;let currentEventImage='';
-function showEventEditor(indexOrId){let idx=null;if(typeof indexOrId==='number'){idx=indexOrId}else if(typeof indexOrId==='string'&&indexOrId){idx=(store.events||[]).findIndex(ev=>String(ev.id||'')===String(indexOrId||''))}currentEventIndex=(idx!=null&&idx>=0)?idx:null;const editor=document.getElementById('eventEditor');editor.style.display='block';initTicketDesignControls();const e=normalizeEventForStore(currentEventIndex!=null?store.events[currentEventIndex]:{title:'',artists:'',location:'',venue:'',date:'',time:'',image:'',price:0,genre:'',description:'',ticketLink:'',socialLink:'',isFree:false,status:'active',featured:false,sort_order:0,buttonText:'COMPRAR BOLETOS',ticketDesign:buildDefaultTicketDesign('')});document.getElementById('ee_title').value=e.title||'';document.getElementById('ee_artists').value=e.artists||'';document.getElementById('ee_venue').value=e.venue||'';document.getElementById('ee_location').value=e.location||'';document.getElementById('ee_date').value=toInputDate(e.date);const timeParts=(e.time||'').split(' - ');document.getElementById('ee_time_start').value=timeParts[0]||'';document.getElementById('ee_time_end').value=timeParts[1]||'';document.getElementById('ee_type').value=e.isFree?'free':'paid';document.getElementById('ee_price').value=e.price||0;document.getElementById('ee_ticket_limit').value=(e.ticket_limit==null?'':e.ticket_limit);document.getElementById('ee_ticket_link').value=e.ticketLink||'';document.getElementById('ee_social_link').value=e.socialLink||'';document.getElementById('ee_genre').value=e.genre||'';document.getElementById('ee_desc').value=e.description||'';const statusValue=((String(e.status||'').toLowerCase()==='active')?'active':(String(e.status||'').toLowerCase()==='draft'?'draft':'hidden'));document.getElementById('ee_status').value=statusValue;document.getElementById('ee_featured').checked=!!e.featured;document.getElementById('ee_order').value=e.sort_order||0;currentEventImage=e.image||'';const eePreview=document.getElementById('ee_image_preview');if(eePreview)eePreview.src=currentEventImage||'';currentEventBanner=e.banner_image||'';const bnPrev=document.getElementById('ee_banner_preview');const bnClear=document.getElementById('ee_banner_clear');if(bnPrev){if(currentEventBanner){bnPrev.src=currentEventBanner;bnPrev.style.display='block';if(bnClear)bnClear.style.display='inline'}else{bnPrev.src='';bnPrev.style.display='none';if(bnClear)bnClear.style.display='none'}}toggleBannerUpload();setupDrop('ee_banner_drop',url=>{currentEventBanner=url;const bp=document.getElementById('ee_banner_preview');const bc=document.getElementById('ee_banner_clear');if(bp){bp.src=url;bp.style.display=url?'block':'none'}if(bc)bc.style.display=url?'inline':'none'},{serverUpload:true});setupDrop('ee_image_drop',url=>{currentEventImage=url;const p=document.getElementById('ee_image_preview');if(p)p.src=url;const currentDesign=readTicketDesignFromForm();currentDesign.event_flyer_image=url||'';if(currentDesign.background_mode==='flyer'&&!currentDesign.background_image){renderTicketDesignPreview()}else if(currentDesign.background_mode==='ai'&&!currentDesign.background_image){currentDesign.background_image=url||'';applyTicketDesignToForm(currentDesign)}else{renderTicketDesignPreview()}updateTicketDesignVisibility()},{serverUpload:true});applyTicketDesignToForm(e.ticketDesign||parseTicketDesignValue(e.ticket_design_json||null,currentEventImage||''));renderTicketTemplateOptions();updateTicketDesignVisibility();renderTicketDesignPreview();document.getElementById('ee_title').focus()}
+function showEventEditor(indexOrId){let idx=null;if(typeof indexOrId==='number'){idx=indexOrId}else if(typeof indexOrId==='string'&&indexOrId){idx=(store.events||[]).findIndex(ev=>String(ev.id||'')===String(indexOrId||''))}currentEventIndex=(idx!=null&&idx>=0)?idx:null;const editor=document.getElementById('eventEditor');editor.style.display='block';const e=currentEventIndex!=null?store.events[currentEventIndex]:{title:'',artists:'',location:'',venue:'',date:'',time:'',image:'',price:0,genre:'',description:'',ticketLink:'',socialLink:'',isFree:false,status:'active',featured:false,sort_order:0,buttonText:'COMPRAR BOLETOS'};document.getElementById('ee_title').value=e.title||'';document.getElementById('ee_artists').value=e.artists||'';document.getElementById('ee_venue').value=e.venue||'';document.getElementById('ee_location').value=e.location||'';document.getElementById('ee_date').value=toInputDate(e.date);const timeParts=(e.time||'').split(' - ');document.getElementById('ee_time_start').value=timeParts[0]||'';document.getElementById('ee_time_end').value=timeParts[1]||'';document.getElementById('ee_type').value=e.isFree?'free':'paid';document.getElementById('ee_price').value=e.price||0;document.getElementById('ee_ticket_limit').value=(e.ticket_limit==null?'':e.ticket_limit);document.getElementById('ee_ticket_link').value=e.ticketLink||'';document.getElementById('ee_social_link').value=e.socialLink||'';document.getElementById('ee_genre').value=e.genre||'';document.getElementById('ee_desc').value=e.description||'';const statusValue=((String(e.status||'').toLowerCase()==='active')?'active':(String(e.status||'').toLowerCase()==='draft'?'draft':'hidden'));document.getElementById('ee_status').value=statusValue;document.getElementById('ee_featured').checked=!!e.featured;document.getElementById('ee_order').value=e.sort_order||0;
+/* populate hero checkbox: match by title+date against current heroEvent */
+;(function(){var he=(store.settings&&store.settings.heroEvent)||{};var heTitle=String(he.title||'').trim().toLowerCase();var heDate=String(he.date||'').trim();var eTitle=String(e.title||'').trim().toLowerCase();var eDate=toInputDate(e.date);var isHero=!!(heTitle&&eTitle&&heTitle===eTitle)||(heDate&&eDate&&heDate===eDate&&heTitle===eTitle);document.getElementById('ee_hero').checked=isHero})();
+currentEventImage=e.image||'';const eePreview=document.getElementById('ee_image_preview');if(eePreview)eePreview.src=currentEventImage||'';setupDrop('ee_image_drop',url=>{currentEventImage=url;const p=document.getElementById('ee_image_preview');if(p)p.src=url});document.getElementById('ee_title').focus()
+
+  // Add event listener for event type to toggle ticket link visibility
+  const eventTypeSelect = document.getElementById('ee_type');
+  const ticketLinkContainer = document.getElementById('ticketLinkContainer');
+  
+  function updateTicketLinkVisibility() {
+    if (eventTypeSelect.value === 'free') {
+      ticketLinkContainer.style.display = 'none';
+    } else {
+      ticketLinkContainer.style.display = 'block';
+    }
+  }
+  
+  // Set initial visibility based on current event type
+  updateTicketLinkVisibility();
+  
+  // Add change listener for future changes
+  eventTypeSelect.addEventListener('change', updateTicketLinkVisibility);
+}
 window.__realShowEventEditor=showEventEditor
-function cancelEventEditor(){document.getElementById('eventEditor').style.display='none';currentEventIndex=null;currentEventImage='';closeTicketMobilePreview()}
-function clearEventEditorImage(){currentEventImage='';const p=document.getElementById('ee_image_preview');if(p)p.src='';renderTicketDesignPreview();updateTicketDesignVisibility()}
-let currentEventBanner='';
-function toggleBannerUpload(){
-  const sec=document.getElementById('ee_banner_section');
-  const checked=document.getElementById('ee_featured').checked;
-  if(sec)sec.classList.toggle('hidden',!checked);
-}
-function clearEventBanner(){
-  currentEventBanner='';
-  const p=document.getElementById('ee_banner_preview');
-  const c=document.getElementById('ee_banner_clear');
-  if(p){p.src='';p.style.display='none';}
-  if(c)c.style.display='none';
-}
-let _savingEvent=false;
+function cancelEventEditor(){document.getElementById('eventEditor').style.display='none';currentEventIndex=null;currentEventImage=''}
+function clearEventEditorImage(){currentEventImage='';const p=document.getElementById('ee_image_preview');if(p)p.src=''}
 async function saveEventEditor(){
-  if(_savingEvent){return}
-  _savingEvent=true;
-  const saveBtn=document.querySelector('#eventEditor button[onclick*="saveEventEditor"]');
-  if(saveBtn){saveBtn.disabled=true;saveBtn.textContent='Guardando...';}
   const source = currentEventIndex != null ? store.events[currentEventIndex] : null;
   const base = normalizeEventForStore(source || {
     title: '', artists: '', location: '', venue: '', date: '', time: '', image: '',
@@ -2263,14 +1961,18 @@ async function saveEventEditor(){
   base.featured = document.getElementById('ee_featured').checked;
   base.sort_order = Number(document.getElementById('ee_order').value || 0);
   base.image = currentEventImage || '';
-  base.banner_image = currentEventBanner || null;
-  if(base.isFree){
-    base.ticketDesign=buildDefaultTicketDesign(base.image||'');
-    base.ticket_design_json=null;
-  }else{
-    base.ticketDesign=readTicketDesignFromForm();
-    base.ticketDesign.event_flyer_image=base.image||'';
-    base.ticket_design_json=JSON.stringify(base.ticketDesign);
+  /* Sync hero event when checkbox is checked */
+  var isHeroChecked = document.getElementById('ee_hero').checked;
+  if(isHeroChecked){
+    if(!store.settings)store.settings={};
+    var he=store.settings.heroEvent||{};
+    he.title=base.title;he.date=base.date;he.time=base.time;
+    he.location=base.location||base.venue;he.venue=base.venue;
+    he.description=base.description;he.image=base.image;
+    he.isFree=base.isFree;he.status='active';he.displayEnabled=true;
+    he.badge=he.badge||'PRÓXIMO';he.button1Text=he.button1Text||'BOLETOS PREVENTA';
+    store.settings.heroEvent=he;
+    base.featured=true; /* hero events are always featured */
   }
   if(base.title.length<2){
     showToast('El título debe tener al menos 2 caracteres','error');
@@ -2320,9 +2022,6 @@ async function saveEventEditor(){
     persistEventLocally(base,currentEventIndex);
     showToast('Evento guardado localmente (sin conexión al servidor)');
     cancelEventEditor();
-  } finally {
-    _savingEvent=false;
-    if(saveBtn){saveBtn.disabled=false;saveBtn.textContent='Guardar';}
   }
 }
 
@@ -2375,16 +2074,7 @@ function closeModal(){document.getElementById('modal').classList.remove('active'
 function localizeModalSpanish(){const m=document.getElementById('modal');if(!m||!m.classList.contains('active'))return;const title=document.getElementById('modalTitle');const setTitle=(t)=>{if(title)title.textContent=t};const v=(id)=>document.getElementById(id);if(v('a_name')){setTitle((v('a_name').value||'').trim()? 'Editar DJ':'Agregar DJ');const d=v('a_image_drop');if(d)d.textContent='Arrastra y suelta imagen'}if(v('v_title')){setTitle((v('v_title').value||'').trim()? 'Editar Set de Video':'Agregar Set de Video');const d=v('v_thumb_drop');if(d)d.textContent='Arrastra y suelta miniatura';if(v('v_youtube'))v('v_youtube').placeholder='Enlace de YouTube';if(v('v_sc'))v('v_sc').placeholder='Enlace de SoundCloud'}if(v('ev_title')){setTitle((v('ev_title').value||'').trim()? 'Editar Evento':'Agregar Evento');const d=v('ev_image_drop');if(d)d.textContent='Arrastra y suelta imagen'}if(v('t_title')){setTitle((v('t_title').value||'').trim()? 'Editar Pista':'Agregar Pista');const d=v('t_cover_drop');if(d)d.textContent='Arrastra y suelta portada';if(v('t_sp'))v('t_sp').placeholder='Enlace de Spotify';if(v('t_sc'))v('t_sc').placeholder='Enlace de SoundCloud';if(v('t_bc'))v('t_bc').placeholder='Enlace de Bandcamp'}if(v('vn_title')){setTitle((v('vn_title').value||'').trim()? 'Editar Vinilo':'Agregar Vinilo');const d=v('vn_images_drop');if(d)d.textContent='Arrastra y suelta imágenes'}if(v('p_title')){setTitle((v('p_title').value||'').trim()? 'Editar Producto':'Agregar Producto');const d=v('p_images_drop');if(d)d.textContent='Arrastra y suelta imágenes'}if(v('m_drop')){setTitle('Subir Medios');v('m_drop').textContent='Arrastra y suelta imágenes aquí'}}
 function enhanceArtistSocialInputs(){const links=document.getElementById('a_links');if(!links)return;links.type='hidden';links.classList.add('hidden');let wrap=document.getElementById('a_social_blocks');if(!wrap){wrap=document.createElement('div');wrap.id='a_social_blocks';wrap.className='grid grid-cols-1 md:grid-cols-2 gap-2 mt-2';wrap.innerHTML='<input id="a_instagram" placeholder="Instagram URL" class="w-full bg-muted border border-white/10 rounded px-3 py-2"><input id="a_spotify" placeholder="Spotify URL" class="w-full bg-muted border border-white/10 rounded px-3 py-2"><input id="a_soundcloud" placeholder="SoundCloud URL" class="w-full bg-muted border border-white/10 rounded px-3 py-2"><input id="a_youtube" placeholder="YouTube URL" class="w-full bg-muted border border-white/10 rounded px-3 py-2">';links.insertAdjacentElement('afterend',wrap)}const ig=document.getElementById('a_instagram');const sp=document.getElementById('a_spotify');const sc=document.getElementById('a_soundcloud');const yt=document.getElementById('a_youtube');const raw=(links.value||'').split(',').map(x=>x.trim()).filter(Boolean);const pick=(regex)=>raw.find(l=>regex.test(l))||'';ig.value=pick(/instagram\.com/i)||ig.value||'';sp.value=pick(/spotify\.com/i)||sp.value||'';sc.value=pick(/soundcloud\.com/i)||sc.value||'';yt.value=pick(/youtu(be\.com|\.be)/i)||yt.value||'';const sync=()=>{links.value=[ig.value.trim(),sp.value.trim(),sc.value.trim(),yt.value.trim()].filter(Boolean).join(',')};ig.oninput=sync;sp.oninput=sync;sc.oninput=sync;yt.oninput=sync;sync()}const __modalObserver=new MutationObserver(()=>{try{localizeModalSpanish();enhanceArtistSocialInputs()}catch(e){}});(function(){const el=document.getElementById('modal');if(el)__modalObserver.observe(el,{attributes:true,attributeFilter:['class']})})();
 function showToast(message,type){let toast=document.getElementById('toast');let msg=document.getElementById('toastMsg');if(!toast){toast=document.createElement('div');toast.id='toast';toast.className='fixed bottom-6 right-6 z-50 hidden';const card=document.createElement('div');card.className='px-4 py-3 rounded-button text-black font-bold bg-accent';msg=document.createElement('div');msg.id='toastMsg';card.appendChild(msg);toast.appendChild(card);document.body.appendChild(toast)}if(!msg){msg=document.getElementById('toastMsg')}const card=toast.firstElementChild;if(card){const isError=type==='error';card.className='px-4 py-3 rounded-button text-black font-bold '+(isError?'bg-red-500 text-white':'bg-accent')}msg.textContent=message||'';toast.classList.remove('hidden');setTimeout(()=>{toast.classList.add('hidden')},2500)}
-async function uploadEventImage(file){
-  const fd=new FormData();
-  fd.append('image',file);
-  const res=await fetch(window.__SUNSESH_API_BASE+'/api/events/upload-image',{method:'POST',body:fd,credentials:'include'});
-  if(!res.ok) throw new Error('Upload failed');
-  const data=await res.json();
-  return data.url;
-}
-function setupDrop(id, cb, opts){
-  const useServerUpload=opts&&opts.serverUpload;
+function setupDrop(id, cb){
   const el=document.getElementById(id);
   if(!el)return;
   let preview=null;
@@ -2420,20 +2110,6 @@ function setupDrop(id, cb, opts){
   })();
   const handleFile=(f)=>{
     if(!f)return;
-    if(useServerUpload){
-      const localUrl=URL.createObjectURL(f);
-      if(preview)preview.src=localUrl;
-      el.style.opacity='0.5';el.style.pointerEvents='none';
-      uploadEventImage(f).then(url=>{
-        cb(url);
-        if(preview)preview.src=window.__SUNSESH_API_BASE+url;
-      }).catch(()=>{
-        const reader=new FileReader();
-        reader.onload=()=>{cb(reader.result);if(preview)preview.src=reader.result};
-        reader.readAsDataURL(f);
-      }).finally(()=>{el.style.opacity='';el.style.pointerEvents=''});
-      return;
-    }
     const reader=new FileReader();
     reader.onload=()=>{
       cb(reader.result);
@@ -2648,10 +2324,10 @@ async function fetchProductsIntoStore(){try{const res=await fetch(window.__SUNSE
 fetchMusicIntoStore();fetchVideosIntoStore();fetchVinylIntoStore();fetchOrdersIntoStore();
 async function fetchArtistsIntoStore(){try{const res=await fetch(window.__SUNSESH_API_BASE + '/api/artists',{headers:{'Cache-Control':'no-cache'},cache:'no-store'});let data=await res.json();if(!Array.isArray(data))data=[];data=data.map(a=>{const list=(a.genres_list||[]);const names=list.map(x=>x.name);const ids=list.map(x=>x.id);return {...a,genres:names,genre:names.join(', '),genre_ids:ids}});if(!store.settings)store.settings={};store.settings.disableArtistSeed=true;store.artists=data;localStorage.setItem(STORE_KEY,JSON.stringify(store));renderArtists()}catch{}}
 fetchArtistsIntoStore();
-async function applySettingsFromApi(){try{const res=await fetch(window.__SUNSESH_API_BASE + '/api/settings',{headers:{'Cache-Control':'no-cache'},cache:'no-store'});if(!res.ok)return;const s=await res.json();const styleId='dynamic-theme';let style=document.getElementById(styleId);if(!style){style=document.createElement('style');style.id=styleId;document.head.appendChild(style)}var primary=s.primary_color||'#006400';var secondary=s.secondary_color||'#00FFAA';var bg=s.background_color||'#0b1e14';var text=s.global_text_color||'#ffffff';var card=s.card_background||'#0d1b13';var font=s.font_family||"'Montserrat',sans-serif";style.textContent=':root{--primary:'+primary+';--secondary:'+secondary+';--bg:'+bg+';--text:'+text+';--card:'+card+';--font:'+font+'} .badge{background:var(--primary)!important;color:#000} .btn{background:var(--secondary)!important;color:#000} body{background:var(--bg)!important;color:var(--text)!important;font-family:var(--font)!important}';const logo=document.getElementById('siteLogoPreview');if(logo&&s.site_logo){logo.src=s.site_logo}const bh=document.getElementById('bgHeroPreview');if(bh&&s.hero_section_background_image){bh.src=s.hero_section_background_image}const ba=document.getElementById('bgAboutPreview');if(ba&&s.about_background_image){ba.src=s.about_background_image}const bgp=document.getElementById('bgGalleryPreview');if(bgp&&s.gallery_background_image){bgp.src=s.gallery_background_image}if(!store.settings)store.settings={};store.settings.order_notification_email=s.order_notification_email||'';store.settings.bank_name=s.bank_name||'';store.settings.bank_account_holder=s.bank_account_holder||'';store.settings.bank_clabe=s.bank_clabe||'';store.settings.bank_card=s.bank_card||'';let heroEvent={};if(Object.prototype.hasOwnProperty.call(s,'hero_event_json')){try{const parsed=JSON.parse(s.hero_event_json||'{}');if(parsed&&typeof parsed==='object')heroEvent=parsed}catch{}}store.settings.heroEvent=heroEvent;let friends=[];if(s.friends_json){try{const parsed=JSON.parse(s.friends_json);if(Array.isArray(parsed))friends=parsed}catch{}}store.settings.friends=friends;let templates=[];if(s.ticket_templates_json){try{const parsed=JSON.parse(s.ticket_templates_json);if(Array.isArray(parsed))templates=parsed}catch{}}store.settings.ticketTemplates=templates;localStorage.setItem(STORE_KEY,JSON.stringify(store));renderFriendsAdmin();renderTicketTemplateOptions()}catch{}}
+async function applySettingsFromApi(){try{const res=await fetch(window.__SUNSESH_API_BASE + '/api/settings',{headers:{'Cache-Control':'no-cache'},cache:'no-store'});if(!res.ok)return;const s=await res.json();const styleId='dynamic-theme';let style=document.getElementById(styleId);if(!style){style=document.createElement('style');style.id=styleId;document.head.appendChild(style)}var primary=s.primary_color||'#006400';var secondary=s.secondary_color||'#00FFAA';var bg=s.background_color||'#0b1e14';var text=s.global_text_color||'#ffffff';var card=s.card_background||'#0d1b13';var font=s.font_family||"'Montserrat',sans-serif";style.textContent=':root{--primary:'+primary+';--secondary:'+secondary+';--bg:'+bg+';--text:'+text+';--card:'+card+';--font:'+font+'} .badge{background:var(--primary)!important;color:#000} .btn{background:var(--secondary)!important;color:#000} body{background:var(--bg)!important;color:var(--text)!important;font-family:var(--font)!important}';const logo=document.getElementById('siteLogoPreview');if(logo&&s.site_logo){logo.src=s.site_logo}const bh=document.getElementById('bgHeroPreview');if(bh&&s.hero_section_background_image){bh.src=s.hero_section_background_image}const ba=document.getElementById('bgAboutPreview');if(ba&&s.about_background_image){ba.src=s.about_background_image}const bgp=document.getElementById('bgGalleryPreview');if(bgp&&s.gallery_background_image){bgp.src=s.gallery_background_image}if(!store.settings)store.settings={};store.settings.order_notification_email=s.order_notification_email||'';store.settings.bank_name=s.bank_name||'';store.settings.bank_account_holder=s.bank_account_holder||'';store.settings.bank_clabe=s.bank_clabe||'';store.settings.bank_card=s.bank_card||'';let friends=[];if(s.friends_json){try{const parsed=JSON.parse(s.friends_json);if(Array.isArray(parsed))friends=parsed}catch{}}store.settings.friends=friends;localStorage.setItem(STORE_KEY,JSON.stringify(store));renderFriendsAdmin()}catch{}}
 applySettingsFromApi();
 fetchEventsIntoStore();
-function renderAll(){document.getElementById('stat-artists').textContent=(store.artists||[]).filter(a=>a.active!==false).length;document.getElementById('stat-tracks').textContent=(store.tracks||[]).length;document.getElementById('stat-videos').textContent=(store.videos||[]).length;document.getElementById('stat-vinyl').textContent=(store.vinyl||[]).filter(v=>v.active!==false).length;document.getElementById('stat-products').textContent=(store.products||[]).filter(p=>p.active!==false).length;document.getElementById('stat-orders').textContent=(store.orders||[]).length;renderArtists();renderTracks();renderVideos();renderVinyl();renderProducts();renderMedia();renderFriendsAdmin();populateSettings();renderEvents();populateHeroEventForm();renderHeroPreview()}
+function renderAll(){document.getElementById('stat-artists').textContent=(store.artists||[]).filter(a=>a.active!==false).length;document.getElementById('stat-tracks').textContent=(store.tracks||[]).length;document.getElementById('stat-videos').textContent=(store.videos||[]).length;document.getElementById('stat-vinyl').textContent=(store.vinyl||[]).filter(v=>v.active!==false).length;document.getElementById('stat-products').textContent=(store.products||[]).filter(p=>p.active!==false).length;document.getElementById('stat-orders').textContent=(store.orders||[]).length;renderArtists();renderTracks();renderVideos();renderVinyl();renderProducts();renderMedia();renderFriendsAdmin();populateSettings();renderEvents()}
 
 /* === SSC Overrides: panel events + music/vinyl/video forms === */
 function parseTrackPlatformLinks(raw){
@@ -2771,9 +2447,6 @@ function renderAll(){
   renderEvents();
   postFilterEvents();
   renderDashboardEvents();
-  populateHeroEventForm();
-  renderHeroPreview();
-  updateHeroLineupVisibility();
 }
 
 async function fetchMusicIntoStore(){
@@ -4060,14 +3733,6 @@ async function applySettingsFromApi(){
     store.settings.bank_account_holder=s.bank_account_holder||'';
     store.settings.bank_clabe=s.bank_clabe||'';
     store.settings.bank_card=s.bank_card||'';
-    let heroEvent={};
-    if(Object.prototype.hasOwnProperty.call(s,'hero_event_json')){
-      try{
-        const parsed=JSON.parse(s.hero_event_json||'{}');
-        if(parsed&&typeof parsed==='object') heroEvent=parsed;
-      }catch{}
-    }
-    store.settings.heroEvent=heroEvent;
     let aboutSlides=[];
     if(s.about_gallery_images){
       try{
@@ -4088,17 +3753,8 @@ async function applySettingsFromApi(){
       }catch{}
     }
     store.settings.friends=friends;
-    let templates=[];
-    if(s.ticket_templates_json){
-      try{
-        const parsed=JSON.parse(s.ticket_templates_json);
-        if(Array.isArray(parsed))templates=parsed;
-      }catch{}
-    }
-    store.settings.ticketTemplates=templates;
     localStorage.setItem(STORE_KEY,JSON.stringify(store));
     renderFriendsAdmin();
-    renderTicketTemplateOptions();
     refreshMiniPage();
   }catch{}
 }
@@ -4127,9 +3783,6 @@ function renderAll(){
   renderEvents();
   postFilterEvents();
   renderDashboardEvents();
-  populateHeroEventForm();
-  renderHeroPreview();
-  updateHeroLineupVisibility();
 }
 
 window.renderAll=renderAll;
@@ -4138,6 +3791,21 @@ window.renderAll=renderAll;
   <script src="assets/js/ssc-ux.js" defer></script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

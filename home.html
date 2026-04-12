@@ -1287,8 +1287,8 @@ var regularGrid=document.querySelector('#homeEventsGrid');
 if(!regularGrid)return;
 if(bannerArea)bannerArea.textContent='';
 regularGrid.textContent='';
-var featuredEvents=gridEvents.filter(function(e){return e.featured});
-var regularEvents=gridEvents.filter(function(e){return !e.featured});
+var featuredEvents=evts.filter(function(e){return e.featured});
+var regularEvents=evts.filter(function(e){return !e.featured&&eventKey(e)!==primaryKey});
 function createFeaturedBanner(e){
   var banner=document.createElement('a');
   banner.href='events.html';
