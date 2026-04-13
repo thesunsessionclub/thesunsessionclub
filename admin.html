@@ -2065,10 +2065,8 @@ async function saveEventEditor(){
     }
     if (!res.ok) {
       const t = await res.text();
-      console.warn('Save event fail', res.status, t);
-      persistEventLocally(base,currentEventIndex);
-      showToast('Evento guardado localmente (sin servidor)');
-      cancelEventEditor();
+      console.error('[SSC] Save event failed:', res.status, t);
+      showToast('Error ' + res.status + ': ' + (t||'sin respuesta'), 'error');
       return;
     }
     const saved = await res.json().catch(()=>null);
