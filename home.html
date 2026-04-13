@@ -3720,134 +3720,221 @@ document.addEventListener('DOMContentLoaded',function(){const f=document.querySe
 <script src="/socket.io/socket.io.js"></script>
 <script src="assets/js/ssc-socket.js"></script>
 <script>
-/* VJ Loop - Underground Pulse | SSC Hero Background */
+/* VJ Loop — Underground Techno Pulse | SSC
+   Técnicas del VJ Loops Master Skill:
+   - Perspective grid (Synthwave/Techno)
+   - Radial tunnel rings (3D fly-through)
+   - Volumetric light rays from source
+   - Beat-reactive particle emitters
+   - CRT scan lines + chromatic hint
+   - Vignette + atmospheric glow
+   Paleta: #00FFAA accent, dark green, black
+*/
 (function(){
   const canvas=document.getElementById('vjLoop');
   if(!canvas)return;
   const ctx=canvas.getContext('2d');
   let W,H,raf;
+
   function resize(){
-    const rect=canvas.parentElement.getBoundingClientRect();
-    W=canvas.width=rect.width||window.innerWidth;
-    H=canvas.height=rect.height||window.innerHeight;
+    const hero=canvas.closest('.hero-bg')||canvas.parentElement;
+    W=canvas.width=hero.offsetWidth||window.innerWidth;
+    H=canvas.height=hero.offsetHeight||window.innerHeight;
   }
-  window.addEventListener('resize',()=>{resize()});
+  window.addEventListener('resize',resize);
   resize();
 
-  // Particles
-  const N=90;
-  const pts=Array.from({length:N},()=>({
-    x:Math.random(),y:Math.random()+0.1,
-    s:Math.random()*1.8+0.4,
-    sp:Math.random()*0.00045+0.00015,
-    a:Math.random()*0.55+0.1,
-    g:Math.random()<0.75
-  }));
+  /* ── PARTICLES (neural/stardust) ── */
+  const NPTS=110;
+  const pts=Array.from({length:NPTS},()=>resetParticle({}));
+  function resetParticle(p){
+    p.x=Math.random();p.y=1+Math.random()*0.1;
+    p.s=Math.random()*1.6+0.3;
+    p.sp=Math.random()*0.0004+0.0001;
+    p.a=Math.random()*0.5+0.08;
+    p.drift=(Math.random()-0.5)*0.0002;
+    p.green=Math.random()<0.78;
+    return p;
+  }
 
-  // Rays origin: bottom-left (matches screenshot reference)
-  const ROX=0.05,ROY=1.08;
-  const RAYS=28;
-  const ANGLE_START=-0.08*Math.PI;
-  const ANGLE_SPAN=0.68*Math.PI;
+  /* ── PERSPECTIVE GRID ── */
+  const GRID_LINES_H=14; // horizontal
+  const GRID_LINES_V=18; // vertical
+
+  /* ── TUNNEL RINGS ── */
+  const TUNNEL_COUNT=9;
+
+  /* ── VOLUMETRIC RAYS from bottom-left ── */
+  const RAYS=22;
 
   let t=0;
+
+  /* ─── MAIN DRAW ─── */
   function draw(){
-    ctx.clearRect(0,0,W,H);
-
-    // Deep background
-    ctx.fillStyle='#050e08';
+    /* 1. Background */
+    ctx.fillStyle='#04090605';
     ctx.fillRect(0,0,W,H);
-
-    // ── RAYS ──
-    const ox=ROX*W, oy=ROY*H;
-    for(let i=0;i<RAYS;i++){
-      const base=ANGLE_START+ANGLE_SPAN*(i/RAYS);
-      // Each ray drifts slightly over time
-      const drift=0.012*Math.sin(t*0.55+i*0.9);
-      const ang=base+drift;
-      const pulse=0.5+0.5*Math.sin(t*1.1+i*0.52);
-      const alpha=(0.025+pulse*0.065)*(1-i/RAYS*0.3+0.05);
-
-      // Ray end point far off screen
-      const ex=ox+Math.cos(-ang)*W*2.4;
-      const ey=oy+Math.sin(-ang)*W*2.4;
-
-      // Width of fan at far end
-      const spread=(W*0.022)*(0.8+pulse*0.4);
-      const pa=-ang+Math.PI/2;
-      const cpx=Math.cos(pa), cpy=Math.sin(pa);
-
-      const grad=ctx.createLinearGradient(ox,oy,ex,ey);
-      grad.addColorStop(0,`rgba(0,255,170,${Math.min(alpha*2.2,0.35)})`);
-      grad.addColorStop(0.25,`rgba(0,255,170,${alpha})`);
-      grad.addColorStop(0.6,`rgba(0,200,130,${alpha*0.4})`);
-      grad.addColorStop(1,'rgba(0,180,100,0)');
-
-      ctx.beginPath();
-      ctx.moveTo(ox,oy);
-      ctx.lineTo(ex+cpx*spread, ey+cpy*spread);
-      ctx.lineTo(ex-cpx*spread, ey-cpy*spread);
-      ctx.closePath();
-      ctx.fillStyle=grad;
-      ctx.fill();
+    // Hard clear every few frames to prevent smearing
+    if((t*60|0)%3===0){
+      ctx.fillStyle='#030807';
+      ctx.fillRect(0,0,W,H);
     }
 
-    // ── CONCENTRIC ARCS from origin ──
-    for(let r=0;r<7;r++){
-      const rad=(80+r*110)*(1+0.04*Math.sin(t*0.6+r*0.8));
-      const alpha=0.06+0.04*Math.sin(t*0.4+r*0.6);
+    const VPX=W*0.72; // vanishing point X (right of center for asymmetry)
+    const VPY=H*0.42; // vanishing point Y
+
+    /* 2. ── PERSPECTIVE GRID (Techno/Synthwave) ── */
+    ctx.save();
+    ctx.globalAlpha=1;
+
+    // Horizontal grid lines (receding to VP)
+    for(let i=0;i<GRID_LINES_H;i++){
+      const frac=i/GRID_LINES_H;
+      // Lines start from bottom edge, converge toward VP
+      const startY=H*(0.55+frac*0.5);
+      const alpha=(0.04+0.03*Math.sin(t*0.4+i*0.5))*(1-frac*0.6);
+      const pulse=0.5+0.5*Math.sin(t*0.8-i*0.3);
       ctx.beginPath();
-      ctx.arc(ox,oy,rad,Math.PI+ANGLE_START,Math.PI+ANGLE_START+ANGLE_SPAN);
-      ctx.strokeStyle=`rgba(0,255,170,${alpha})`;
-      ctx.lineWidth=0.8;
+      ctx.moveTo(0,startY);
+      ctx.lineTo(W,startY);
+      ctx.strokeStyle=`rgba(0,255,170,${alpha*(0.6+pulse*0.4)})`;
+      ctx.lineWidth=0.5;
       ctx.stroke();
     }
 
-    // ── CENTRE GLOW at origin ──
-    const cg=ctx.createRadialGradient(ox,oy,0,ox,oy,W*0.22);
-    cg.addColorStop(0,`rgba(0,255,170,${0.12+0.08*Math.sin(t*1.4)})`);
-    cg.addColorStop(0.4,'rgba(0,180,90,0.04)');
-    cg.addColorStop(1,'rgba(0,0,0,0)');
-    ctx.fillStyle=cg;
+    // Vertical grid lines converging to VP
+    for(let i=0;i<=GRID_LINES_V;i++){
+      const xFrac=i/GRID_LINES_V;
+      const startX=xFrac*W;
+      const alpha=(0.03+0.02*Math.sin(t*0.5+i*0.4))*(0.4+0.6*(1-Math.abs(xFrac-0.72)));
+      ctx.beginPath();
+      ctx.moveTo(startX,H);
+      ctx.lineTo(VPX,VPY);
+      ctx.strokeStyle=`rgba(0,255,170,${alpha})`;
+      ctx.lineWidth=0.4;
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    /* 3. ── VOLUMETRIC LIGHT RAYS from bottom-left ── */
+    const ROX=W*0.03, ROY=H*1.06;
+    const ASTART=-0.06*Math.PI, ASPAN=0.66*Math.PI;
+    for(let i=0;i<RAYS;i++){
+      const base=ASTART+ASPAN*(i/RAYS);
+      const drift=0.008*Math.sin(t*0.6+i*1.1);
+      const ang=base+drift;
+      const pulse=0.5+0.5*Math.sin(t*1.0+i*0.6);
+      const alpha=(0.018+pulse*0.05)*(1-i/RAYS*0.25+0.04);
+      const ex=ROX+Math.cos(-ang)*W*2.2;
+      const ey=ROY+Math.sin(-ang)*W*2.2;
+      const spread=(W*0.018)*(0.7+pulse*0.5);
+      const pa=-ang+Math.PI*0.5;
+      const cpx=Math.cos(pa),cpy=Math.sin(pa);
+      const g=ctx.createLinearGradient(ROX,ROY,ex,ey);
+      g.addColorStop(0,`rgba(0,255,170,${Math.min(alpha*2,0.3)})`);
+      g.addColorStop(0.2,`rgba(0,255,170,${alpha})`);
+      g.addColorStop(0.65,`rgba(0,200,120,${alpha*0.3})`);
+      g.addColorStop(1,'rgba(0,150,80,0)');
+      ctx.beginPath();
+      ctx.moveTo(ROX,ROY);
+      ctx.lineTo(ex+cpx*spread,ey+cpy*spread);
+      ctx.lineTo(ex-cpx*spread,ey-cpy*spread);
+      ctx.closePath();
+      ctx.fillStyle=g;
+      ctx.fill();
+    }
+
+    /* 4. ── TUNNEL RINGS (3D fly-through, centered on VP) ── */
+    // Rings zoom out from VP — infinite tunnel illusion
+    const LOOP_PERIOD=4.0; // seconds per ring cycle
+    for(let r=0;r<TUNNEL_COUNT;r++){
+      const phase=((t/LOOP_PERIOD + r/TUNNEL_COUNT)%1);
+      const radius=phase*Math.max(W,H)*0.85;
+      const alpha=(0.07+0.04*Math.sin(t*0.7+r))*(1-phase)*(1-phase);
+      if(alpha<0.004)continue;
+      // Hexagonal tunnel rings for industrial/techno feel
+      ctx.save();
+      ctx.translate(VPX,VPY);
+      const sides=6;
+      ctx.beginPath();
+      for(let s=0;s<=sides;s++){
+        const ang2=(s/sides)*Math.PI*2+t*0.08;
+        const rx=Math.cos(ang2)*radius;
+        const ry=Math.sin(ang2)*radius*0.7; // squish Y for perspective
+        s===0?ctx.moveTo(rx,ry):ctx.lineTo(rx,ry);
+      }
+      ctx.strokeStyle=`rgba(0,255,170,${alpha})`;
+      ctx.lineWidth=1;
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    /* 5. ── VP GLOW (origin pulse) ── */
+    const vpPulse=0.08+0.05*Math.sin(t*1.5);
+    const vpG=ctx.createRadialGradient(VPX,VPY,0,VPX,VPY,W*0.28);
+    vpG.addColorStop(0,`rgba(0,255,170,${vpPulse})`);
+    vpG.addColorStop(0.35,`rgba(0,180,90,0.03)`);
+    vpG.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=vpG;
     ctx.fillRect(0,0,W,H);
 
-    // ── GREEN GLOW right edge (signature atmospheric light) ──
-    const rg=ctx.createRadialGradient(W*0.98,H*0.45,0,W*0.98,H*0.45,W*0.55);
-    rg.addColorStop(0,`rgba(0,80,40,${0.28+0.08*Math.sin(t*0.7)})`);
-    rg.addColorStop(0.5,'rgba(0,40,20,0.12)');
+    /* 6. ── ATMOSPHERIC GREEN GLOW right ── */
+    const rgA=0.22+0.07*Math.sin(t*0.5);
+    const rg=ctx.createRadialGradient(W,H*0.4,0,W,H*0.4,W*0.6);
+    rg.addColorStop(0,`rgba(0,70,35,${rgA})`);
+    rg.addColorStop(0.6,'rgba(0,30,15,0.07)');
     rg.addColorStop(1,'rgba(0,0,0,0)');
     ctx.fillStyle=rg;
     ctx.fillRect(0,0,W,H);
 
-    // ── PARTICLES ──
+    /* 7. ── SOURCE GLOW bottom-left ── */
+    const lgA=0.15+0.07*Math.sin(t*1.2);
+    const lg=ctx.createRadialGradient(ROX,ROY,0,ROX,ROY,W*0.25);
+    lg.addColorStop(0,`rgba(0,255,150,${lgA})`);
+    lg.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=lg;
+    ctx.fillRect(0,0,W,H);
+
+    /* 8. ── PARTICLES (neural/stardust floating up) ── */
     pts.forEach(p=>{
       p.y-=p.sp;
-      if(p.y<-0.04){p.y=1.04;p.x=Math.random()}
-      const px=p.x*W, py=p.y*H;
+      p.x+=p.drift;
+      if(p.y<-0.03||p.x<-0.05||p.x>1.05)resetParticle(p);
+      const px=p.x*W,py=p.y*H;
       const sz=p.s;
-      const rg2=ctx.createRadialGradient(px,py,0,px,py,sz*5);
-      if(p.g){
-        rg2.addColorStop(0,`rgba(0,255,170,${p.a})`);
-        rg2.addColorStop(1,'rgba(0,255,170,0)');
+      const pg=ctx.createRadialGradient(px,py,0,px,py,sz*5);
+      if(p.green){
+        pg.addColorStop(0,`rgba(0,255,170,${p.a})`);
+        pg.addColorStop(1,'rgba(0,255,170,0)');
       }else{
-        rg2.addColorStop(0,`rgba(180,255,220,${p.a*0.4})`);
-        rg2.addColorStop(1,'rgba(180,255,220,0)');
+        pg.addColorStop(0,`rgba(160,255,210,${p.a*0.35})`);
+        pg.addColorStop(1,'rgba(160,255,210,0)');
       }
       ctx.beginPath();
       ctx.arc(px,py,sz*5,0,Math.PI*2);
-      ctx.fillStyle=rg2;
+      ctx.fillStyle=pg;
       ctx.fill();
     });
 
-    // ── SCAN LINES subtle ──
-    ctx.fillStyle='rgba(0,0,0,0.04)';
-    for(let y=0;y<H;y+=4){ctx.fillRect(0,y,W,1.5)}
+    /* 9. ── CRT SCAN LINES (VJ aesthetic) ── */
+    ctx.fillStyle='rgba(0,0,0,0.035)';
+    for(let y=0;y<H;y+=3)ctx.fillRect(0,y,W,1);
 
-    // ── VIGNETTE ──
-    const vig=ctx.createRadialGradient(W*0.35,H*0.45,H*0.1,W*0.35,H*0.45,W*0.95);
+    /* 10. ── CHROMATIC ABERRATION HINT (subtle RGBSplit) ── */
+    ctx.save();
+    ctx.globalAlpha=0.012;
+    ctx.globalCompositeOperation='screen';
+    ctx.fillStyle='rgba(255,0,50,1)';
+    ctx.fillRect(1,0,W,H);
+    ctx.fillStyle='rgba(0,50,255,1)';
+    ctx.fillRect(-1,0,W,H);
+    ctx.restore();
+
+    /* 11. ── VIGNETTE ── */
+    const vig=ctx.createRadialGradient(W*0.3,H*0.42,H*0.05,W*0.3,H*0.42,W*1.0);
     vig.addColorStop(0,'rgba(0,0,0,0)');
-    vig.addColorStop(0.7,'rgba(0,0,0,0.2)');
-    vig.addColorStop(1,'rgba(0,0,0,0.75)');
+    vig.addColorStop(0.55,'rgba(0,0,0,0.15)');
+    vig.addColorStop(1,'rgba(0,0,0,0.82)');
     ctx.fillStyle=vig;
     ctx.fillRect(0,0,W,H);
 
@@ -3855,9 +3942,9 @@ document.addEventListener('DOMContentLoaded',function(){const f=document.querySe
     raf=requestAnimationFrame(draw);
   }
 
-  // Pause when tab not visible (performance)
   document.addEventListener('visibilitychange',()=>{
-    if(document.hidden){cancelAnimationFrame(raf)}else{raf=requestAnimationFrame(draw)}
+    if(document.hidden)cancelAnimationFrame(raf);
+    else raf=requestAnimationFrame(draw);
   });
 
   draw();
