@@ -806,6 +806,7 @@ animation: pulse 2s infinite;
 <!-- Hero Section -->
 <div class="hero-bg min-h-[90vh] flex items-center" data-no-global-parallax="1">
   <div class="ssc-hero-media">
+    <canvas id="vjLoop" style="position:absolute;inset:0;width:100%;height:100%;z-index:0;display:block;"></canvas>
     <video class="ssc-hero-video" autoplay muted loop playsinline preload="metadata" crossorigin="anonymous" poster="assets/hero-rave.png" data-parallax="0.16" data-parallax-mode="translate">
       <!-- video source removed - using poster image instead -->
     </video>
@@ -3718,6 +3719,150 @@ document.addEventListener('DOMContentLoaded',function(){const f=document.querySe
   <script src="assets/js/ssc-ux.js" defer></script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="assets/js/ssc-socket.js"></script>
+<script>
+/* VJ Loop - Underground Pulse | SSC Hero Background */
+(function(){
+  const canvas=document.getElementById('vjLoop');
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  let W,H,raf;
+  function resize(){
+    const rect=canvas.parentElement.getBoundingClientRect();
+    W=canvas.width=rect.width||window.innerWidth;
+    H=canvas.height=rect.height||window.innerHeight;
+  }
+  window.addEventListener('resize',()=>{resize()});
+  resize();
+
+  // Particles
+  const N=90;
+  const pts=Array.from({length:N},()=>({
+    x:Math.random(),y:Math.random()+0.1,
+    s:Math.random()*1.8+0.4,
+    sp:Math.random()*0.00045+0.00015,
+    a:Math.random()*0.55+0.1,
+    g:Math.random()<0.75
+  }));
+
+  // Rays origin: bottom-left (matches screenshot reference)
+  const ROX=0.05,ROY=1.08;
+  const RAYS=28;
+  const ANGLE_START=-0.08*Math.PI;
+  const ANGLE_SPAN=0.68*Math.PI;
+
+  let t=0;
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+
+    // Deep background
+    ctx.fillStyle='#050e08';
+    ctx.fillRect(0,0,W,H);
+
+    // ── RAYS ──
+    const ox=ROX*W, oy=ROY*H;
+    for(let i=0;i<RAYS;i++){
+      const base=ANGLE_START+ANGLE_SPAN*(i/RAYS);
+      // Each ray drifts slightly over time
+      const drift=0.012*Math.sin(t*0.55+i*0.9);
+      const ang=base+drift;
+      const pulse=0.5+0.5*Math.sin(t*1.1+i*0.52);
+      const alpha=(0.025+pulse*0.065)*(1-i/RAYS*0.3+0.05);
+
+      // Ray end point far off screen
+      const ex=ox+Math.cos(-ang)*W*2.4;
+      const ey=oy+Math.sin(-ang)*W*2.4;
+
+      // Width of fan at far end
+      const spread=(W*0.022)*(0.8+pulse*0.4);
+      const pa=-ang+Math.PI/2;
+      const cpx=Math.cos(pa), cpy=Math.sin(pa);
+
+      const grad=ctx.createLinearGradient(ox,oy,ex,ey);
+      grad.addColorStop(0,`rgba(0,255,170,${Math.min(alpha*2.2,0.35)})`);
+      grad.addColorStop(0.25,`rgba(0,255,170,${alpha})`);
+      grad.addColorStop(0.6,`rgba(0,200,130,${alpha*0.4})`);
+      grad.addColorStop(1,'rgba(0,180,100,0)');
+
+      ctx.beginPath();
+      ctx.moveTo(ox,oy);
+      ctx.lineTo(ex+cpx*spread, ey+cpy*spread);
+      ctx.lineTo(ex-cpx*spread, ey-cpy*spread);
+      ctx.closePath();
+      ctx.fillStyle=grad;
+      ctx.fill();
+    }
+
+    // ── CONCENTRIC ARCS from origin ──
+    for(let r=0;r<7;r++){
+      const rad=(80+r*110)*(1+0.04*Math.sin(t*0.6+r*0.8));
+      const alpha=0.06+0.04*Math.sin(t*0.4+r*0.6);
+      ctx.beginPath();
+      ctx.arc(ox,oy,rad,Math.PI+ANGLE_START,Math.PI+ANGLE_START+ANGLE_SPAN);
+      ctx.strokeStyle=`rgba(0,255,170,${alpha})`;
+      ctx.lineWidth=0.8;
+      ctx.stroke();
+    }
+
+    // ── CENTRE GLOW at origin ──
+    const cg=ctx.createRadialGradient(ox,oy,0,ox,oy,W*0.22);
+    cg.addColorStop(0,`rgba(0,255,170,${0.12+0.08*Math.sin(t*1.4)})`);
+    cg.addColorStop(0.4,'rgba(0,180,90,0.04)');
+    cg.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=cg;
+    ctx.fillRect(0,0,W,H);
+
+    // ── GREEN GLOW right edge (signature atmospheric light) ──
+    const rg=ctx.createRadialGradient(W*0.98,H*0.45,0,W*0.98,H*0.45,W*0.55);
+    rg.addColorStop(0,`rgba(0,80,40,${0.28+0.08*Math.sin(t*0.7)})`);
+    rg.addColorStop(0.5,'rgba(0,40,20,0.12)');
+    rg.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=rg;
+    ctx.fillRect(0,0,W,H);
+
+    // ── PARTICLES ──
+    pts.forEach(p=>{
+      p.y-=p.sp;
+      if(p.y<-0.04){p.y=1.04;p.x=Math.random()}
+      const px=p.x*W, py=p.y*H;
+      const sz=p.s;
+      const rg2=ctx.createRadialGradient(px,py,0,px,py,sz*5);
+      if(p.g){
+        rg2.addColorStop(0,`rgba(0,255,170,${p.a})`);
+        rg2.addColorStop(1,'rgba(0,255,170,0)');
+      }else{
+        rg2.addColorStop(0,`rgba(180,255,220,${p.a*0.4})`);
+        rg2.addColorStop(1,'rgba(180,255,220,0)');
+      }
+      ctx.beginPath();
+      ctx.arc(px,py,sz*5,0,Math.PI*2);
+      ctx.fillStyle=rg2;
+      ctx.fill();
+    });
+
+    // ── SCAN LINES subtle ──
+    ctx.fillStyle='rgba(0,0,0,0.04)';
+    for(let y=0;y<H;y+=4){ctx.fillRect(0,y,W,1.5)}
+
+    // ── VIGNETTE ──
+    const vig=ctx.createRadialGradient(W*0.35,H*0.45,H*0.1,W*0.35,H*0.45,W*0.95);
+    vig.addColorStop(0,'rgba(0,0,0,0)');
+    vig.addColorStop(0.7,'rgba(0,0,0,0.2)');
+    vig.addColorStop(1,'rgba(0,0,0,0.75)');
+    ctx.fillStyle=vig;
+    ctx.fillRect(0,0,W,H);
+
+    t+=0.015;
+    raf=requestAnimationFrame(draw);
+  }
+
+  // Pause when tab not visible (performance)
+  document.addEventListener('visibilitychange',()=>{
+    if(document.hidden){cancelAnimationFrame(raf)}else{raf=requestAnimationFrame(draw)}
+  });
+
+  draw();
+})();
+</script>
 </body>
 </html>
 
