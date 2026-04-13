@@ -424,23 +424,28 @@ function mergeEvents(apiEvents,localEvents){const map=new Map();(Array.isArray(a
 function readLocalStoreEvents(){const s=getStore();return Array.isArray(s.events)?s.events.map(normalizeEvent):[]}
 function readLocalEvents(){return readLocalStoreEvents().filter(e=>((e.status||'').toLowerCase()==='active'))}
 async function fetchEvents(){
+  const url=window.__SUNSESH_API_BASE + '/api/events';
   try{
-    const res=await fetch(window.__SUNSESH_API_BASE + '/api/events',{headers:{'Cache-Control':'no-cache'},cache:'no-store'});
+    const res=await fetch(url,{headers:{'Cache-Control':'no-cache'},cache:'no-store'});
+    if(!res.ok){console.error('[SSC] API error',res.status,url);throw new Error('api-error');}
     const data=await res.json();
     if(Array.isArray(data)){
+      console.log('[SSC] Events from API:',data.length);
       const normalized=data.map(normalizeEvent);
       const s=getStore();
       s.events=normalized;
       setStore(s);
       __eventsCache=normalized.filter(e=>((e.status||'').toLowerCase()==='active'));
+      console.log('[SSC] Active events:',__eventsCache.length);
       const ids=__eventsCache.map(e=>e.id).filter(Boolean);
       if(ids.length) await fetchTicketSummaries(ids);
       startTicketSummaryPolling();
       return;
     }
-  }catch(_){ }
+  }catch(err){console.error('[SSC] fetchEvents failed:',err,url);}
   const localEvents=readLocalStoreEvents();
   __eventsCache=localEvents.filter(e=>((e.status||'').toLowerCase()==='active'));
+  console.warn('[SSC] Using cached events:',__eventsCache.length);
   const ids=__eventsCache.map(e=>e.id).filter(Boolean);
   if(ids.length) await fetchTicketSummaries(ids);
   startTicketSummaryPolling();

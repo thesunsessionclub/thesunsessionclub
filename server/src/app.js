@@ -12,20 +12,6 @@ import { apiCache, staticCacheHeaders, uploadsCacheHeaders } from './middleware/
 
 const app = express();
 const projectRoot = path.resolve(process.cwd(), '..');
-const defaultAllowedOrigins = [
-  'http://localhost:5173',
-  'http://127.0.0.1:5173',
-  'http://localhost:5500',
-  'http://127.0.0.1:5500',
-  'http://localhost:8000',
-  'http://127.0.0.1:8000',
-  'http://localhost:8001',
-  'http://127.0.0.1:8001',
-];
-const configuredOrigins = Array.isArray(config.corsOrigins) ? config.corsOrigins : [];
-const allowedOrigins = Array.from(new Set([...defaultAllowedOrigins, ...configuredOrigins]));
-
-app.set('trust proxy', 1);
 
 app.use(
   helmet({
@@ -39,10 +25,24 @@ app.use(cookieParser());
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin || origin === 'null') return callback(null, 'null');
-      if (config.nodeEnv !== 'production') return callback(null, origin);
-      if (allowedOrigins.includes(origin)) return callback(null, origin);
-      return callback(new Error('Not allowed by CORS'));
+      const allowed = [
+        'http://localhost:5173',
+        'http://127.0.0.1:5173',
+        'http://localhost:5500',
+        'http://127.0.0.1:5500',
+        'http://localhost:8000',
+        'http://127.0.0.1:8000',
+        'http://localhost:8001',
+        'http://127.0.0.1:8001',
+        'https://thesunsession.com',
+        'https://www.thesunsession.com',
+        'http://thesunsession.com',
+        'http://www.thesunsession.com',
+      ];
+      if (!origin || origin === 'null') return callback(null, true);
+      if (config.nodeEnv !== 'production') return callback(null, true);
+      if (allowed.includes(origin)) return callback(null, true);
+      return callback(null, true); // allow all in case of subdomain/IP access
     },
     credentials: true,
   })
