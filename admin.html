@@ -2173,14 +2173,35 @@ function setupDrop(id, cb){
     el.appendChild(i);
     return i;
   })();
-  const handleFile=(f)=>{
+  const handleFile=async(f)=>{
     if(!f)return;
+    // Show local preview immediately while uploading
     const reader=new FileReader();
-    reader.onload=()=>{
-      cb(reader.result);
-      if(preview)preview.src=reader.result;
-    };
+    reader.onload=()=>{if(preview)preview.src=reader.result};
     reader.readAsDataURL(f);
+    // Upload to server and use the returned URL
+    try{
+      const fd=new FormData();
+      fd.append('file',f);
+      const res=await fetch((window.__SUNSESH_API_BASE||'')+'/api/events/upload',{method:'POST',body:fd,credentials:'include'});
+      if(res.ok){
+        const data=await res.json();
+        const url=data.url;
+        cb(url);
+        if(preview)preview.src=url;
+      }else{
+        // Fallback: pass base64 (will be stripped on event save, but works for settings)
+        const r2=new FileReader();
+        r2.onload=()=>{cb(r2.result);if(preview)preview.src=r2.result};
+        r2.readAsDataURL(f);
+        console.warn('[SSC] Image upload failed, falling back to base64');
+      }
+    }catch(e){
+      const r2=new FileReader();
+      r2.onload=()=>{cb(r2.result);if(preview)preview.src=r2.result};
+      r2.readAsDataURL(f);
+      console.warn('[SSC] Image upload error:',e.message);
+    }
   };
   el.addEventListener('click',()=>{input.value='';input.click()});
   input.addEventListener('change',()=>{const f=input.files&&input.files[0];handleFile(f)});

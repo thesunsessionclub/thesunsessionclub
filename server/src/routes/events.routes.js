@@ -1,7 +1,10 @@
 import { Router } from 'express';
 import { body } from 'express-validator';
-import { list, create, update, remove } from '../controllers/events.controller.js';
+import multer from 'multer';
+import { list, create, update, remove, uploadImage } from '../controllers/events.controller.js';
 import { authenticate, requireRole } from '../middleware/auth.js';
+
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
 
 const router = Router();
 const adminOnly = [authenticate, requireRole(['ADMIN'])];
@@ -30,5 +33,6 @@ router.put(
   update
 );
 router.delete('/:id', ...adminOnly, remove);
+router.post('/upload', ...adminOnly, upload.single('file'), uploadImage);
 
 export default router;
