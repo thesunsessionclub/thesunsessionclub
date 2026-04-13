@@ -4,9 +4,10 @@ import multer from 'multer';
 import { list, create, update, remove, generateTicketArt, uploadImage } from '../controllers/events.controller.js';
 import { authenticate, requireRole } from '../middleware/auth.js';
 
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
+
 const router = Router();
 const adminOnly = [authenticate, requireRole(['ADMIN'])];
-const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 8 * 1024 * 1024 } });
 
 router.get('/', list);
 router.post(
@@ -44,6 +45,8 @@ router.put(
   ],
   update
 );
+// Upload route: accepts both field names for compatibility
+router.post('/upload', ...adminOnly, upload.single('file'), uploadImage);
 router.post('/upload-image', ...adminOnly, upload.single('image'), uploadImage);
 router.delete('/:id', ...adminOnly, remove);
 
