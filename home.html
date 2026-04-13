@@ -89,24 +89,19 @@ body:not(.dark) #contact .section-title {
 color: #000 !important;
 }
 .hero-bg {
-background-image: url('assets/hero-rave.png'), linear-gradient(135deg, var(--hero-start) 0%, var(--hero-end) 70%);
-background-size: 115% 115%, 200% 200%;
-background-position: center center, center;
-background-repeat: no-repeat, no-repeat;
-background-blend-mode: overlay;
+background: #030807; /* solid dark fallback — VJ canvas replaces the image */
 position: relative;
 overflow: hidden;
 isolation: isolate;
-animation: heroZoom 18s ease-in-out infinite alternate;
 }
-.dark .hero-bg { background-blend-mode: normal; }
 .hero-bg::before {
 content: "";
 position: absolute;
 inset: 0;
-background: radial-gradient(1000px 600px at 15% 15%, rgba(0,255,170,0.2), transparent 65%),
-linear-gradient(180deg, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.3) 45%, rgba(0,0,0,0.6) 100%);
-z-index: 1;
+/* light gradient overlay to help text readability */
+background: linear-gradient(180deg, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.1) 40%, rgba(0,0,0,0.45) 100%);
+z-index: 3;
+pointer-events: none;
 }
 .hero-bg::after {
 content: "";
@@ -117,14 +112,15 @@ radial-gradient(circle at 10% 20%, rgba(0,255,170,0.14) 0 2px, transparent 3px),
 radial-gradient(circle at 70% 30%, rgba(255,255,255,0.08) 0 2px, transparent 3px),
 radial-gradient(circle at 30% 80%, rgba(0,255,170,0.12) 0 2px, transparent 3px);
 background-size: 160px 160px, 220px 220px, 200px 200px;
-opacity: 0.25;
+opacity: 0.2;
 animation: heroFloat 16s ease-in-out infinite alternate;
-z-index: 1;
+z-index: 3;
 pointer-events: none;
 }
+#vjLoop { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; display: block; }
 .hero-content {
 position: relative;
-z-index: 2;
+z-index: 5;
 }
 .hero-kicker {
 letter-spacing: 0.28em;
@@ -806,9 +802,9 @@ animation: pulse 2s infinite;
 <!-- Hero Section -->
 <div class="hero-bg min-h-[90vh] flex items-center" data-no-global-parallax="1">
   <div class="ssc-hero-media">
-    <canvas id="vjLoop" style="position:absolute;inset:0;width:100%;height:100%;z-index:0;display:block;"></canvas>
-    <video class="ssc-hero-video" autoplay muted loop playsinline preload="metadata" crossorigin="anonymous" poster="assets/hero-rave.png" data-parallax="0.16" data-parallax-mode="translate">
-      <!-- video source removed - using poster image instead -->
+    <canvas id="vjLoop"></canvas>
+    <video class="ssc-hero-video" autoplay muted loop playsinline preload="metadata" crossorigin="anonymous" poster="assets/hero-rave.png" data-parallax="0.16" data-parallax-mode="translate" style="display:none">
+      <!-- video source removed — VJ canvas loop replaces it -->
     </video>
     <div class="ssc-hero-layer layer-1" data-parallax="0.06" data-parallax-mode="translate"></div>
     <div class="ssc-hero-layer layer-2" data-parallax="0.12" data-parallax-mode="translate"></div>
