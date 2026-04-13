@@ -2035,10 +2035,10 @@ async function saveEventEditor(){
     await fetchEventsIntoStore();
     showToast('Evento guardado correctamente');
     cancelEventEditor();
-  } catch (_) {
+  } catch (err) {
+    console.error('[SSC] saveEventEditor error:', err);
+    showToast('Error: ' + (err && err.message ? err.message : String(err)), 'error');
     persistEventLocally(base,currentEventIndex);
-    showToast('Evento guardado localmente (sin conexión al servidor)');
-    cancelEventEditor();
   }
 }
 
