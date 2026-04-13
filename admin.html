@@ -2024,8 +2024,10 @@ async function saveEventEditor(){
   base.status = st === 'active' ? 'ACTIVE' : (st === 'draft' ? 'DRAFT' : 'CANCELLED');
   base.featured = document.getElementById('ee_featured').checked;
   base.sort_order = Number(document.getElementById('ee_order').value || 0);
-  base.image = currentEventImage || '';
-  base.banner_image = currentBannerImage || '';
+  // Only save URLs — strip base64 (upload first via drag-drop to get a URL)
+  const stripB64=v=>(!v||String(v).startsWith('data:'))?'':v;
+  base.image = stripB64(currentEventImage);
+  base.banner_image = stripB64(currentBannerImage);
   /* Sync hero event when checkbox is checked */
   var isHeroChecked = document.getElementById('ee_hero').checked;
   if(isHeroChecked){
