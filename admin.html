@@ -988,7 +988,31 @@ input::placeholder, textarea::placeholder{color:rgba(255,255,255,.7)}
 const STORE_KEY='ssc_store_v1';const ROLE_KEY='ssc_admin_role';const USER_KEY='ssc_admin_user';
 const DEFAULT_STORE={artists:[{name:'RUBZZ',image:'/assets/img/rubzz.png',genres:['Techno','Underground','Minimal'],active:true},{name:'MERME',image:'/assets/img/merme.png',genres:['House','Deep Tech','Progressive'],active:true},{name:'DRACK',image:'/assets/img/drack.png',genres:['Tech House','Melodic','Tribal'],active:true}],tracks:[],videos:[],events:[{title:'SUMMER VIBES',artists:'DJ ALEX & EMMA BEATS',location:'Skyline Club, Downtown',venue:'Skyline Club',date:'2025-06-15',time:'22:00 - 04:00',image:'/assets/hero-rave.png',price:0,genre:'House',status:'active',featured:false,sort_order:1,ticketLink:'#',socialLink:'https://instagram.com/sunsessionclub',isFree:true,buttonText:'VER MÁS'},{title:'TECHNO UNDERGROUND',artists:'MARCUS DEEP & GUESTS',location:'Warehouse 33, Industrial District',venue:'Warehouse 33',date:'2025-06-22',time:'23:00 - 06:00',image:'/assets/hero-rave.png',price:30,genre:'Techno',status:'active',featured:false,sort_order:2,ticketLink:'#',socialLink:'#',isFree:false,buttonText:'COMPRAR BOLETOS'},{title:'SUNSET SESSIONS',artists:'ALL RESIDENT DJs',location:'Rooftop Lounge, City Center',venue:'Rooftop Lounge',date:'2025-07-01',time:'18:00 - 00:00',image:'/assets/hero-rave.png',price:0,genre:'House',status:'active',featured:false,sort_order:3,ticketLink:'#',socialLink:'https://instagram.com/sunsessionclub',isFree:true,buttonText:'VER MÁS'}],vinyl:[],products:[],orders:[],media:[],settings:{heroEvent:{badge:'EVENTO ESPECIAL',title:'PRÓXIMAMENTE',date:'',time:'',description:'',image:'',button1Text:'BOLETOS PREVENTA',button1Link:'',ticketProvider:'',isFree:false,socialLink:'',button2Text:'VER LINEUP',button2Link:'',lineupEnabled:false,lineupImage:'',status:'inactive'},users:[{username:'admin',hash:'admin',role:'admin'}]}};
 function loadStore(){try{const raw=localStorage.getItem(STORE_KEY);if(raw){return JSON.parse(raw)}return JSON.parse(JSON.stringify(DEFAULT_STORE))}catch(e){return JSON.parse(JSON.stringify(DEFAULT_STORE))}}
-function saveStore(){localStorage.setItem(STORE_KEY,JSON.stringify(store));renderAll()}
+function compactStoreForStorage(s){
+  const c=JSON.parse(JSON.stringify(s));
+  // Strip base64 images — only keep URLs
+  const stripB64=v=>(!v||String(v).startsWith('data:'))?'':v;
+  (c.events||[]).forEach(e=>{e.image=stripB64(e.image);e.banner_image=stripB64(e.banner_image||'');});
+  (c.artists||[]).forEach(a=>{a.profile_image=stripB64(a.profile_image);});
+  (c.tracks||[]).forEach(t=>{t.cover=stripB64(t.cover);});
+  (c.products||[]).forEach(p=>{if(Array.isArray(p.images))p.images=p.images.map(stripB64).filter(Boolean);});
+  (c.vinyl||[]).forEach(v=>{if(Array.isArray(v.images))v.images=v.images.map(stripB64).filter(Boolean);});
+  // Trim large collections
+  if(c.orders&&c.orders.length>30)c.orders=c.orders.slice(-30);
+  return c;
+}
+function safeLocalSet(key,data){
+  try{localStorage.setItem(key,JSON.stringify(data));return true;}catch(e){
+    try{
+      // If still fails, clear events/orders/products (fetched fresh anyway)
+      const slim=JSON.parse(JSON.stringify(data));
+      slim.events=[];slim.orders=[];slim.products=[];slim.tracks=[];slim.vinyl=[];
+      localStorage.setItem(key,JSON.stringify(slim));
+      return true;
+    }catch{return false;}
+  }
+}
+function saveStore(){safeLocalSet(STORE_KEY,compactStoreForStorage(store));renderAll()}
 async function sha256(s){const enc=new TextEncoder();const d=await crypto.subtle.digest('SHA-256',enc.encode(s));return Array.from(new Uint8Array(d)).map(b=>b.toString(16).padStart(2,'0')).join('')}
 async function verifyPass(p,h){try{if(h===p)return true;if(window.crypto&&crypto.subtle){return (await sha256(p))===h}return h===p}catch(e){return h===p}}
 function normalizeStore(s){const out=(s&&typeof s==='object')?s:{};out.artists=Array.isArray(out.artists)?out.artists:[];out.tracks=Array.isArray(out.tracks)?out.tracks:[];out.videos=Array.isArray(out.videos)?out.videos:[];out.events=Array.isArray(out.events)?out.events:[];out.vinyl=Array.isArray(out.vinyl)?out.vinyl:[];out.products=Array.isArray(out.products)?out.products:[];out.orders=Array.isArray(out.orders)?out.orders:[];out.media=Array.isArray(out.media)?out.media:[];out.settings=(out.settings&&typeof out.settings==='object')?out.settings:{};out.settings.users=Array.isArray(out.settings.users)?out.settings.users:[];out.settings.friends=Array.isArray(out.settings.friends)?out.settings.friends:[];return out}
@@ -1071,7 +1095,7 @@ async function fetchEventsIntoStore(){
     const data=await res.json();
     if(Array.isArray(data)){
       store.events=mergeEventsForStore(data,store.events);
-      localStorage.setItem(STORE_KEY,JSON.stringify(store));
+      safeLocalSet(STORE_KEY,compactStoreForStorage(store));
       renderEvents();
       renderDashboardEvents();
       console.log('[admin] Events updated from API');
@@ -2334,14 +2358,14 @@ async function authenticate(){
 }document.getElementById('logoutBtn').onclick=async function(){try{await fetch(window.__SUNSESH_API_BASE + '/api/auth/logout',{method:'POST',credentials:'include'})}catch{}localStorage.removeItem(ROLE_KEY);localStorage.removeItem(USER_KEY);location.reload()};
 authenticate();renderAll();
 try{setupDrop('siteLogoDrop',url=>{const img=document.getElementById('siteLogoPreview');if(img)img.src=url})}catch(_){}
-async function fetchMusicIntoStore(){try{const res=await fetch(window.__SUNSESH_API_BASE + '/api/music',{headers:{'Cache-Control':'no-cache'},cache:'no-store'});const data=await res.json();if(Array.isArray(data)){store.tracks=data.map(x=>({id:x.id,title:x.title,artist:x.artist_name||'',genre:x.genre||[],cover:x.cover_image,platform_links:x.platform_links,status:x.status}));localStorage.setItem(STORE_KEY,JSON.stringify(store));renderTracks()}}catch{}}
-async function fetchVideosIntoStore(){try{const res=await fetch(window.__SUNSESH_API_BASE + '/api/videos',{headers:{'Cache-Control':'no-cache'},cache:'no-store'});const data=await res.json();if(Array.isArray(data)){store.videos=data.map(x=>({id:x.id,title:x.title,artist:x.artist||'',date:x.date?new Date(x.date).toISOString().slice(0,10):'',location:x.location||'',thumbnail:x.thumbnail||'',youtubeLink:x.youtubeLink||'',soundcloudLink:x.soundcloudLink||'',genre:x.genre||'',featured:!!x.featured,status:x.status||'ACTIVE'}));localStorage.setItem(STORE_KEY,JSON.stringify(store));renderVideos()}}catch{}}
-async function fetchVinylIntoStore(){try{const res=await fetch(window.__SUNSESH_API_BASE + '/api/vinyl',{headers:{'Cache-Control':'no-cache'},cache:'no-store'});const data=await res.json();if(Array.isArray(data)){store.vinyl=data.map(x=>({id:x.id,title:x.title,artist:x.artist||'',year:(x.release_date?new Date(x.release_date).getFullYear():''),genre:'',edition:'',price:Number(x.price||0),stock:Number(x.stock||0),images:[x.cover_image].filter(Boolean),status:x.status}));localStorage.setItem(STORE_KEY,JSON.stringify(store));renderVinyl()}}catch{}}
-async function fetchProductsIntoStore(){try{const res=await fetch(window.__SUNSESH_API_BASE + '/api/merch',{credentials:'include',headers:{'Cache-Control':'no-cache'},cache:'no-store'});const data=await res.json();if(Array.isArray(data)){store.products=data.map(x=>({id:x.id,title:x.product_name,category:x.category,price:Number(x.price||0),stock:Number(x.stock||0),variants:(x.sizes||'').split(',').filter(Boolean),images:(()=>{try{const j=JSON.parse(x.images||'[]');return Array.isArray(j)?j:[]}catch{return[]}})(),description:x.description||'',status:x.status}));localStorage.setItem(STORE_KEY,JSON.stringify(store));renderProducts()}}catch{}}
+async function fetchMusicIntoStore(){try{const res=await fetch(window.__SUNSESH_API_BASE + '/api/music',{headers:{'Cache-Control':'no-cache'},cache:'no-store'});const data=await res.json();if(Array.isArray(data)){store.tracks=data.map(x=>({id:x.id,title:x.title,artist:x.artist_name||'',genre:x.genre||[],cover:x.cover_image,platform_links:x.platform_links,status:x.status}));safeLocalSet(STORE_KEY,compactStoreForStorage(store));renderTracks()}}catch{}}
+async function fetchVideosIntoStore(){try{const res=await fetch(window.__SUNSESH_API_BASE + '/api/videos',{headers:{'Cache-Control':'no-cache'},cache:'no-store'});const data=await res.json();if(Array.isArray(data)){store.videos=data.map(x=>({id:x.id,title:x.title,artist:x.artist||'',date:x.date?new Date(x.date).toISOString().slice(0,10):'',location:x.location||'',thumbnail:x.thumbnail||'',youtubeLink:x.youtubeLink||'',soundcloudLink:x.soundcloudLink||'',genre:x.genre||'',featured:!!x.featured,status:x.status||'ACTIVE'}));safeLocalSet(STORE_KEY,compactStoreForStorage(store));renderVideos()}}catch{}}
+async function fetchVinylIntoStore(){try{const res=await fetch(window.__SUNSESH_API_BASE + '/api/vinyl',{headers:{'Cache-Control':'no-cache'},cache:'no-store'});const data=await res.json();if(Array.isArray(data)){store.vinyl=data.map(x=>({id:x.id,title:x.title,artist:x.artist||'',year:(x.release_date?new Date(x.release_date).getFullYear():''),genre:'',edition:'',price:Number(x.price||0),stock:Number(x.stock||0),images:[x.cover_image].filter(Boolean),status:x.status}));safeLocalSet(STORE_KEY,compactStoreForStorage(store));renderVinyl()}}catch{}}
+async function fetchProductsIntoStore(){try{const res=await fetch(window.__SUNSESH_API_BASE + '/api/merch',{credentials:'include',headers:{'Cache-Control':'no-cache'},cache:'no-store'});const data=await res.json();if(Array.isArray(data)){store.products=data.map(x=>({id:x.id,title:x.product_name,category:x.category,price:Number(x.price||0),stock:Number(x.stock||0),variants:(x.sizes||'').split(',').filter(Boolean),images:(()=>{try{const j=JSON.parse(x.images||'[]');return Array.isArray(j)?j:[]}catch{return[]}})(),description:x.description||'',status:x.status}));safeLocalSet(STORE_KEY,compactStoreForStorage(store));renderProducts()}}catch{}}
 fetchMusicIntoStore();fetchVideosIntoStore();fetchVinylIntoStore();fetchOrdersIntoStore();
-async function fetchArtistsIntoStore(){try{const res=await fetch(window.__SUNSESH_API_BASE + '/api/artists',{headers:{'Cache-Control':'no-cache'},cache:'no-store'});let data=await res.json();if(!Array.isArray(data))data=[];data=data.map(a=>{const list=(a.genres_list||[]);const names=list.map(x=>x.name);const ids=list.map(x=>x.id);return {...a,genres:names,genre:names.join(', '),genre_ids:ids}});if(!store.settings)store.settings={};store.settings.disableArtistSeed=true;store.artists=data;localStorage.setItem(STORE_KEY,JSON.stringify(store));renderArtists()}catch{}}
+async function fetchArtistsIntoStore(){try{const res=await fetch(window.__SUNSESH_API_BASE + '/api/artists',{headers:{'Cache-Control':'no-cache'},cache:'no-store'});let data=await res.json();if(!Array.isArray(data))data=[];data=data.map(a=>{const list=(a.genres_list||[]);const names=list.map(x=>x.name);const ids=list.map(x=>x.id);return {...a,genres:names,genre:names.join(', '),genre_ids:ids}});if(!store.settings)store.settings={};store.settings.disableArtistSeed=true;store.artists=data;safeLocalSet(STORE_KEY,compactStoreForStorage(store));renderArtists()}catch{}}
 fetchArtistsIntoStore();
-async function applySettingsFromApi(){try{const res=await fetch(window.__SUNSESH_API_BASE + '/api/settings',{headers:{'Cache-Control':'no-cache'},cache:'no-store'});if(!res.ok)return;const s=await res.json();const styleId='dynamic-theme';let style=document.getElementById(styleId);if(!style){style=document.createElement('style');style.id=styleId;document.head.appendChild(style)}var primary=s.primary_color||'#006400';var secondary=s.secondary_color||'#00FFAA';var bg=s.background_color||'#0b1e14';var text=s.global_text_color||'#ffffff';var card=s.card_background||'#0d1b13';var font=s.font_family||"'Montserrat',sans-serif";style.textContent=':root{--primary:'+primary+';--secondary:'+secondary+';--bg:'+bg+';--text:'+text+';--card:'+card+';--font:'+font+'} .badge{background:var(--primary)!important;color:#000} .btn{background:var(--secondary)!important;color:#000} body{background:var(--bg)!important;color:var(--text)!important;font-family:var(--font)!important}';const logo=document.getElementById('siteLogoPreview');if(logo&&s.site_logo){logo.src=s.site_logo}const bh=document.getElementById('bgHeroPreview');if(bh&&s.hero_section_background_image){bh.src=s.hero_section_background_image}const ba=document.getElementById('bgAboutPreview');if(ba&&s.about_background_image){ba.src=s.about_background_image}const bgp=document.getElementById('bgGalleryPreview');if(bgp&&s.gallery_background_image){bgp.src=s.gallery_background_image}if(!store.settings)store.settings={};store.settings.order_notification_email=s.order_notification_email||'';store.settings.bank_name=s.bank_name||'';store.settings.bank_account_holder=s.bank_account_holder||'';store.settings.bank_clabe=s.bank_clabe||'';store.settings.bank_card=s.bank_card||'';let friends=[];if(s.friends_json){try{const parsed=JSON.parse(s.friends_json);if(Array.isArray(parsed))friends=parsed}catch{}}store.settings.friends=friends;localStorage.setItem(STORE_KEY,JSON.stringify(store));renderFriendsAdmin()}catch{}}
+async function applySettingsFromApi(){try{const res=await fetch(window.__SUNSESH_API_BASE + '/api/settings',{headers:{'Cache-Control':'no-cache'},cache:'no-store'});if(!res.ok)return;const s=await res.json();const styleId='dynamic-theme';let style=document.getElementById(styleId);if(!style){style=document.createElement('style');style.id=styleId;document.head.appendChild(style)}var primary=s.primary_color||'#006400';var secondary=s.secondary_color||'#00FFAA';var bg=s.background_color||'#0b1e14';var text=s.global_text_color||'#ffffff';var card=s.card_background||'#0d1b13';var font=s.font_family||"'Montserrat',sans-serif";style.textContent=':root{--primary:'+primary+';--secondary:'+secondary+';--bg:'+bg+';--text:'+text+';--card:'+card+';--font:'+font+'} .badge{background:var(--primary)!important;color:#000} .btn{background:var(--secondary)!important;color:#000} body{background:var(--bg)!important;color:var(--text)!important;font-family:var(--font)!important}';const logo=document.getElementById('siteLogoPreview');if(logo&&s.site_logo){logo.src=s.site_logo}const bh=document.getElementById('bgHeroPreview');if(bh&&s.hero_section_background_image){bh.src=s.hero_section_background_image}const ba=document.getElementById('bgAboutPreview');if(ba&&s.about_background_image){ba.src=s.about_background_image}const bgp=document.getElementById('bgGalleryPreview');if(bgp&&s.gallery_background_image){bgp.src=s.gallery_background_image}if(!store.settings)store.settings={};store.settings.order_notification_email=s.order_notification_email||'';store.settings.bank_name=s.bank_name||'';store.settings.bank_account_holder=s.bank_account_holder||'';store.settings.bank_clabe=s.bank_clabe||'';store.settings.bank_card=s.bank_card||'';let friends=[];if(s.friends_json){try{const parsed=JSON.parse(s.friends_json);if(Array.isArray(parsed))friends=parsed}catch{}}store.settings.friends=friends;safeLocalSet(STORE_KEY,compactStoreForStorage(store));renderFriendsAdmin()}catch{}}
 applySettingsFromApi();
 fetchEventsIntoStore();
 function renderAll(){document.getElementById('stat-artists').textContent=(store.artists||[]).filter(a=>a.active!==false).length;document.getElementById('stat-tracks').textContent=(store.tracks||[]).length;document.getElementById('stat-videos').textContent=(store.videos||[]).length;document.getElementById('stat-vinyl').textContent=(store.vinyl||[]).filter(v=>v.active!==false).length;document.getElementById('stat-products').textContent=(store.products||[]).filter(p=>p.active!==false).length;document.getElementById('stat-orders').textContent=(store.orders||[]).length;renderArtists();renderTracks();renderVideos();renderVinyl();renderProducts();renderMedia();renderFriendsAdmin();populateSettings();renderEvents()}
@@ -2487,7 +2511,7 @@ async function fetchMusicIntoStore(){
           status:x.status||'ACTIVE'
         };
       });
-      localStorage.setItem(STORE_KEY,JSON.stringify(store));
+      safeLocalSet(STORE_KEY,compactStoreForStorage(store));
       renderTracks();
       renderAll();
     }
@@ -2514,7 +2538,7 @@ async function fetchVinylIntoStore(){
           status:x.status||'ACTIVE'
         };
       });
-      localStorage.setItem(STORE_KEY,JSON.stringify(store));
+      safeLocalSet(STORE_KEY,compactStoreForStorage(store));
       renderVinyl();
       renderAll();
     }
@@ -2909,7 +2933,7 @@ async function refreshFriendsFromApi(){
     }
     if(!store.settings)store.settings={};
     store.settings.friends=friends;
-    localStorage.setItem(STORE_KEY,JSON.stringify(store));
+    safeLocalSet(STORE_KEY,compactStoreForStorage(store));
     renderFriendsAdmin();
   }catch{}
 }
@@ -2994,7 +3018,7 @@ async function fetchOrdersIntoStore(){
     const data=await res.json();
     if(Array.isArray(data)){
       store.orders=data;
-      localStorage.setItem(STORE_KEY,JSON.stringify(store));
+      safeLocalSet(STORE_KEY,compactStoreForStorage(store));
       renderOrders();
       renderAll();
     }
@@ -3172,7 +3196,7 @@ async function syncLocalProducts(){
     }catch{}
   }
   if(synced){
-    localStorage.setItem(STORE_KEY,JSON.stringify(store));
+    safeLocalSet(STORE_KEY,compactStoreForStorage(store));
   }
 }
 
@@ -3220,7 +3244,7 @@ async function fetchProductsIntoStore(){
       if(pendingLocal.length){
         store.products=store.products.concat(pendingLocal);
       }
-      localStorage.setItem(STORE_KEY,JSON.stringify(store));
+      safeLocalSet(STORE_KEY,compactStoreForStorage(store));
       renderProducts();
       renderAll();
     }
@@ -3770,7 +3794,7 @@ async function applySettingsFromApi(){
       }catch{}
     }
     store.settings.friends=friends;
-    localStorage.setItem(STORE_KEY,JSON.stringify(store));
+    safeLocalSet(STORE_KEY,compactStoreForStorage(store));
     renderFriendsAdmin();
     refreshMiniPage();
   }catch{}
