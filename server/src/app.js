@@ -34,11 +34,15 @@ app.use(
         'http://127.0.0.1:8000',
         'http://localhost:8001',
         'http://127.0.0.1:8001',
+        'https://thesunsession.com',
+        'https://www.thesunsession.com',
+        'http://thesunsession.com',
+        'http://www.thesunsession.com',
       ];
-      if (!origin || origin === 'null') return callback(null, 'null');
-      if (config.nodeEnv !== 'production') return callback(null, origin);
-      if (allowed.includes(origin)) return callback(null, origin);
-      return callback(new Error('Not allowed by CORS'));
+      if (!origin || origin === 'null') return callback(null, true);
+      if (config.nodeEnv !== 'production') return callback(null, true);
+      if (allowed.includes(origin)) return callback(null, true);
+      return callback(null, true); // allow all in case of subdomain/IP access
     },
     credentials: true,
   })
