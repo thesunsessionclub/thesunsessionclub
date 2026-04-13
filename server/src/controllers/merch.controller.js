@@ -1,5 +1,6 @@
 ﻿import { prisma } from '../prisma.js';
 import { validationResult } from 'express-validator';
+import { broadcast } from '../socket.js';
 import QRCode from 'qrcode';
 import { randomBytes } from 'node:crypto';
 
@@ -172,6 +173,7 @@ export const create = async (req, res) => {
       include: { color_variants: true },
     });
     res.status(201).json(item);
+    broadcast('merch:update', null);
   } catch (err) {
     res.status(500).json({ message: 'No se pudo crear producto', details: err?.message });
   }
@@ -197,6 +199,7 @@ export const update = async (req, res) => {
       });
     });
     res.json(item);
+    broadcast('merch:update', null);
   } catch (err) {
     res.status(500).json({ message: 'No se pudo actualizar producto', details: err?.message });
   }
@@ -207,6 +210,7 @@ export const remove = async (req, res) => {
   try {
     await prisma.merchProduct.update({ where: { id }, data: { deletedAt: new Date() } });
     res.status(204).send();
+    broadcast('merch:update', null);
   } catch {
     res.status(204).send();
   }

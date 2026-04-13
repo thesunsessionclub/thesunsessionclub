@@ -1,5 +1,6 @@
 import { prisma } from '../prisma.js';
 import { validationResult } from 'express-validator';
+import { broadcast } from '../socket.js';
 import crypto from 'crypto';
 import fs from 'fs/promises';
 import path from 'path';
@@ -175,6 +176,7 @@ export const createRequest = async (req, res) => {
     );
     const whatsappSent = await safeNotify('request-whatsapp', () => sendTicketWhatsApp({ type: 'request', order, event }));
     res.status(201).json({ ...order, payment_proof: proofUrl || order.payment_proof, mail_sent: mailSent, whatsapp_sent: whatsappSent });
+    broadcast('tickets:update', null);
   } catch (err) {
     res.status(500).json({ message: 'No se pudo crear solicitud', details: err?.message });
   }
@@ -212,6 +214,7 @@ export const updateOrder = async (req, res) => {
       },
     });
     res.json(item);
+    broadcast('tickets:update', null);
   } catch (err) {
     res.status(500).json({ message: 'No se pudo actualizar solicitud', details: err?.message });
   }

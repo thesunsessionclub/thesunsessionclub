@@ -1,8 +1,10 @@
-﻿import app from './app.js';
+﻿import { createServer } from 'http';
+import app from './app.js';
 import { config } from './config/env.js';
 import { prisma } from './prisma.js';
 import bcrypt from 'bcryptjs';
 import { seedIfEmpty as seedGenresIfEmpty } from './controllers/genres.controller.js';
+import { initSocket } from './socket.js';
 
 async function ensureAdminSeed() {
   try {
@@ -119,7 +121,9 @@ Promise.all([ensureAdminSeed(), ensureArtistSeed(), seedGenresIfEmpty()]).finall
     console.warn('\n⚠  JWT secrets are set to default values. Change JWT_SECRET and JWT_REFRESH_SECRET in .env before deploying to production.\n');
   }
 
-  app.listen(config.port, config.host, () => {
+  const httpServer = createServer(app);
+  initSocket(httpServer);
+  httpServer.listen(config.port, config.host, () => {
     console.log(`Servidor web+API escuchando en http://${config.host}:${config.port}`);
   });
 });

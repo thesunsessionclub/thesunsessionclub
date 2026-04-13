@@ -1,5 +1,6 @@
 import { prisma } from '../prisma.js';
 import { validationResult } from 'express-validator';
+import { broadcast } from '../socket.js';
 
 export const getSettings = async (req, res) => {
   try {
@@ -23,6 +24,7 @@ export const upsertSettings = async (req, res) => {
     });
     console.log('Settings actualizados:', item);
     res.json(item);
+    broadcast('settings:update', null);
   } catch (err) {
     res.status(500).json({ message: 'No se pudo guardar settings', details: err?.message });
   }

@@ -1,5 +1,6 @@
 import { prisma } from '../prisma.js';
 import { validationResult } from 'express-validator';
+import { broadcast } from '../socket.js';
 
 export const list = async (req, res) => {
   try {
@@ -40,6 +41,7 @@ export const create = async (req, res) => {
       include: { genres: { include: { genre: true } } }
     });
     res.status(201).json(full);
+    broadcast('artists:update', null);
   } catch (err) {
     console.log('Error crear artista', err?.message || err);
     res.status(500).json({ message: 'No se pudo crear artista', details: err?.message });
@@ -70,6 +72,7 @@ export const update = async (req, res) => {
       include: { genres: { include: { genre: true } } }
     });
     res.json(full);
+    broadcast('artists:update', null);
   } catch (err) {
     console.log('Error actualizar artista', err?.message || err);
     res.status(500).json({ message: 'No se pudo actualizar artista', details: err?.message });
@@ -81,6 +84,7 @@ export const remove = async (req, res) => {
     await prisma.artist.update({ where: { id }, data: { deletedAt: new Date() } });
     await prisma.artistGenre.deleteMany({ where: { artistId: id } });
     res.status(204).send();
+    broadcast('artists:update', null);
   } catch {
     res.status(204).send();
   }
