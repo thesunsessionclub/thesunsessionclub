@@ -12,6 +12,30 @@ export const list = async (req, res) => {
   }
 };
 
+export const create = async (req, res) => {
+  const name = (req.body?.name || '').trim();
+  if (!name) return res.status(400).json({ message: 'Nombre requerido' });
+  try {
+    const all = await prisma.genre.findMany({ select: { name: true } });
+    const existing = all.find(g => g.name.toLowerCase() === name.toLowerCase());
+    if (existing) return res.status(409).json({ message: 'El género ya existe' });
+    const genre = await prisma.genre.create({ data: { name, status: 'active' } });
+    res.json(genre);
+  } catch (e) {
+    res.status(500).json({ message: e.message });
+  }
+};
+
+export const remove = async (req, res) => {
+  const { id } = req.params;
+  try {
+    await prisma.genre.delete({ where: { id: Number(id) } });
+    res.json({ ok: true });
+  } catch (e) {
+    res.status(500).json({ message: e.message });
+  }
+};
+
 const DEFAULT_GENRES = [
   'Techno',
   'House',
