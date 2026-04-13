@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es-MX">
 <head>
 <script>
@@ -6,7 +6,7 @@
   const explicit = (window.SUNSESH_API || '').trim();
  const currentPort = String(location.port || '');
  const hasLikelyDevPort = !!currentPort && !['80', '443', '4000'].includes(currentPort);
- const isLanIp = /^(127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.)/.test(location.hostname);
+ const isLanIp = /^\d{1,3}(?:\.\d{1,3}){3}$/.test(location.hostname);
  const preferLocalApi = isLanIp || location.hostname === 'localhost' || location.hostname === '127.0.0.1' || hasLikelyDevPort;
   const origin = (location.origin && location.origin !== 'null') ? location.origin : '';
  const base = explicit || (preferLocalApi ? (location.protocol + '//' + location.hostname + ':4000') : origin);
@@ -16,12 +16,11 @@
 
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="image/jpeg" href="/assets/img/logo.jpg">
   <title>Galería de Eventos  Sun Session Club</title>
   <link href="assets/css/site.css?v=20260329-01" rel="stylesheet">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com/3.4.16"></script>
   <script>
@@ -29,15 +28,15 @@
       theme: {
         extend: {
           colors: { primary: '#00FFAA', accent: '#0b1e14' },
-          borderRadius: { button: '16px' }
+          borderRadius: { button: '10px' }
         }
       }
     }
   </script>
   <style>
     body { font-family: 'Montserrat', sans-serif; }
-    .glass { background: var(--card-bg, rgba(12, 21, 17, 0.82)); border: 1px solid var(--card-border, rgba(255,255,255,0.08)); backdrop-filter: blur(12px); }
-    .glow:hover { box-shadow: 0 18px 46px rgba(0,0,0,0.45), 0 0 24px rgba(0,255,170,0.18); transform: translateY(-6px); border-color: rgba(0,255,170,0.35); }
+    .glass { background: rgba(14, 18, 16, 0.7); border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(12px); }
+    .glow:hover { box-shadow: 0 12px 30px rgba(0,255,170,0.25); transform: translateY(-4px); }
     .masonry { column-count: 3; column-gap: 16px; }
     .masonry-item { break-inside: avoid; margin-bottom: 16px; }
     .gallery-hero{
@@ -54,11 +53,11 @@
 <body class="bg-black text-white">
   <nav class="ssc-nav sticky top-0 z-40 bg-black/90 border-b border-white/10">
     <div class="container mx-auto px-6 py-4 flex items-center justify-between">
-      <a href="home.html" class="flex items-center gap-2 text-sm text-white/70 hover:text-primary">
+      <a href="sunsessionesp_fixed_v3.html" class="flex items-center gap-2 text-sm text-white/70 hover:text-primary">
         <i class="ri-arrow-left-line"></i><span>Volver al inicio</span>
       </a>
       <div class="text-lg font-bold tracking-widest">GALERÍA</div>
-      <a href="home.html#merch" class="px-4 py-2 bg-primary text-black rounded-button font-bold">MERCH</a>
+      <a href="sunsessionesp_fixed_v3.html#merch" class="px-4 py-2 bg-primary text-black rounded-button font-bold">MERCH</a>
     </div>
   </nav>
 
@@ -120,7 +119,7 @@
     <div class="absolute top-6 right-6 flex items-center gap-3">
       <button id="lbZoom" class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center"><i class="ri-zoom-in-line"></i></button>
       <button id="lbFull" class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center"><i class="ri-fullscreen-line"></i></button>
-<button id="lbClose" aria-label="Cerrar" class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-xl font-bold leading-none"><span aria-hidden="true">X</span></button>
+      <button id="lbClose" class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center"><i class="ri-close-line"></i></button>
     </div>
     <button id="lbPrev" class="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center"><i class="ri-arrow-left-s-line text-2xl"></i></button>
     <button id="lbNext" class="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center"><i class="ri-arrow-right-s-line text-2xl"></i></button>
@@ -310,8 +309,11 @@ const API_BASE = window.__SUNSESH_API_BASE || '';
   </script>
   <script src="assets/js/site.js?v=20260327-3"></script>
   <script src="assets/js/ssc-ux.js" defer></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="assets/js/ssc-socket.js"></script>
 </body>
 </html>
+
 
 
 

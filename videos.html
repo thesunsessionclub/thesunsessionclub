@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es-MX">
 <head>
 <script>
@@ -6,7 +6,7 @@
   const explicit = (window.SUNSESH_API || '').trim();
  const currentPort = String(location.port || '');
  const hasLikelyDevPort = !!currentPort && !['80', '443', '4000'].includes(currentPort);
- const isLanIp = /^(127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.)/.test(location.hostname);
+ const isLanIp = /^\d{1,3}(?:\.\d{1,3}){3}$/.test(location.hostname);
  const preferLocalApi = isLanIp || location.hostname === 'localhost' || location.hostname === '127.0.0.1' || hasLikelyDevPort;
   const origin = (location.origin && location.origin !== 'null') ? location.origin : '';
  const base = explicit || (preferLocalApi ? (location.protocol + '//' + location.hostname + ':4000') : origin);
@@ -16,30 +16,30 @@
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" type="image/jpeg" href="/assets/img/logo.jpg">
 <title>LIVE SETS - Sun Session Club</title>
   <link href="assets/css/site.css?v=20260329-01" rel="stylesheet">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com/3.4.16"></script>
-<script>tailwind.config={theme:{extend:{colors:{primary:'#006400',secondary:'#00FFAA'},borderRadius:{'button':'16px'}}}}</script>
+<script>tailwind.config={theme:{extend:{colors:{primary:'#006400',secondary:'#00FFAA'},borderRadius:{'button':'8px'}}}}</script>
 <style>
 body{font-family:'Montserrat',sans-serif}
-.rounded-button{border-radius:16px}
-.card{background:var(--card-bg,rgba(12,21,17,0.82));border:1px solid var(--card-border,rgba(255,255,255,0.08));border-radius:var(--radius);overflow:hidden;transition:transform var(--transition-base),box-shadow var(--transition-base),border-color var(--transition-base)}
-.card:hover{transform:translateY(-6px);box-shadow:0 18px 46px rgba(0,0,0,0.45),0 0 24px rgba(0,255,170,0.18);border-color:rgba(0,255,170,0.35)}
+.rounded-button{border-radius:8px}
+.card{background:#0a0a0a;border:1px solid rgba(255,255,255,.08);border-radius:12px;overflow:hidden;transition:transform .25s ease, box-shadow .25s ease}
+.card:hover{transform:translateY(-4px);box-shadow:0 12px 28px rgba(0,100,0,.35)}
 .thumb{position:relative;height:220px;background:#111}
 .thumb img{width:100%;height:100%;object-fit:cover;opacity:.9}
 .thumb::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom, rgba(0,0,0,.35), rgba(0,0,0,.75))}
 .play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff}
 .play i{font-size:48px;background:rgba(0,100,0,.18);border:2px solid #006400;border-radius:9999px;padding:14px}
-.badge{position:absolute;left:12px;top:12px;background:var(--primary);color:var(--badge-text,#07110c);border:none;padding:.2rem .6rem;border-radius:9999px;font-size:.75rem;font-weight:700;letter-spacing:0.02em}
-.badge-accent{background:var(--secondary,#00c27a);color:var(--badge-text,#07110c)}
+.badge{position:absolute;left:12px;top:12px;background:#000;border:1px solid rgba(255,255,255,.15);color:#fff;padding:.2rem .5rem;border-radius:9999px;font-size:.75rem}
+.badge-accent{background:#006400;color:#fff;border:none}
 .thumb .watch-btn{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);opacity:0;transition:opacity .25s}
 .card:hover .watch-btn{opacity:1}
-.watch-btn a{display:flex;align-items:center;gap:8px;background:var(--primary);color:#07110c;font-weight:700;padding:.5rem .9rem;border-radius:var(--radius)}
+.watch-btn a{display:flex;align-items:center;gap:8px;background:#006400;color:#000;font-weight:700;padding:.5rem .9rem;border-radius:8px}
 .videos-hero{
 --ssc-hero-image: url('https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1800&q=80');
 --ssc-hero-position: center 38%;
@@ -52,18 +52,18 @@ body{font-family:'Montserrat',sans-serif}
 <nav class="ssc-nav bg-black sticky top-0 z-50 border-b border-white/10">
 <div class="container mx-auto px-6 py-4 grid grid-cols-3 items-center">
 <div class="flex items-center space-x-3">
-<a href="home.html" class="text-white hover:text-primary flex items-center space-x-2"><i class="ri-arrow-left-line"></i><span class="text-sm">Volver al inicio</span></a>
+<a href="sunsessionesp_fixed_v3.html" class="text-white hover:text-primary flex items-center space-x-2"><i class="ri-arrow-left-line"></i><span class="text-sm">Volver al inicio</span></a>
 <img src="/assets/img/logo.jpg" alt="The Sun Session Club Logo" class="h-12 ml-4 object-contain">
 </div>
 <ul class="hidden md:flex justify-center space-x-6">
-<li><a href="home.html" class="text-white hover:text-primary uppercase text-sm">Inicio</a></li>
-<li><a href="artistas.html" class="text-white hover:text-primary uppercase text-sm">Artistas</a></li>
-<li><a href="home.html#events" class="text-white hover:text-primary uppercase text-sm">Eventos</a></li>
+<li><a href="sunsessionesp_fixed_v3.html" class="text-white hover:text-primary uppercase text-sm">Inicio</a></li>
+<li><a href="artistas_sunsssesion.html" class="text-white hover:text-primary uppercase text-sm">Artistas</a></li>
+<li><a href="sunsessionesp_fixed_v3.html#events" class="text-white hover:text-primary uppercase text-sm">Eventos</a></li>
 <li><a href="music.html" class="text-white hover:text-primary uppercase text-sm">Música</a></li>
 <li><a href="videos.html" class="text-primary uppercase text-sm font-bold">Videos</a></li>
 <li><a href="gallery.html" class="text-white hover:text-primary uppercase text-sm">Galería</a></li>
-          <li><a href="home.html#merch" class="text-white hover:text-primary uppercase text-sm">MERCH</a></li>
-<li><a href="home.html#contact" class="text-white hover:text-primary uppercase text-sm">Contacto</a></li>
+          <li><a href="sunsessionesp_fixed_v3.html#merch" class="text-white hover:text-primary uppercase text-sm">MERCH</a></li>
+<li><a href="sunsessionesp_fixed_v3.html#contact" class="text-white hover:text-primary uppercase text-sm">Contacto</a></li>
 </ul>
 <div class="flex justify-end items-center space-x-3">
 <button onclick="openCart()" class="bg-white bg-opacity-10 hover:bg-opacity-20 text-white font-medium py-2 px-3 rounded-button shadow-soft flex items-center space-x-2"><i class="ri-shopping-cart-line"></i><span>Carrito</span></button>
@@ -102,7 +102,7 @@ body{font-family:'Montserrat',sans-serif}
 <div class="rounded-2xl border border-white/10 overflow-hidden bg-black/90">
 <div class="flex items-center justify-between px-5 py-4 border-b border-white/10">
 <div class="text-white/80 text-sm uppercase tracking-[0.14em]">Vista previa del video</div>
-<button id="videoModalClose" type="button" aria-label="Cerrar" class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white text-xl font-bold leading-none"><span aria-hidden="true">X</span></button>
+<button id="videoModalClose" type="button" class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white"><i class="ri-close-line text-xl"></i></button>
 </div>
 <div class="aspect-video bg-black">
 <iframe id="videoModalFrame" class="w-full h-full" src="" title="Vista previa del video" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
@@ -114,11 +114,11 @@ body{font-family:'Montserrat',sans-serif}
 <div class="container mx-auto px-6">
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
 <div><img src="/assets/img/logo.jpg" alt="The Sun Session Club Logo" class="h-16 mb-6 object-contain"><p class="text-gray-400 mb-6">The Sun Session Club reúne sets, visuales y momentos reales de la escena electrónica. Revive cada fecha con energía auténtica.</p><div class="flex space-x-4"><a href="#" class="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-primary transition-colors"><i class="ri-facebook-fill text-xl"></i></a><a href="#" class="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-primary transition-colors"><i class="ri-instagram-fill text-xl"></i></a><a href="#" class="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-primary transition-colors"><i class="ri-twitter-fill text-xl"></i></a><a href="#" class="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-primary transition-colors"><i class="ri-youtube-fill text-xl"></i></a></div></div>
-<div><h3 class="text-xl font-bold mb-6">Enlaces Rápidos</h3><ul class="space-y-3"><li><a href="artistas.html" class="text-gray-400 hover:text-primary transition-colors">Artistas</a></li><li><a href="home.html#events" class="text-gray-400 hover:text-primary transition-colors">Eventos</a></li><li><a href="music.html" class="text-gray-400 hover:text-primary transition-colors">Música</a></li><li><a href="videos.html" class="text-gray-400 hover:text-primary transition-colors">Videos</a></li><li><a href="gallery.html" class="text-gray-400 hover:text-primary transition-colors">Galería</a></li><li><a href="home.html#contact" class="text-gray-400 hover:text-primary transition-colors">Contacto</a></li></ul></div>
+<div><h3 class="text-xl font-bold mb-6">Enlaces Rápidos</h3><ul class="space-y-3"><li><a href="artistas_sunsssesion.html" class="text-gray-400 hover:text-primary transition-colors">Artistas</a></li><li><a href="sunsessionesp_fixed_v3.html#events" class="text-gray-400 hover:text-primary transition-colors">Eventos</a></li><li><a href="music.html" class="text-gray-400 hover:text-primary transition-colors">Música</a></li><li><a href="videos.html" class="text-gray-400 hover:text-primary transition-colors">Videos</a></li><li><a href="gallery.html" class="text-gray-400 hover:text-primary transition-colors">Galería</a></li><li><a href="sunsessionesp_fixed_v3.html#contact" class="text-gray-400 hover:text-primary transition-colors">Contacto</a></li></ul></div>
 <div><h3 class="text-xl font-bold mb-6">Información de Contacto</h3><ul class="space-y-3"><li class="flex items-start space-x-3"><div class="w-5 h-5 flex items-center justify-center text-primary mt-1"><i class="ri-map-pin-line"></i></div><span class="text-gray-400">Mexicali B.C.</span></li><li class="flex items-start space-x-3"><div class="w-5 h-5 flex items-center justify-center text-primary mt-1"><i class="ri-mail-line"></i></div><span class="text-gray-400">thesunsessionclub@gmail.com</span></li><li class="flex items-start space-x-3"><div class="w-5 h-5 flex items-center justify-center text-primary mt-1"><i class="ri-phone-line"></i></div><span class="text-gray-400">+1 (686) 109-5015</span></li></ul></div>
 <div><h3 class="text-xl font-bold mb-6">Noticias</h3><p class="text-gray-400 mb-4">Suscríbete para recibir de primera mano los próximos eventos y ofertas especiales.</p><form class="space-y-4"><div class="relative"><input type="email" placeholder="Tu correo electrónico" class="w-full px-4 py-3 bg-gray-800 border-none rounded text-white focus:outline-none focus:ring-2 focus:ring-primary"></div><div class="flex items-center"><input type="checkbox" id="footer-consent-videos" class="custom-checkbox mr-3"><label for="footer-consent-videos" class="text-gray-400 text-sm">Acepto recibir correos electrónicos promocionales</label></div><button type="submit" class="bg-primary hover:bg-opacity-90 text-black font-bold py-3 px-6 rounded-button w-full transition-all">SUSCRIBIRSE</button></form></div>
 </div>
-<div class="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center"><p class="text-gray-500 text-sm mb-4 md:mb-0"> <span class="ssc-year"></span> The Sun Session Club. Todos los derechos reservados.</p><div class="flex items-center space-x-6"><a href="home.html#about" class="text-gray-500 hover:text-primary text-sm transition-colors">Nosotros</a><a href="privacy.html" class="text-gray-500 hover:text-primary text-sm transition-colors">Política de privacidad</a><a href="terms.html" class="text-gray-500 hover:text-primary text-sm transition-colors">Términos y condiciones</a><a href="#" class="text-gray-500 hover:text-primary text-sm transition-colors">Política de cookies</a><a href="login.html" class="hidden text-gray-500 hover:text-primary transition-colors flex items-center" title="Iniciar sesión"><i class="ri-user-3-line text-lg"></i></a></div></div>
+<div class="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center"><p class="text-gray-500 text-sm mb-4 md:mb-0"> 2025 The Sun Session Club. Todos los derechos reservados.</p><div class="flex items-center space-x-6"><a href="sunsessionesp_fixed_v3.html#about" class="text-gray-500 hover:text-primary text-sm transition-colors">Nosotros</a><a href="privacy.html" class="text-gray-500 hover:text-primary text-sm transition-colors">Política de privacidad</a><a href="terms.html" class="text-gray-500 hover:text-primary text-sm transition-colors">Términos y condiciones</a><a href="#" class="text-gray-500 hover:text-primary text-sm transition-colors">Política de cookies</a><a href="login.html" class="hidden text-gray-500 hover:text-primary transition-colors flex items-center" title="Iniciar sesión"><i class="ri-user-3-line text-lg"></i></a></div></div>
 </div>
 </footer>
 <script>
@@ -279,8 +279,11 @@ bindVideoModalEvents();
 </script>
   <script src="assets/js/site.js?v=20260327-3"></script>
   <script src="assets/js/ssc-ux.js" defer></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="assets/js/ssc-socket.js"></script>
 </body>
 </html>
+
 
 
 

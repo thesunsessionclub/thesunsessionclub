@@ -1,5 +1,6 @@
 import { prisma } from '../prisma.js';
 import { validationResult } from 'express-validator';
+import { broadcast } from '../socket.js';
 /**
  * Eventos CRUD
  */
@@ -21,6 +22,7 @@ export const create = async (req, res) => {
     const data = normalizeEvent(req.body);
     const item = await prisma.event.create({ data });
     res.status(201).json(item);
+    broadcast('events:update', null);
   } catch (err) {
     res.status(500).json({ message: 'No se pudo crear evento', details: err?.message });
   }
@@ -33,6 +35,7 @@ export const update = async (req, res) => {
     const data = normalizeEvent(req.body);
     const item = await prisma.event.update({ where: { id }, data });
     res.json(item);
+    broadcast('events:update', null);
   } catch (err) {
     res.status(500).json({ message: 'No se pudo actualizar evento', details: err?.message });
   }
@@ -42,6 +45,7 @@ export const remove = async (req, res) => {
   try {
     await prisma.event.update({ where: { id }, data: { deletedAt: new Date() } });
     res.status(204).send();
+    broadcast('events:update', null);
   } catch {
     res.status(204).send();
   }
