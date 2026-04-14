@@ -479,8 +479,17 @@ function createEventCard(e,isFeatured=false){
   /* ── Image wrap ── */
   const imgWrap=document.createElement('div');imgWrap.className='ssc-card__img-wrap';
   const img=document.createElement('img');img.className='ssc-card__img';img.loading='lazy';
-  img.src=proxyImage(e.image||'');img.alt=e.title||'';
-  img.onerror=function(){this.src='/assets/hero-rave.png'};
+  const rawImg=e.image||'';
+  img.src=rawImg?proxyImage(resolveUploadUrl(rawImg)):'';
+  img.alt=e.title||'';
+  img.onerror=function(){
+    // Instead of hardcoded fallback image: hide img and apply dark gradient placeholder
+    this.style.display='none';
+    if(this.parentElement){
+      this.parentElement.style.background='linear-gradient(135deg,#0a1a10 0%,#061008 60%,#0d2414 100%)';
+    }
+  };
+  if(!rawImg){img.onerror();}
   const overlay=document.createElement('div');overlay.className='ssc-card__img-overlay';
   const grain=document.createElement('div');grain.className='ssc-card__grain';
   const dateBadge=document.createElement('div');dateBadge.className='ssc-card__date-badge';
@@ -562,7 +571,7 @@ function openEventModal(e){
   const icon=document.getElementById('em_cta_icon');
   const text=document.getElementById('em_cta_text');
   const buy=document.getElementById('em_buy');
-  if(img) img.src=proxyImage(e.image||'');
+  if(img){const raw=e.image||'';img.src=raw?proxyImage(resolveUploadUrl(raw)):'';}
   if(dt) dt.textContent=badgeFromDate(e.date);
   if(ttl) ttl.textContent=e.title||'';
   if(art) art.textContent=e.artists||'';
@@ -631,6 +640,7 @@ document.getElementById('searchInput').oninput=()=>render(apply(__eventsCache,cu
 window.addEventListener('storage',function(ev){if(ev.key===STORE_KEY){__eventsCache=readLocalEvents();configurePriceRange(__eventsCache,false);buildFilters(__eventsCache);render(apply(__eventsCache,currentFilters()))}});
 }
 document.addEventListener('DOMContentLoaded',init);
+function resolveUploadUrl(u){if(!u)return '';if(/^https?:\/\//.test(u)||/^data:/.test(u))return u;if(u.startsWith('/uploads/'))return (window.__SUNSESH_API_BASE||'')+u;return u}
 function proxyImage(u){if(!u)return'';if(/^https?:\/\//.test(u))return `${window.__SUNSESH_API_BASE}/api/proxy/image?url=${encodeURIComponent(u)}`;return u}
 </script>
 

@@ -1313,8 +1313,11 @@ function createEventCard(e){
   var isFree=e.isFree||Number(e.price||0)===0;
   var card=document.createElement('div');card.className='card-hover bg-white rounded-2xl overflow-hidden shadow-lg border border-primary/30';
   card.dataset.eventId=e.id||'';
-  var imgWrap=document.createElement('div');imgWrap.className='relative h-60 overflow-hidden';
-  var img=document.createElement('img');img.src=e.image||'';img.alt=e.title||'';img.className='w-full h-full object-cover object-top card-image';
+  var imgWrap=document.createElement('div');imgWrap.className='relative h-60 overflow-hidden';imgWrap.style.background='linear-gradient(135deg,#0a1a10 0%,#061008 60%,#0d2414 100%)';
+  var rawImg=e.image||'';
+  if(rawImg&&window.__SUNSESH_API_BASE&&rawImg.startsWith('/uploads/'))rawImg=window.__SUNSESH_API_BASE+rawImg;
+  var img=document.createElement('img');img.src=rawImg;img.alt=e.title||'';img.className='w-full h-full object-cover object-top card-image';
+  img.onerror=function(){this.style.display='none'};
   var badge=document.createElement('div');badge.className='absolute top-4 right-4 bg-primary text-black font-bold py-1 px-3 rounded-full text-sm';badge.textContent=badgeFromDate(e.date);
   imgWrap.appendChild(img);imgWrap.appendChild(badge);
   var body=document.createElement('div');body.className='p-6';
