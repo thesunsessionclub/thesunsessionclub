@@ -15,114 +15,194 @@
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Check-in | Sun Session Club</title>
-<link href="assets/css/site.css?v=20260329-02" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com/3.4.16"></script>
-<script>tailwind.config={darkMode:'class',theme:{extend:{colors:{primary:'#006400',secondary:'#00FFAA'},borderRadius:{'button':'8px'}}}};</script>
+<title>TSSC // Check-in</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/html5-qrcode"></script>
 <style>
-body{font-family:'Montserrat',sans-serif;background:#0b1e14;color:#ffffff}
-.card{background:#0d1b13;border:1px solid rgba(0,100,0,0.2)}
-.scan-area{position:relative;border-radius:16px;overflow:hidden}
-.scan-area video{border-radius:16px}
-
-/* Status badges */
-.status-valid{background:#00FFAA;color:#000;animation:pulse-valid 0.6s ease}
-.status-used{background:#ff5c5c;color:#000;animation:shake 0.4s ease}
-.status-invalid{background:#666;color:#fff}
-
-/* Result card animations */
-@keyframes pulse-valid{
-  0%{transform:scale(0.95);opacity:0.5}
-  50%{transform:scale(1.03)}
-  100%{transform:scale(1);opacity:1}
+:root{
+  --bg-void:#060606; --bg-surface:#0e0e10; --bg-elevated:#16161a;
+  --text-primary:#f2f2f2; --text-secondary:#8a8a8a; --text-muted:#555;
+  --brand:#00ffaa; --red:#ff0055; --orange:#ff4d00;
+  --border:#222; --border-strong:#333;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+  --display:'Archivo Black',Impact,sans-serif;
+  --body:'Inter',system-ui,sans-serif;
 }
-@keyframes shake{
-  0%,100%{transform:translateX(0)}
-  25%{transform:translateX(-8px)}
-  75%{transform:translateX(8px)}
-}
-@keyframes slideUp{
-  from{opacity:0;transform:translateY(20px)}
-  to{opacity:1;transform:translateY(0)}
-}
-.result-card{animation:slideUp 0.3s ease-out}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg-void);color:var(--text-primary);font-family:var(--body);-webkit-font-smoothing:antialiased;min-height:100vh}
+button{font-family:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.tex-grain{position:fixed;inset:0;z-index:9999;pointer-events:none;opacity:.035;mix-blend-mode:overlay;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>")}
 
-/* Scan counter */
-.counter{font-variant-numeric:tabular-nums}
+.wrap{max-width:640px;margin:0 auto;padding:24px 16px 60px}
 
-/* Cooldown overlay */
-.cooldown-overlay{
-  position:absolute;inset:0;
-  background:rgba(0,255,170,0.1);
-  display:flex;align-items:center;justify-content:center;
-  border-radius:16px;pointer-events:none;
-  opacity:0;transition:opacity 0.3s;
-}
+/* Header */
+.head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding-bottom:20px;border-bottom:1px solid var(--border);margin-bottom:24px}
+.head .crumb{font-family:var(--mono);font-size:10px;letter-spacing:.22em;color:var(--text-muted);text-transform:uppercase;margin-bottom:6px}
+.head .crumb b{color:var(--brand);font-weight:400}
+.head h1{font-family:var(--display);font-size:30px;letter-spacing:.02em;line-height:1;text-transform:uppercase;color:var(--text-primary);font-weight:400}
+.head h1 em{font-style:normal;color:var(--brand)}
+.head .sub{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--text-secondary);text-transform:uppercase;margin-top:8px}
+.head .stat{text-align:right;flex-shrink:0}
+.head .stat .l{font-family:var(--mono);font-size:9px;letter-spacing:.22em;color:var(--text-muted);text-transform:uppercase}
+.head .stat .v{font-family:var(--display);font-size:36px;color:var(--brand);letter-spacing:.02em;line-height:1;margin-top:4px;font-variant-numeric:tabular-nums}
+
+/* Panel */
+.panel{background:var(--bg-surface);border:1px solid var(--border);border-radius:4px;margin-bottom:14px;overflow:hidden;position:relative}
+.panel-h{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:10px;letter-spacing:.22em;color:var(--text-muted);text-transform:uppercase}
+.panel-h .live{color:var(--brand);display:inline-flex;align-items:center;gap:6px}
+.panel-h .live::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--brand);box-shadow:0 0 6px var(--brand);animation:liveBlink 1.2s ease-in-out infinite}
+@keyframes liveBlink{50%{opacity:.4}}
+.panel-body{padding:14px}
+
+/* Scanner */
+.scan-stage{position:relative;background:#020202;border:1px solid var(--border-strong);border-radius:2px;overflow:hidden;aspect-ratio:1/1;display:grid;place-items:center;margin-bottom:12px}
+#reader{width:100%;height:100%;background:transparent}
+#reader video{width:100%!important;height:100%!important;object-fit:cover;display:block;border-radius:0}
+#reader__dashboard{display:none!important}
+#reader__scan_region{background:transparent!important;border:0!important;padding:0!important}
+#reader__scan_region img{display:none!important}
+.scan-frame{position:absolute;inset:24px;pointer-events:none;z-index:5}
+.corner{position:absolute;width:32px;height:32px;border:2px solid var(--brand);box-shadow:0 0 10px rgba(0,255,170,.3)}
+.corner.tl{top:0;left:0;border-right:none;border-bottom:none}
+.corner.tr{top:0;right:0;border-left:none;border-bottom:none}
+.corner.bl{bottom:0;left:0;border-right:none;border-top:none}
+.corner.br{bottom:0;right:0;border-left:none;border-top:none}
+.scan-line{position:absolute;left:12px;right:12px;height:2px;background:linear-gradient(90deg,transparent,var(--brand),transparent);box-shadow:0 0 14px var(--brand);opacity:0;transition:opacity .3s;z-index:4}
+.scanning .scan-line{opacity:1;animation:scanLine 2.4s ease-in-out infinite}
+@keyframes scanLine{0%,100%{top:12px}50%{top:calc(100% - 14px)}}
+.idle-msg{font-family:var(--mono);font-size:10px;letter-spacing:.24em;color:var(--text-muted);text-transform:uppercase;text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px;padding:20px;z-index:3}
+.scanning .idle-msg{display:none}
+.idle-msg svg{width:32px;height:32px;color:var(--text-muted)}
+.cooldown-overlay{position:absolute;inset:0;background:rgba(0,255,170,.12);display:grid;place-items:center;border-radius:2px;pointer-events:none;opacity:0;transition:opacity .3s;z-index:10}
 .cooldown-overlay.active{opacity:1}
+.cooldown-overlay svg{width:48px;height:48px;color:var(--brand);filter:drop-shadow(0 0 12px var(--brand))}
+
+/* Buttons */
+.btn-row{display:flex;gap:8px}
+.btn{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;padding:12px 16px;border-radius:2px;line-height:1;transition:all .12s;display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid transparent;cursor:pointer}
+.btn-primary{background:var(--brand);color:#000;font-weight:700;flex:1}
+.btn-primary:hover{filter:brightness(1.1);box-shadow:0 4px 14px rgba(0,255,170,.3)}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed}
+.btn-ghost{background:transparent;border-color:var(--border-strong);color:var(--text-primary)}
+.btn-ghost:hover{border-color:var(--brand);color:var(--brand)}
+
+/* Manual input */
+.manual-row{display:flex;gap:8px}
+.manual-row input{flex:1;background:#0a0a0c;border:1px solid var(--border-strong);color:var(--text-primary);padding:11px 12px;border-radius:2px;font-family:var(--mono);font-size:12px;letter-spacing:.06em;outline:none;transition:border-color .15s}
+.manual-row input:focus{border-color:var(--brand)}
+.manual-row input::placeholder{color:var(--text-muted)}
+
+/* Result cards (status states) */
+.result-card{padding:14px;border:1px solid var(--border);border-radius:2px;display:flex;align-items:flex-start;gap:12px;animation:slideUp .25s ease-out;margin-bottom:8px}
+.result-card .ic{width:36px;height:36px;border-radius:2px;display:grid;place-items:center;flex-shrink:0;font-family:var(--mono);font-weight:700;font-size:18px}
+.result-card .info{flex:1;min-width:0}
+.result-card .info .status-line{font-family:var(--display);font-size:14px;letter-spacing:.06em;text-transform:uppercase;line-height:1;margin-bottom:6px}
+.result-card .info .detail{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--text-secondary)}
+.result-card .ts{font-family:var(--mono);font-size:10px;letter-spacing:.06em;color:var(--text-muted)}
+.result-card.valid{border-color:var(--brand);background:rgba(0,255,170,.05);animation:pulseValid .5s ease}
+.result-card.valid .ic{background:var(--brand);color:#000}
+.result-card.valid .status-line{color:var(--brand)}
+.result-card.used{border-color:var(--red);background:rgba(255,0,85,.05);animation:shake .35s ease}
+.result-card.used .ic{background:var(--red);color:#fff}
+.result-card.used .status-line{color:var(--red)}
+.result-card.invalid{border-color:var(--orange);background:rgba(255,77,0,.05)}
+.result-card.invalid .ic{background:var(--orange);color:#000}
+.result-card.invalid .status-line{color:var(--orange)}
+@keyframes pulseValid{0%{transform:scale(.97)}50%{transform:scale(1.01)}100%{transform:scale(1)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@keyframes slideUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* History */
+.hist-h{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:10px;letter-spacing:.22em;color:var(--text-muted);text-transform:uppercase}
+.hist-h .clear{color:var(--text-secondary);transition:color .12s;cursor:pointer;background:none;border:0;padding:0;font-family:var(--mono);font-size:10px;letter-spacing:.18em}
+.hist-h .clear:hover{color:var(--brand)}
+.hist-list{padding:0}
+.hist-item{display:grid;grid-template-columns:28px 1fr auto;gap:10px;align-items:center;padding:10px 14px;border-bottom:1px solid var(--border)}
+.hist-item:last-child{border-bottom:0}
+.hist-item .ic{width:24px;height:24px;border-radius:2px;display:grid;place-items:center;font-family:var(--mono);font-size:12px;font-weight:700}
+.hist-item.valid .ic{background:rgba(0,255,170,.12);color:var(--brand)}
+.hist-item.used .ic{background:rgba(255,0,85,.12);color:var(--red)}
+.hist-item.invalid .ic{background:rgba(255,77,0,.12);color:var(--orange)}
+.hist-item .info{display:flex;flex-direction:column;gap:1px;min-width:0}
+.hist-item .info .lbl{font-size:12px;color:var(--text-primary);line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hist-item .info .meta{font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:var(--text-muted);text-transform:uppercase}
+.hist-item .ts{font-family:var(--mono);font-size:9px;color:var(--text-muted);letter-spacing:.06em}
+
+.back-link{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:var(--text-muted);text-transform:uppercase;text-decoration:none;margin-top:24px;transition:color .12s}
+.back-link:hover{color:var(--brand)}
 </style>
 </head>
-<body data-no-anim class="min-h-screen">
-<div class="max-w-2xl mx-auto px-4 py-6">
+<body data-no-anim>
+<div class="tex-grain"></div>
+<div class="wrap">
 
   <!-- Header -->
-  <div class="flex items-center justify-between mb-6">
+  <div class="head">
     <div>
-      <h1 class="text-2xl font-extrabold tracking-tight">Check-in</h1>
-      <p class="text-white/50 text-sm mt-1">Escanea el QR del ticket para validar entrada</p>
+      <div class="crumb">Comercio · <b>Check-in</b> · scanner</div>
+      <h1>Check-<em>in</em></h1>
+      <div class="sub">Escanea el QR · valida la entrada</div>
     </div>
-    <div class="text-right">
-      <div class="text-xs text-white/40 uppercase tracking-wider">Escaneados</div>
-      <div id="scanCount" class="text-3xl font-extrabold text-secondary counter">0</div>
+    <div class="stat">
+      <div class="l">Escaneados</div>
+      <div id="scanCount" class="v">0</div>
     </div>
   </div>
 
-  <!-- Scanner Card -->
-  <div class="card rounded-2xl p-4 mb-4">
-    <div class="scan-area">
-      <div id="reader" class="w-full" style="min-height:280px;background:#050a07;border-radius:16px;"></div>
-      <div id="cooldown" class="cooldown-overlay">
-        <svg class="w-12 h-12 text-secondary" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
-        </svg>
+  <!-- Scanner Panel -->
+  <div class="panel">
+    <div class="panel-h">
+      <span>Scanner · <b style="color:var(--text-primary);font-weight:400">QR camera</b></span>
+      <span id="scanStatus" class="live" style="color:var(--text-muted)">○ STANDBY</span>
+    </div>
+    <div class="panel-body">
+      <div class="scan-stage" id="scanStage">
+        <div class="idle-msg" id="idleMsg">
+          <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9V5a2 2 0 0 1 2-2h4M3 15v4a2 2 0 0 0 2 2h4M21 9V5a2 2 0 0 0-2-2h-4M21 15v4a2 2 0 0 1-2 2h-4"/><circle cx="12" cy="12" r="3"/></svg>
+          <span>Cámara apagada · Activa para escanear</span>
+        </div>
+        <div id="reader"></div>
+        <div class="scan-frame">
+          <span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
+        </div>
+        <div class="scan-line"></div>
+        <div id="cooldown" class="cooldown-overlay">
+          <svg fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button id="startScan" class="btn btn-primary">▶ INICIAR CÁMARA</button>
+        <button id="stopScan" class="btn btn-ghost">■ DETENER</button>
       </div>
     </div>
-    <div class="mt-3 flex items-center gap-2">
-      <button id="startScan" class="flex-1 bg-secondary text-black font-bold px-4 py-3 rounded-xl text-sm transition-all hover:brightness-110 active:scale-[0.98]">
-        Iniciar camara
-      </button>
-      <button id="stopScan" class="bg-white/10 text-white/70 px-4 py-3 rounded-xl text-sm transition-all hover:bg-white/15">
-        Detener
-      </button>
-    </div>
   </div>
 
-  <!-- Manual Input -->
-  <div class="card rounded-2xl p-4 mb-4">
-    <div class="text-xs text-white/40 uppercase tracking-wider mb-2">Validacion manual</div>
-    <div class="flex gap-2">
-      <input id="manualCode" placeholder="Codigo del ticket"
-             class="flex-1 bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/30 focus:border-secondary/50 focus:outline-none transition-colors">
-      <button id="manualBtn" class="bg-secondary text-black font-bold px-5 py-3 rounded-xl text-sm transition-all hover:brightness-110 active:scale-[0.98]">
-        Validar
-      </button>
+  <!-- Manual Input Panel -->
+  <div class="panel">
+    <div class="panel-h"><span>Validación · <b style="color:var(--text-primary);font-weight:400">manual</b></span></div>
+    <div class="panel-body">
+      <div class="manual-row">
+        <input id="manualCode" placeholder="Código del ticket · ej: TK-1234">
+        <button id="manualBtn" class="btn btn-primary" style="flex:0 0 auto">VALIDAR</button>
+      </div>
     </div>
   </div>
 
   <!-- Result Display -->
-  <div id="result" class="space-y-3"></div>
+  <div id="result"></div>
 
-  <!-- Scan History -->
-  <div id="historySection" class="mt-6 hidden">
-    <div class="flex items-center justify-between mb-3">
-      <h2 class="text-sm font-bold text-white/50 uppercase tracking-wider">Historial reciente</h2>
-      <button id="clearHistory" class="text-xs text-white/30 hover:text-white/50 transition-colors">Limpiar</button>
+  <!-- History -->
+  <div id="historySection" class="panel" hidden>
+    <div class="hist-h">
+      <span>Historial · <b style="color:var(--text-primary);font-weight:400">recientes</b></span>
+      <button id="clearHistory" class="clear">Limpiar</button>
     </div>
-    <div id="history" class="space-y-2"></div>
+    <div id="history" class="hist-list"></div>
   </div>
+
+  <a href="/admin.html#checkin" class="back-link">← Volver al panel</a>
 
 </div>
 
@@ -141,57 +221,48 @@ const cooldownEl = document.getElementById('cooldown');
 
 function renderResult(data, ok, status) {
   if (!resultEl) return;
-  const statusClass = status === 'valid' ? 'status-valid' : status === 'used' ? 'status-used' : 'status-invalid';
+  const statusClass = status === 'valid' ? 'valid' : status === 'used' ? 'used' : 'invalid';
   const statusLabel = status === 'valid' ? 'ACCESO PERMITIDO' : status === 'used' ? 'YA UTILIZADO' : 'INVALIDO';
   const icon = status === 'valid' ? '\u2713' : status === 'used' ? '\u2717' : '!';
+  const time = new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  const klass = status === 'valid' ? 'valid' : status === 'used' ? 'used' : 'invalid';
+  const label = status === 'valid' ? 'ACCESO PERMITIDO' : status === 'used' ? 'YA UTILIZADO' : 'INV\u00c1LIDO';
 
   const ticket = data.ticket || data || {};
   const order = ticket.order || {};
   const event = ticket.event || {};
   const usedAt = data.usedAt || ticket.usedAt;
 
-  let html = `
-  <div class="result-card card rounded-2xl overflow-hidden">
-    <div class="${statusClass} p-4 text-center">
-      <div class="text-4xl font-black mb-1">${icon}</div>
-      <div class="text-lg font-extrabold tracking-wide">${statusLabel}</div>
-    </div>
-    <div class="p-5 space-y-3">`;
-
-  if (order.full_name) {
-    html += `
-      <div>
-        <div class="text-xs text-white/40 uppercase tracking-wider mb-1">Titular</div>
-        <div class="text-xl font-bold">${order.full_name}</div>
-      </div>`;
-  }
-  if (event.title) {
-    html += `
-      <div>
-        <div class="text-xs text-white/40 uppercase tracking-wider mb-1">Evento</div>
-        <div class="text-base font-semibold text-secondary">${event.title}</div>
-      </div>`;
-  }
-
   const code = ticket.ticket_code || data.ticket_code || '';
-  if (code) {
-    html += `
-      <div>
-        <div class="text-xs text-white/40 uppercase tracking-wider mb-1">Codigo</div>
-        <div class="text-sm font-mono font-bold tracking-widest text-white/70">${code}</div>
-      </div>`;
+  const card = document.createElement('div');
+  card.className = 'result-card ' + statusClass;
+  const ic = document.createElement('div'); ic.className = 'ic'; ic.textContent = icon;
+  const info = document.createElement('div'); info.className = 'info';
+  const sl = document.createElement('div'); sl.className = 'status-line'; sl.textContent = label || statusLabel;
+  info.appendChild(sl);
+  function detail(prefix, value, valColor){
+    const d = document.createElement('div'); d.className = 'detail';
+    const pre = document.createElement('span');
+    pre.style.cssText = 'color:var(--text-muted);letter-spacing:.18em';
+    pre.textContent = prefix + ' · ';
+    const b = document.createElement('b');
+    b.style.cssText = 'font-weight:400;letter-spacing:.06em;color:' + (valColor || 'var(--text-primary)');
+    b.textContent = value;
+    d.appendChild(pre); d.appendChild(b);
+    return d;
   }
-
+  if (order.full_name) info.appendChild(detail('TITULAR', order.full_name));
+  if (event.title) info.appendChild(detail('EVENTO', event.title, 'var(--brand)'));
+  if (code) info.appendChild(detail('CÓDIGO', code));
   if (status === 'used' && usedAt) {
-    const dt = new Date(usedAt);
-    html += `
-      <div class="bg-red-900/20 border border-red-500/20 rounded-lg p-3">
-        <div class="text-xs text-red-400">Utilizado: ${dt.toLocaleString('es-MX')}</div>
-      </div>`;
+    const d = document.createElement('div'); d.className = 'detail';
+    d.style.color = 'var(--red)';
+    d.textContent = 'Utilizado: ' + new Date(usedAt).toLocaleString('es-MX');
+    info.appendChild(d);
   }
-
-  html += '</div></div>';
-  resultEl.innerHTML = html;
+  const tsEl = document.createElement('div'); tsEl.className = 'ts'; tsEl.textContent = time;
+  card.appendChild(ic); card.appendChild(info); card.appendChild(tsEl);
+  resultEl.replaceChildren(card);
 
   // Add to history
   if (code || order.full_name) {
@@ -207,38 +278,44 @@ function renderResult(data, ok, status) {
 
 function setError(message) {
   if (!resultEl) return;
-  resultEl.innerHTML = `
-  <div class="result-card card rounded-2xl overflow-hidden">
-    <div class="status-invalid p-4 text-center">
-      <div class="text-2xl font-black mb-1">!</div>
-      <div class="text-sm font-bold">${message}</div>
-    </div>
-  </div>`;
+  const card = document.createElement('div');
+  card.className = 'result-card invalid';
+  const ic = document.createElement('div'); ic.className = 'ic'; ic.textContent = '!';
+  const info = document.createElement('div'); info.className = 'info';
+  const sl = document.createElement('div'); sl.className = 'status-line'; sl.textContent = 'ERROR';
+  const d = document.createElement('div'); d.className = 'detail'; d.textContent = message;
+  info.appendChild(sl); info.appendChild(d);
+  card.appendChild(ic); card.appendChild(info);
+  resultEl.replaceChildren(card);
 }
 
 /* ── History ──────────────────────────────────────── */
 
 function addToHistory(entry) {
   if (!historyEl) return;
+  historySection.hidden = false;
   historySection.classList.remove('hidden');
-  const statusColor = entry.status === 'valid' ? 'bg-green-500' : entry.status === 'used' ? 'bg-red-500' : 'bg-gray-500';
+  const klass = entry.status === 'valid' ? 'valid' : entry.status === 'used' ? 'used' : 'invalid';
+  const sigil = entry.status === 'valid' ? '✓' : entry.status === 'used' ? '✗' : '!';
   const time = entry.time.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
   const div = document.createElement('div');
-  div.className = 'flex items-center gap-3 bg-black/20 rounded-xl px-4 py-3';
-  div.innerHTML = `
-    <div class="${statusColor} w-2.5 h-2.5 rounded-full flex-shrink-0"></div>
-    <div class="flex-1 min-w-0">
-      <div class="text-sm font-semibold truncate">${entry.name}</div>
-      <div class="text-xs text-white/40 font-mono">${entry.code}</div>
-    </div>
-    <div class="text-xs text-white/30">${time}</div>`;
+  div.className = 'hist-item ' + klass;
+  const ic = document.createElement('div'); ic.className = 'ic'; ic.textContent = sigil;
+  const info = document.createElement('div'); info.className = 'info';
+  const lbl = document.createElement('div'); lbl.className = 'lbl'; lbl.textContent = entry.name || 'Desconocido';
+  const meta = document.createElement('div'); meta.className = 'meta'; meta.textContent = entry.code || '—';
+  info.appendChild(lbl); info.appendChild(meta);
+  const tsEl = document.createElement('div'); tsEl.className = 'ts'; tsEl.textContent = time;
+  div.appendChild(ic); div.appendChild(info); div.appendChild(tsEl);
+
   historyEl.insertBefore(div, historyEl.firstChild);
-  // Keep max 50 entries
   while (historyEl.children.length > 50) historyEl.removeChild(historyEl.lastChild);
 }
 
 document.getElementById('clearHistory')?.addEventListener('click', () => {
-  if (historyEl) historyEl.innerHTML = '';
+  if (historyEl) historyEl.replaceChildren();
+  historySection.hidden = true;
   historySection.classList.add('hidden');
 });
 
@@ -320,20 +397,26 @@ async function startScan() {
   scanning = true;
 
   const startBtn = document.getElementById('startScan');
-  if (startBtn) { startBtn.textContent = 'Escaneando...'; startBtn.disabled = true; }
+  const stage = document.getElementById('scanStage');
+  const statusEl = document.getElementById('scanStatus');
+  if (startBtn) { startBtn.textContent = 'ESCANEANDO…'; startBtn.disabled = true; }
 
   const onScan = (decodedText) => { if (decodedText) validateCode(decodedText); };
   const config = { fps: 10, qrbox: { width: 280, height: 280 } };
 
   try {
     await scanner.start({ facingMode: 'environment' }, config, onScan);
+    if (stage) stage.classList.add('scanning');
+    if (statusEl) { statusEl.textContent = '● LIVE'; statusEl.style.color = 'var(--brand)'; }
   } catch (err1) {
     try {
       await scanner.start({ facingMode: 'user' }, config, onScan);
+      if (stage) stage.classList.add('scanning');
+      if (statusEl) { statusEl.textContent = '● LIVE'; statusEl.style.color = 'var(--brand)'; }
     } catch (err2) {
       scanning = false;
-      if (startBtn) { startBtn.textContent = 'Iniciar camara'; startBtn.disabled = false; }
-      setError('No se pudo iniciar la camara: ' + (err2?.message || err2));
+      if (startBtn) { startBtn.textContent = '▶ INICIAR CÁMARA'; startBtn.disabled = false; }
+      setError('No se pudo iniciar la cámara: ' + (err2?.message || err2));
     }
   }
 }
@@ -343,7 +426,11 @@ async function stopScan() {
   try { await scanner.stop(); } catch (_) { }
   scanning = false;
   const startBtn = document.getElementById('startScan');
-  if (startBtn) { startBtn.textContent = 'Iniciar camara'; startBtn.disabled = false; }
+  const stage = document.getElementById('scanStage');
+  const statusEl = document.getElementById('scanStatus');
+  if (startBtn) { startBtn.textContent = '▶ INICIAR CÁMARA'; startBtn.disabled = false; }
+  if (stage) stage.classList.remove('scanning');
+  if (statusEl) { statusEl.textContent = '○ STANDBY'; statusEl.style.color = 'var(--text-muted)'; }
 }
 
 document.getElementById('startScan')?.addEventListener('click', startScan);
