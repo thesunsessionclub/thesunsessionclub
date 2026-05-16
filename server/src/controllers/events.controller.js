@@ -1,6 +1,7 @@
 import { prisma } from '../prisma.js';
 import { validationResult } from 'express-validator';
 import { broadcast } from '../socket.js';
+import { generateTicketImage } from '../services/ticketGenerator.js';
 /**
  * Eventos CRUD
  */
@@ -51,7 +52,32 @@ export const remove = async (req, res) => {
   }
 };
 export const generateTicketArt = async (req, res) => {
-  res.status(501).json({ message: 'generateTicketArt not implemented' });
+  try {
+    const eventInput = req.body?.event || {};
+    const ticketDesign = req.body?.ticket_design || eventInput.ticket_design_json || null;
+    const event = {
+      id: eventInput.id || 'preview',
+      title: eventInput.title || 'SUN SESSION',
+      artists: eventInput.artists || '',
+      location: eventInput.location || eventInput.venue || '',
+      venue: eventInput.venue || '',
+      date: eventInput.date || new Date(),
+      time: eventInput.time || '',
+      image: eventInput.image || eventInput.flyer_image || req.body?.flyer_image || '',
+      ticket_design_json: typeof ticketDesign === 'string' ? ticketDesign : JSON.stringify(ticketDesign || {}),
+    };
+    const png = await generateTicketImage({
+      event,
+      order: { full_name: 'Preview Admin' },
+      ticketCode: 'PREVIEW',
+      validationUrl: `${req.protocol}://${req.get('host')}/validate-ticket/PREVIEW`,
+      ticketNumber: 1,
+      totalTickets: 1,
+    });
+    res.json({ image: `data:image/png;base64,${png.toString('base64')}` });
+  } catch (err) {
+    res.status(500).json({ message: 'No se pudo generar preview', details: err?.message });
+  }
 };
 export const uploadImage = async (req, res) => {
   if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
@@ -85,10 +111,20 @@ function normalizeEvent(body) {
     socialLink = '',
     isFree = false,
     ticket_limit = null,
+    ticket_design_json = null,
     status = 'ACTIVE',
     featured = false,
     sort_order = 0,
   } = body || {};
+  // Accept ticket_design as either a JSON string or an object that we serialize
+  let design = null;
+  if (ticket_design_json != null) {
+    if (typeof ticket_design_json === 'string') {
+      design = ticket_design_json;
+    } else {
+      try { design = JSON.stringify(ticket_design_json); } catch { design = null; }
+    }
+  }
   return {
     title,
     artists,
@@ -105,6 +141,7 @@ function normalizeEvent(body) {
     socialLink,
     isFree: !!isFree,
     ticket_limit: ticket_limit == null || ticket_limit === '' ? null : Number(ticket_limit),
+    ticket_design_json: design,
     status,
     featured: !!featured,
     sort_order: Number(sort_order || 0),

@@ -1,0 +1,1072 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SSC // ADMIN_CONSOLE · v.2.0.0 (mockup)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;600;700&family=Permanent+Marker&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg-void:#060606; --bg-surface:#0e0e10; --bg-elevated:#16161a;
+  --bg-sheet:#0a0a0c;
+  --text-primary:#f2f2f2; --text-secondary:#8a8a8a; --text-muted:#555;
+  --brand:#00ffaa; --cyan:#00f0ff; --orange:#ff4d00; --lime:#ccff00; --red:#ff0055; --amber:#ffb347;
+  --border:#222; --border-strong:#333;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+  --display:'Archivo Black',Impact,sans-serif;
+  --body:'Inter',system-ui,sans-serif;
+  --hand:'Permanent Marker',cursive;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--bg-void);color:var(--text-primary);font-family:var(--body);overflow:hidden;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;color:inherit;background:none;border:0;cursor:pointer}
+
+/* ─── GLOBAL TEXTURES ─── */
+.tex-grain{position:fixed;inset:0;z-index:9999;pointer-events:none;opacity:.035;mix-blend-mode:overlay;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>")}
+
+/* ─── LAYOUT ─── */
+.app{display:grid;grid-template-rows:56px 1fr 28px;height:100vh;width:100vw}
+
+/* HEADER (DAW console) */
+header{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:24px;padding:0 16px;background:var(--bg-surface);border-bottom:1px solid var(--border);height:56px;position:relative;z-index:10}
+.brand{display:flex;align-items:center;gap:14px}
+.brand .logo{font-family:var(--display);font-size:22px;letter-spacing:.04em;line-height:1;color:var(--text-primary)}
+.brand .mode{font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--text-secondary);padding-left:14px;border-left:1px solid var(--border);line-height:1}
+/* HEADER · SEARCH (centered) */
+.header-search{display:flex;justify-content:center;align-items:center;max-width:520px;width:100%;justify-self:center;position:relative}
+.header-search input{width:100%;background:#0a0a0c;border:1px solid var(--border);color:var(--text-primary);padding:9px 14px;border-radius:2px;font-family:var(--body);font-size:13px;outline:none;transition:border-color .15s}
+.header-search input::placeholder{color:var(--text-muted);font-family:var(--mono);font-size:11px;letter-spacing:.06em}
+.header-search input:focus{border-color:var(--brand)}
+
+.master{display:flex;align-items:center;gap:10px}
+.header-icon-btn{width:34px;height:34px;border:1px solid var(--border-strong);border-radius:2px;background:var(--bg-elevated);display:grid;place-items:center;color:var(--text-secondary);transition:all .12s;position:relative}
+.header-icon-btn:hover{border-color:var(--brand);color:var(--brand)}
+.header-icon-btn .dot{position:absolute;top:5px;right:5px;width:6px;height:6px;border-radius:50%;background:var(--brand);box-shadow:0 0 6px var(--brand)}
+.user-pill{display:flex;align-items:center;gap:8px;padding:6px 10px;border:1px solid var(--border);border-radius:2px;background:var(--bg-elevated);font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase}
+.user-pill .av{width:22px;height:22px;border-radius:50%;background:#1a1a1c;border:1px solid var(--border-strong)}
+
+/* MAIN GRID */
+.main{display:grid;grid-template-columns:280px 1fr;min-height:0}
+
+/* ─── SIDEBAR (track-list with categories) ─── */
+.sidebar{background:var(--bg-surface);border-right:1px solid var(--border);display:grid;grid-template-rows:auto 1fr auto;min-height:0;overflow:hidden}
+.sb-head{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.sb-head .ttl{font-family:var(--mono);font-size:10px;letter-spacing:.22em;color:var(--text-muted);text-transform:uppercase}
+.sb-head .ct{font-family:var(--mono);font-size:10px;color:var(--brand)}
+
+.tracks{overflow-y:auto;padding:6px 0}
+.tracks::-webkit-scrollbar{width:6px}
+.tracks::-webkit-scrollbar-track{background:var(--bg-surface)}
+.tracks::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:3px}
+
+.cat{padding:14px 14px 4px;font-family:var(--mono);font-size:9px;letter-spacing:.24em;color:var(--text-muted);text-transform:uppercase}
+.cat:first-child{padding-top:8px}
+
+.track{display:grid;grid-template-columns:3px 28px 1fr auto auto;gap:10px;align-items:center;height:50px;padding:6px 14px 6px 0;cursor:pointer;transition:background .12s;position:relative;border-top:1px solid transparent;border-bottom:1px solid transparent}
+.track:hover{background:var(--bg-elevated)}
+.track.active{background:var(--bg-elevated);border-top-color:var(--border);border-bottom-color:var(--border)}
+.track .stripe{height:100%;background:var(--track-color);width:3px;transition:filter .15s}
+.track.active .stripe{box-shadow:0 0 10px var(--track-color)}
+.track .num{font-family:var(--mono);font-size:11px;color:var(--text-muted);text-align:center}
+.track.active .num{color:var(--brand)}
+.track .info{display:flex;flex-direction:column;gap:2px;min-width:0}
+.track .ttl{font-family:var(--display);font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:var(--text-primary);line-height:1}
+.track .meta{font-family:var(--mono);font-size:9px;letter-spacing:.14em;color:var(--text-muted);text-transform:uppercase}
+.track .vu{display:flex;flex-direction:column-reverse;gap:1.5px;height:32px}
+.track .vu i{display:block;width:3px;height:3px;background:#222;border-radius:.5px;transition:background .05s}
+.track:hover .vu i,.track.active .vu i{background:var(--brand);opacity:.5}
+.track:hover .vu i:nth-child(-n+5),.track.active .vu i:nth-child(-n+5){opacity:1}
+.track .badge{font-family:var(--mono);font-size:9px;letter-spacing:.14em;color:var(--brand);background:rgba(0,255,170,.08);border:1px solid rgba(0,255,170,.3);padding:2px 6px;border-radius:999px;line-height:1}
+
+/* SIDEBAR FOOTER */
+.sb-foot{padding:12px 14px;border-top:1px solid var(--border);background:var(--bg-surface);display:grid;gap:10px}
+.kbd-hint{font-family:var(--mono);font-size:9px;letter-spacing:.14em;color:var(--text-muted);text-transform:uppercase;display:flex;justify-content:space-between;align-items:center}
+.kbd-hint kbd{font-family:var(--mono);font-size:9px;padding:2px 5px;background:#1a1a1c;border:1px solid var(--border);border-radius:2px;color:var(--text-secondary)}
+.search-mini{position:relative}
+.search-mini input{width:100%;background:#0a0a0c;border:1px solid var(--border);color:var(--text-primary);padding:8px 10px 8px 28px;border-radius:2px;font-family:var(--mono);font-size:11px;outline:none}
+.search-mini input:focus{border-color:var(--brand)}
+.search-mini::before{content:"⌕";position:absolute;left:8px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-family:var(--mono);font-size:14px}
+
+/* ─── CONTENT AREA ─── */
+.content{display:grid;grid-template-rows:auto auto 1fr;min-height:0;background:var(--bg-void);overflow:hidden}
+
+/* CONTENT HEADER (clean, ops-discipline) */
+.ch{display:flex;align-items:flex-end;justify-content:space-between;padding:20px 24px 0;border-bottom:1px solid var(--border)}
+.ch-l{display:flex;flex-direction:column;gap:6px}
+.crumb{font-family:var(--mono);font-size:10px;letter-spacing:.22em;color:var(--text-muted);text-transform:uppercase}
+.crumb b{color:var(--brand);font-weight:400}
+.ch h1{font-family:var(--display);font-size:36px;letter-spacing:.02em;line-height:1;text-transform:uppercase;color:var(--text-primary)}
+.ch h1 em{font-style:normal;color:var(--brand)}
+.ch-r{display:flex;gap:8px;align-items:center;padding-bottom:12px}
+
+.btn{padding:8px 14px;border-radius:2px;font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;line-height:1;transition:all .12s;display:inline-flex;align-items:center;gap:6px;border:1px solid transparent}
+.btn-primary{background:var(--brand);color:#000;font-weight:700}
+.btn-primary:hover{filter:brightness(1.1);box-shadow:0 4px 14px rgba(0,255,170,.35)}
+.btn-ghost{background:transparent;border-color:var(--border-strong);color:var(--text-primary)}
+.btn-ghost:hover{border-color:var(--brand);color:var(--brand)}
+.btn-icon{width:32px;height:32px;padding:0;justify-content:center;border-color:var(--border-strong);background:var(--bg-elevated)}
+.btn-icon:hover{border-color:var(--brand);color:var(--brand)}
+.btn-danger{color:var(--red);border-color:rgba(255,0,85,.4)}
+.btn-danger:hover{background:rgba(255,0,85,.08);border-color:var(--red)}
+
+/* TAB BAR */
+.tabs{display:flex;gap:0;padding:0 24px;background:var(--bg-surface);border-bottom:1px solid var(--border)}
+.tab{padding:12px 16px;font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--text-secondary);border-bottom:2px solid transparent;transition:color .12s,border-color .12s}
+.tab:hover{color:var(--text-primary)}
+.tab.on{color:var(--brand);border-bottom-color:var(--brand)}
+.tab .ct{font-family:var(--mono);font-size:9px;background:#1a1a1c;color:var(--text-muted);padding:1px 5px;border-radius:2px;margin-left:6px;letter-spacing:.1em}
+
+/* CONTENT BODY */
+.body{padding:24px;overflow-y:auto;display:flex;flex-direction:column;gap:24px}
+
+/* KPI ROW (DAW-meter style) */
+.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.kpi{background:var(--bg-surface);border:1px solid var(--border);border-radius:4px;padding:14px;display:flex;flex-direction:column;gap:4px;position:relative;overflow:hidden}
+.kpi::before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--brand)}
+.kpi .l{font-family:var(--mono);font-size:9px;letter-spacing:.22em;color:var(--text-muted);text-transform:uppercase}
+.kpi .v{font-family:var(--display);font-size:32px;letter-spacing:.02em;color:var(--text-primary);line-height:1}
+.kpi .delta{font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--text-secondary)}
+.kpi .delta.dn{color:var(--red)}
+.kpi .meter{display:flex;gap:1px;margin-top:6px}
+.kpi .meter i{flex:1;height:3px;background:#1a1a1c;border-radius:.5px}
+.kpi .meter i.on{background:var(--brand)}
+
+/* TABLE */
+.panel{background:var(--bg-surface);border:1px solid var(--border);border-radius:4px;overflow:hidden}
+.panel-h{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.panel-h .ttl{font-family:var(--mono);font-size:11px;letter-spacing:.22em;color:var(--text-muted);text-transform:uppercase}
+.panel-h .ttl b{color:var(--text-primary);font-weight:400}
+.panel-h .actions{display:flex;gap:6px}
+.panel-h .filter-pill{font-family:var(--mono);font-size:10px;letter-spacing:.14em;padding:4px 8px;border:1px solid var(--border);border-radius:2px;color:var(--text-secondary);background:transparent;text-transform:uppercase}
+.panel-h .filter-pill.on{background:var(--brand);color:#000;border-color:var(--brand)}
+
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{text-align:left;padding:10px 16px;font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:var(--text-muted);text-transform:uppercase;font-weight:400;background:#0a0a0c;border-bottom:1px solid var(--border)}
+tbody td{padding:14px 16px;border-bottom:1px solid var(--border);vertical-align:middle;color:var(--text-primary)}
+tbody tr:last-child td{border-bottom:0}
+tbody tr{transition:background .12s;cursor:pointer}
+tbody tr:hover{background:var(--bg-elevated)}
+tbody tr.selected{background:rgba(0,255,170,.05);box-shadow:inset 3px 0 0 var(--brand)}
+.cell-thumb{width:48px;height:48px;border-radius:4px;background:linear-gradient(135deg,#1a1a1c,#0a0a0c);display:grid;place-items:center;font-family:var(--display);color:rgba(255,255,255,.4);font-size:14px;flex-shrink:0}
+.cell-evt{display:flex;align-items:center;gap:12px}
+.cell-evt .info{display:flex;flex-direction:column;gap:2px;min-width:0}
+.cell-evt .name{font-family:var(--display);font-size:14px;letter-spacing:.04em;text-transform:uppercase;color:var(--text-primary);line-height:1.1}
+.cell-evt .sub{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--text-muted);text-transform:uppercase}
+.tag-status{font-family:var(--mono);font-size:9px;letter-spacing:.18em;text-transform:uppercase;padding:3px 7px;border-radius:2px;border:1px solid currentColor;background:rgba(255,255,255,.02)}
+.tag-status.active{color:var(--brand)}
+.tag-status.draft{color:var(--text-muted)}
+.tag-status.cancelled{color:var(--red)}
+.tag-status.featured{color:var(--brand);background:rgba(0,255,170,.05);border-color:rgba(0,255,170,.4);margin-left:6px}
+.cell-price{font-family:var(--mono);font-weight:700;color:var(--text-primary);font-size:13px}
+.cell-price.free{color:var(--brand);letter-spacing:.1em;text-transform:uppercase;font-size:11px}
+.cell-mono{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--text-secondary)}
+.row-actions{display:flex;gap:4px;opacity:0;transition:opacity .15s}
+tbody tr:hover .row-actions{opacity:1}
+.row-actions button{width:26px;height:26px;border-radius:2px;border:1px solid var(--border);color:var(--text-secondary);background:transparent;display:grid;place-items:center;font-family:var(--mono);font-size:11px}
+.row-actions button:hover{border-color:var(--brand);color:var(--brand)}
+.row-actions button.del:hover{border-color:var(--red);color:var(--red)}
+
+/* SECONDARY GRID (right column with widgets) */
+.dual{display:grid;grid-template-columns:2fr 1fr;gap:16px;align-items:start}
+
+.activity{display:flex;flex-direction:column}
+.act{display:grid;grid-template-columns:32px 1fr auto;gap:12px;padding:10px 16px;border-bottom:1px solid var(--border);align-items:center}
+.act:last-child{border-bottom:0}
+.act .ic{width:32px;height:32px;border-radius:4px;display:grid;place-items:center;font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.06em}
+.act .ic.tx,.act .ic.ev,.act .ic.tk,.act .ic.mr{background:rgba(0,255,170,.1);color:var(--brand)}
+.act .info{display:flex;flex-direction:column;gap:2px;min-width:0}
+.act .info .lbl{font-size:13px;color:var(--text-primary);line-height:1.3}
+.act .info .meta{font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--text-muted);text-transform:uppercase}
+.act .ts{font-family:var(--mono);font-size:10px;color:var(--text-muted);letter-spacing:.06em;white-space:nowrap}
+
+.next-event{padding:18px;background:transparent;border-top:1px solid var(--border)}
+.next-event .lbl{font-family:var(--mono);font-size:9px;letter-spacing:.24em;color:var(--brand);text-transform:uppercase}
+.next-event .ttl{font-family:var(--display);font-size:24px;letter-spacing:.02em;text-transform:uppercase;color:var(--text-primary);line-height:1;margin-top:6px}
+.next-event .meta{font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:var(--text-muted);text-transform:uppercase;margin-top:8px}
+.cd{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:14px}
+.cd .b{padding:8px 4px;background:#0a0a0c;border:1px solid var(--border);border-radius:2px;text-align:center}
+.cd .b .n{font-family:var(--display);font-size:22px;color:var(--brand);letter-spacing:.04em;line-height:1}
+.cd .b .l{font-family:var(--mono);font-size:8px;letter-spacing:.18em;color:var(--text-muted);margin-top:4px;text-transform:uppercase}
+
+/* ─── SHEET (right slide-over, ops discipline) ─── */
+.sheet-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(2px);z-index:200;opacity:0;pointer-events:none;transition:opacity .2s}
+.sheet-overlay.open{opacity:1;pointer-events:auto}
+.sheet{position:fixed;top:0;right:0;bottom:0;width:560px;max-width:100vw;background:var(--bg-sheet);border-left:1px solid var(--border-strong);z-index:201;transform:translateX(100%);transition:transform .25s cubic-bezier(.2,.8,.2,1);display:grid;grid-template-rows:auto 1fr auto;box-shadow:-30px 0 80px rgba(0,0,0,.5)}
+.sheet.open{transform:translateX(0)}
+.sheet-h{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.sheet-h h2{font-family:var(--display);font-size:22px;letter-spacing:.04em;text-transform:uppercase;color:var(--text-primary)}
+.sheet-h .crumb{margin-bottom:4px}
+.sheet-h-l{display:flex;flex-direction:column;gap:2px}
+.sheet-body{padding:22px;overflow-y:auto;display:flex;flex-direction:column;gap:18px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-family:var(--mono);font-size:10px;letter-spacing:.22em;color:var(--text-muted);text-transform:uppercase}
+.field input,.field select,.field textarea{background:#0a0a0c;border:1px solid var(--border-strong);color:var(--text-primary);padding:10px 12px;border-radius:2px;font-family:var(--body);font-size:13px;outline:none;transition:border-color .15s}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--brand)}
+.field textarea{min-height:80px;resize:vertical;font-family:var(--body)}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.toggle-grp{display:flex;background:#0a0a0c;border:1px solid var(--border-strong);border-radius:2px;padding:3px;gap:3px}
+.toggle-grp button{flex:1;padding:8px;font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--text-secondary);border-radius:1px;transition:all .12s}
+.toggle-grp button.on{background:var(--brand);color:#000;font-weight:700}
+.section-divider{font-family:var(--mono);font-size:10px;letter-spacing:.24em;color:var(--text-muted);text-transform:uppercase;padding:4px 0;display:flex;align-items:center;gap:10px;margin-top:8px}
+.section-divider::after{content:"";flex:1;height:1px;background:var(--border)}
+.sheet-foot{padding:14px 22px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:#0a0a0c}
+.sheet-foot .left{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--text-muted);text-transform:uppercase}
+
+/* TICKET PREVIEW (inside sheet) */
+.tk-preview{aspect-ratio:1.7/1;border:1px solid var(--border-strong);border-radius:4px;background:#0b0e10;color:#f5f5f5;display:flex;overflow:hidden;position:relative}
+.tk-preview .l{flex:2;padding:14px;display:flex;flex-direction:column;justify-content:space-between;border-right:1px dashed rgba(255,255,255,.2)}
+.tk-preview .head{font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;opacity:.6}
+.tk-preview .name{font-family:var(--display);font-size:22px;letter-spacing:.04em;line-height:1;margin-top:4px;text-transform:uppercase}
+.tk-preview .stats{display:flex;gap:14px;font-family:var(--mono);font-size:10px}
+.tk-preview .stats div{line-height:1.4}
+.tk-preview .stats .lbl{opacity:.5;letter-spacing:.18em;text-transform:uppercase}
+.tk-preview .r{flex:1;padding:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;background:rgba(0,255,170,.05)}
+.tk-preview .qr{width:74px;height:74px;background:#fff;border-radius:4px;box-shadow:0 0 0 3px var(--brand)}
+.tk-preview .code{font-family:var(--mono);font-size:9px;letter-spacing:.12em;opacity:.7}
+
+.color-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.color-cell{display:flex;flex-direction:column;gap:6px}
+.color-cell .swatch{display:flex;gap:6px;align-items:center}
+.color-cell .swatch input[type=color]{width:32px;height:32px;border:1px solid var(--border-strong);border-radius:2px;cursor:pointer;background:transparent}
+.color-cell .swatch input[type=text]{flex:1;background:#0a0a0c;border:1px solid var(--border-strong);color:var(--text-primary);padding:6px 8px;font-family:var(--mono);font-size:11px;border-radius:2px;outline:none}
+.checkbox-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.checkbox-grid label{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px;letter-spacing:.16em;color:var(--text-secondary);text-transform:uppercase;cursor:pointer}
+.checkbox-grid label input{accent-color:var(--brand)}
+
+/* ─── FOOTER (transport bar) ─── */
+footer{display:flex;justify-content:space-between;align-items:center;padding:0 16px;background:var(--bg-surface);border-top:1px solid var(--border);font-family:var(--mono);font-size:10px;color:var(--text-muted);letter-spacing:.06em;height:28px}
+footer .seg{display:flex;align-items:center;gap:14px}
+footer .seg b{color:var(--text-primary);font-weight:400}
+footer .right{display:flex;align-items:center;gap:10px}
+footer svg{display:block}
+
+/* SECTIONS */
+.sec[hidden]{display:none!important}
+.sec{display:contents}
+
+/* DJ ROSTER GRID */
+.dj-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+.dj-card{background:var(--bg-surface);border:1px solid var(--border);border-radius:4px;overflow:hidden;cursor:pointer;transition:transform .2s,border-color .2s}
+.dj-card:hover{transform:translateY(-3px);border-color:var(--brand)}
+.dj-photo{position:relative;aspect-ratio:3/4;overflow:hidden;display:flex;align-items:flex-end;padding:16px}
+.dj-photo::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,rgba(0,0,0,.85))}
+.dj-num{position:absolute;top:14px;left:14px;font-family:var(--mono);font-size:11px;letter-spacing:.16em;color:var(--brand);z-index:2}
+.dj-tag{position:absolute;top:14px;right:14px;font-family:var(--mono);font-size:9px;letter-spacing:.18em;color:var(--brand);background:rgba(0,255,170,.15);border:1px solid rgba(0,255,170,.4);padding:3px 7px;border-radius:2px;z-index:2;text-transform:uppercase}
+.dj-photo h3{position:relative;z-index:2;font-family:var(--display);font-size:42px;letter-spacing:.04em;line-height:.9;color:var(--text-primary);text-transform:uppercase;margin:0}
+.dj-body{padding:14px;display:flex;flex-direction:column;gap:10px}
+.dj-genres{display:flex;gap:4px;flex-wrap:wrap}
+.dj-genres span{font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-secondary);background:rgba(255,255,255,.04);border:1px solid var(--border);padding:2px 6px;border-radius:2px}
+.dj-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding-top:10px;border-top:1px solid var(--border)}
+.dj-stats div{display:flex;flex-direction:column;gap:2px}
+.dj-stats span{font-family:var(--mono);font-size:8px;letter-spacing:.18em;color:var(--text-muted);text-transform:uppercase}
+.dj-stats b{font-family:var(--display);font-size:18px;color:var(--brand);letter-spacing:.02em}
+
+/* VIDEO GRID */
+.video-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.video-card{background:var(--bg-surface);border:1px solid var(--border);border-radius:4px;overflow:hidden;cursor:pointer;transition:transform .2s,border-color .2s}
+.video-card:hover{transform:translateY(-3px);border-color:var(--brand)}
+.video-card .vt{position:relative;aspect-ratio:16/9;overflow:hidden}
+.video-card .vt::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(0,0,0,.2),rgba(0,0,0,.7))}
+.video-card .play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:50px;height:50px;border-radius:50%;background:rgba(0,255,170,.15);border:2px solid var(--brand);color:var(--brand);display:grid;place-items:center;font-size:18px;z-index:2;backdrop-filter:blur(10px);transition:transform .2s}
+.video-card:hover .play{transform:translate(-50%,-50%) scale(1.1)}
+.video-card .dur{position:absolute;bottom:8px;right:8px;font-family:var(--mono);font-size:10px;background:rgba(0,0,0,.8);color:var(--text-primary);padding:3px 6px;border-radius:2px;z-index:2;letter-spacing:.06em}
+.video-card .vb{padding:12px}
+.video-card .vt-name{font-family:var(--display);font-size:14px;letter-spacing:.04em;text-transform:uppercase;color:var(--text-primary);line-height:1.1}
+.video-card .vt-meta{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--text-muted);text-transform:uppercase;margin-top:6px}
+
+/* MERCH GRID */
+.merch-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+.m-card{background:var(--bg-surface);border:1px solid var(--border);border-radius:4px;overflow:hidden;cursor:pointer;transition:transform .2s,border-color .2s}
+.m-card:hover{transform:translateY(-3px);border-color:var(--brand)}
+.m-art{position:relative;aspect-ratio:1/1;overflow:hidden}
+.m-tag{position:absolute;top:10px;left:10px;font-family:var(--mono);font-size:9px;letter-spacing:.18em;color:var(--brand);background:rgba(0,255,170,.15);border:1px solid rgba(0,255,170,.4);padding:3px 7px;border-radius:2px;text-transform:uppercase}
+.m-info{padding:12px}
+.m-cat{font-family:var(--mono);font-size:9px;letter-spacing:.18em;color:var(--text-muted);text-transform:uppercase;margin-bottom:4px}
+.m-name{font-family:var(--display);font-size:16px;letter-spacing:.04em;text-transform:uppercase;color:var(--text-primary);line-height:1.1;margin-bottom:8px}
+.m-row{display:flex;justify-content:space-between;align-items:center}
+.m-price{font-family:var(--mono);font-weight:700;color:var(--text-primary);font-size:13px}
+.m-stock{font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--text-secondary);text-transform:uppercase}
+.m-stock.low{color:var(--red)}
+
+/* GALLERY MASONRY */
+.gal-masonry{columns:4;column-gap:8px}
+@media(max-width:1400px){.gal-masonry{columns:3}}
+@media(max-width:900px){.gal-masonry{columns:2}}
+.gal-item{break-inside:avoid;margin:0 0 8px;border-radius:2px;overflow:hidden;cursor:pointer;border:1px solid var(--border);transition:border-color .15s,transform .15s}
+.gal-item:hover{border-color:var(--brand);transform:scale(1.01)}
+
+/* TRACK TABLE */
+.genre-pill{font-family:var(--mono);font-size:9px;letter-spacing:.16em;color:var(--g,var(--brand));background:rgba(255,255,255,.03);border:1px solid currentColor;padding:3px 7px;border-radius:2px;text-transform:uppercase;display:inline-block}
+
+/* SCANNER */
+.scanner .scan-stage{padding:30px;display:flex;flex-direction:column;align-items:center;gap:18px;background:radial-gradient(ellipse at center,rgba(0,255,170,.05),transparent 70%)}
+.scan-frame{position:relative;width:280px;height:280px;border:1px solid var(--border-strong);background:#020202;display:grid;place-items:center;border-radius:2px}
+.corner{position:absolute;width:24px;height:24px;border:2px solid var(--brand)}
+.corner.tl{top:-1px;left:-1px;border-right:none;border-bottom:none}
+.corner.tr{top:-1px;right:-1px;border-left:none;border-bottom:none}
+.corner.bl{bottom:-1px;left:-1px;border-right:none;border-top:none}
+.corner.br{bottom:-1px;right:-1px;border-left:none;border-top:none}
+.scan-line{position:absolute;left:8px;right:8px;height:2px;background:linear-gradient(90deg,transparent,var(--brand),transparent);box-shadow:0 0 12px var(--brand);animation:scanLine 2s ease-in-out infinite}
+@keyframes scanLine{0%,100%{top:8px}50%{top:calc(100% - 12px)}}
+.scan-meta{text-align:center;font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:var(--text-muted);text-transform:uppercase}
+.scan-meta b{display:block;font-family:var(--display);font-size:16px;color:var(--brand);margin-top:4px;letter-spacing:.06em}
+.scan-input{display:flex;gap:8px;padding:14px 16px;border-top:1px solid var(--border)}
+.scan-input input{flex:1;background:#0a0a0c;border:1px solid var(--border-strong);color:var(--text-primary);padding:10px 12px;border-radius:2px;font-family:var(--mono);font-size:12px;outline:none}
+.scan-input input:focus{border-color:var(--brand)}
+
+/* SETTINGS GRID */
+.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+@media(max-width:1100px){.settings-grid{grid-template-columns:1fr}}
+
+/* EMPTY STATES */
+.empty{padding:60px 24px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px}
+.empty .ic{width:48px;height:48px;border:1px dashed var(--border-strong);border-radius:50%;display:grid;place-items:center;color:var(--text-muted);font-family:var(--mono);font-size:18px}
+.empty h3{font-family:var(--display);font-size:18px;letter-spacing:.04em;text-transform:uppercase;color:var(--text-secondary);font-weight:400}
+.empty p{font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:var(--text-muted);text-transform:uppercase;max-width:40ch}
+.empty .btn{margin-top:8px}
+.empty-row td{padding:0!important;border:0!important}
+
+/* MOBILE / TABLET */
+@media(max-width:1100px){
+  .main{grid-template-columns:1fr}
+  .sidebar{display:none}
+  .kpi-row{grid-template-columns:repeat(2,1fr)}
+  .dual{grid-template-columns:1fr}
+  .sheet{width:100%}
+}
+</style>
+</head>
+<body>
+<div class="tex-grain"></div>
+
+<div class="app">
+
+  <!-- ═══ HEADER ═══ -->
+  <header>
+    <div class="brand">
+      <div class="logo">SSC</div>
+      <div class="mode">ADMIN_CONSOLE // V.2.0.0</div>
+    </div>
+    <div class="header-search">
+      <input type="text" placeholder="Buscar evento, DJ, orden, ticket…  ⌘K">
+    </div>
+    <div class="master">
+      <button class="header-icon-btn" title="Notificaciones">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 0 0 4 0"/></svg>
+        <span class="dot"></span>
+      </button>
+      <button class="header-icon-btn" title="Ver sitio">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg>
+      </button>
+      <div class="user-pill"><div class="av"></div><span>ADMIN · MXLI</span></div>
+    </div>
+  </header>
+
+  <!-- ═══ MAIN ═══ -->
+  <div class="main">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sb-head">
+        <span class="ttl">TRACK BROWSER</span>
+        <span class="ct">0 / 12</span>
+      </div>
+      <div class="tracks" id="tracks">
+
+        <span class="cat">─── OVERVIEW</span>
+        <div class="track active" data-id="dashboard" style="--track-color:var(--brand)">
+          <div class="stripe"></div>
+          <div class="num">01</div>
+          <div class="info">
+            <div class="ttl">Dashboard</div>
+            <div class="meta">live</div>
+          </div>
+          <div class="vu"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        </div>
+
+        <span class="cat">─── CONTENIDO</span>
+        <div class="track" data-id="events" style="--track-color:var(--brand)">
+          <div class="stripe"></div>
+          <div class="num">02</div>
+          <div class="info"><div class="ttl">Eventos</div><div class="meta">—</div></div>
+          
+          <div class="vu"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        </div>
+        <div class="track" data-id="artists" style="--track-color:var(--brand)">
+          <div class="stripe"></div>
+          <div class="num">03</div>
+          <div class="info"><div class="ttl">DJs · Roster</div><div class="meta">—</div></div>
+          
+          <div class="vu"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        </div>
+        <div class="track" data-id="music" style="--track-color:var(--brand)">
+          <div class="stripe"></div>
+          <div class="num">04</div>
+          <div class="info"><div class="ttl">Música</div><div class="meta">—</div></div>
+          
+          <div class="vu"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        </div>
+        <div class="track" data-id="videos" style="--track-color:var(--brand)">
+          <div class="stripe"></div>
+          <div class="num">05</div>
+          <div class="info"><div class="ttl">Videos</div><div class="meta">—</div></div>
+          <div class="vu"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        </div>
+        <div class="track" data-id="gallery" style="--track-color:var(--brand)">
+          <div class="stripe"></div>
+          <div class="num">06</div>
+          <div class="info"><div class="ttl">Galería</div><div class="meta">—</div></div>
+          <div class="vu"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        </div>
+
+        <span class="cat">─── COMERCIO</span>
+        <div class="track" data-id="merch" style="--track-color:var(--brand)">
+          <div class="stripe"></div>
+          <div class="num">07</div>
+          <div class="info"><div class="ttl">Merch</div><div class="meta">—</div></div>
+          
+          <div class="vu"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        </div>
+        <div class="track" data-id="orders" style="--track-color:var(--brand)">
+          <div class="stripe"></div>
+          <div class="num">08</div>
+          <div class="info"><div class="ttl">Órdenes</div><div class="meta">—</div></div>
+          
+          <div class="vu"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        </div>
+        <div class="track" data-id="tickets" style="--track-color:var(--brand)">
+          <div class="stripe"></div>
+          <div class="num">09</div>
+          <div class="info"><div class="ttl">Tickets</div><div class="meta">—</div></div>
+          
+          <div class="vu"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        </div>
+        <div class="track" data-id="checkin" style="--track-color:var(--brand)">
+          <div class="stripe"></div>
+          <div class="num">10</div>
+          <div class="info"><div class="ttl">Check-in</div><div class="meta">scanner</div></div>
+          <div class="vu"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        </div>
+
+        <span class="cat">─── SISTEMA</span>
+        <div class="track" data-id="settings" style="--track-color:#444">
+          <div class="stripe"></div>
+          <div class="num">11</div>
+          <div class="info"><div class="ttl">Configuración</div><div class="meta">site · users</div></div>
+          <div class="vu"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        </div>
+        <div class="track" data-id="friends" style="--track-color:#444">
+          <div class="stripe"></div>
+          <div class="num">12</div>
+          <div class="info"><div class="ttl">Friends</div><div class="meta">partners</div></div>
+          <div class="vu"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        </div>
+
+      </div>
+      <div class="sb-foot">
+        <div class="search-mini"><input type="text" placeholder="GO TO… (CMD+K)"></div>
+        <div class="kbd-hint"><span>QUICK NEW</span><span><kbd>N</kbd> · <kbd>E</kbd></span></div>
+      </div>
+    </aside>
+
+    <!-- CONTENT -->
+    <main class="content">
+
+    <!-- ─── DASHBOARD ─── -->
+    <section class="sec" data-sec="dashboard">
+      <div class="ch">
+        <div class="ch-l">
+          <div class="crumb">Sistema · <b>Dashboard</b> · live</div>
+          <h1>Panel de <em>control</em></h1>
+        </div>
+        <div class="ch-r">
+          <button class="btn btn-ghost">⌖ FILTERS</button>
+          <button class="btn btn-ghost">⤓ EXPORT</button>
+          <button class="btn btn-primary" id="newEventBtn">+ NUEVO EVENTO</button>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <button class="tab on">RESUMEN</button>
+        <button class="tab">PRÓXIMOS EVENTOS<span class="ct">0</span></button>
+        <button class="tab">ÓRDENES RECIENTES<span class="ct">0</span></button>
+        <button class="tab">SCAN LOG</button>
+      </div>
+
+      <div class="body">
+
+        <!-- KPIs -->
+        <div class="kpi-row">
+          <div class="kpi" data-kpi="revenue">
+            <span class="l">INGRESOS · MES</span>
+            <div class="v">$0</div>
+            <div class="delta">—</div>
+            <div class="meter"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          </div>
+          <div class="kpi" data-kpi="tickets">
+            <span class="l">TICKETS · VENDIDOS</span>
+            <div class="v">0</div>
+            <div class="delta">—</div>
+            <div class="meter"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          </div>
+          <div class="kpi" data-kpi="events">
+            <span class="l">EVENTOS · ACTIVOS</span>
+            <div class="v">0</div>
+            <div class="delta">—</div>
+            <div class="meter"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          </div>
+          <div class="kpi" data-kpi="lowStock">
+            <span class="l">MERCH · LOW STOCK</span>
+            <div class="v">0</div>
+            <div class="delta">—</div>
+            <div class="meter"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          </div>
+          <div class="kpi" data-kpi="checkins">
+            <span class="l">CHECK-IN · HOY</span>
+            <div class="v">0</div>
+            <div class="delta">—</div>
+            <div class="meter"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          </div>
+        </div>
+
+        <!-- TABLE -->
+        <div class="panel">
+          <div class="panel-h">
+            <span class="ttl">EVENTOS · <b>Próximos 30 días</b></span>
+            <div class="actions">
+              <button class="filter-pill on">TODOS</button>
+              <button class="filter-pill">ACTIVOS</button>
+              <button class="filter-pill">DRAFT</button>
+              <button class="filter-pill">DESTACADOS</button>
+              <button class="btn btn-icon">⌕</button>
+            </div>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>EVENTO</th>
+                <th>FECHA</th>
+                <th>LUGAR</th>
+                <th>PRECIO</th>
+                <th>VENDIDOS</th>
+                <th>STATUS</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="dashEventsRows">
+              <tr class="empty-row"><td colspan="7"><div class="empty"><div class="ic">+</div><h3>Sin eventos cargados</h3><p>Crea tu primer evento para verlo aquí</p><button class="btn btn-primary" data-open-sheet>+ NUEVO EVENTO</button></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- DUAL: Activity + Next event -->
+        <div class="dual">
+          <div class="panel">
+            <div class="panel-h">
+              <span class="ttl">ACTIVITY · <b>Stream en vivo</b></span>
+              <span class="ttl" style="color:var(--text-muted)">○ IDLE</span>
+            </div>
+            <div class="activity" id="activityStream">
+              <div class="empty"><div class="ic">~</div><h3>Sin actividad reciente</h3><p>Las órdenes, check-ins y eventos aparecerán aquí en vivo</p></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-h">
+              <span class="ttl">NEXT EVENT · <b>Countdown</b></span>
+              <span class="ttl" style="color:var(--text-muted)">—</span>
+            </div>
+            <div class="next-event" id="nextEventBlock">
+              <div class="empty"><div class="ic">★</div><h3>Sin evento próximo</h3><p>Crea un evento destacado para ver el countdown</p></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ─── EVENTOS ─── -->
+    <section class="sec" data-sec="events" hidden>
+      <div class="ch">
+        <div class="ch-l"><div class="crumb">Contenido · <b>Eventos</b></div><h1>Cartelera <em>activa</em></h1></div>
+        <div class="ch-r">
+          <button class="btn btn-ghost">⌖ FILTRAR</button>
+          <button class="btn btn-ghost">⤓ CSV</button>
+          <button class="btn btn-primary" data-open-sheet>+ NUEVO EVENTO</button>
+        </div>
+      </div>
+      <div class="tabs">
+        <button class="tab on">PRÓXIMOS<span class="ct">0</span></button>
+        <button class="tab">PASADOS<span class="ct">0</span></button>
+        <button class="tab">DRAFT<span class="ct">0</span></button>
+        <button class="tab">CANCELADOS</button>
+      </div>
+      <div class="body">
+        <div class="kpi-row" style="grid-template-columns:repeat(4,1fr)">
+          <div class="kpi"><span class="l">EVENTOS · MES</span><div class="v">0</div><div class="delta">—</div></div>
+          <div class="kpi"><span class="l">CAPACIDAD · TOTAL</span><div class="v">0</div><div class="delta">—</div></div>
+          <div class="kpi"><span class="l">VENDIDOS · 30D</span><div class="v">0</div><div class="delta">—</div></div>
+          <div class="kpi"><span class="l">INGRESOS · 30D</span><div class="v">$0</div><div class="delta">MXN</div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-h">
+            <span class="ttl">EVENTOS · <b>Lista completa</b></span>
+            <div class="actions">
+              <button class="filter-pill on">TODOS</button>
+              <button class="filter-pill">DESTACADOS</button>
+              <button class="filter-pill">GRATUITOS</button>
+              <button class="btn btn-icon">⌕</button>
+            </div>
+          </div>
+          <table>
+            <thead><tr><th>EVENTO</th><th>FECHA</th><th>LUGAR</th><th>PRECIO</th><th>VENDIDOS</th><th>STATUS</th><th></th></tr></thead>
+            <tbody id="eventsRows">
+              <tr class="empty-row"><td colspan="7"><div class="empty"><div class="ic">+</div><h3>Sin eventos</h3><p>Crea tu primer evento</p><button class="btn btn-primary" data-open-sheet>+ NUEVO EVENTO</button></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── ARTISTS / DJ ROSTER ─── -->
+    <section class="sec" data-sec="artists" hidden>
+      <div class="ch">
+        <div class="ch-l"><div class="crumb">Contenido · <b>DJs · Roster</b></div><h1>Roster <em>residentes</em></h1></div>
+        <div class="ch-r">
+          <button class="btn btn-ghost">⌖ POR GÉNERO</button>
+          <button class="btn btn-primary">+ AGREGAR DJ</button>
+        </div>
+      </div>
+      <div class="tabs">
+        <button class="tab on">RESIDENTES<span class="ct">0</span></button>
+        <button class="tab">GUEST<span class="ct">0</span></button>
+        <button class="tab">ARCHIVADOS</button>
+      </div>
+      <div class="body">
+        <div class="dj-grid" id="djGrid">
+          <div class="empty" style="grid-column:1/-1"><div class="ic">♪</div><h3>Sin DJs en el roster</h3><p>Agrega artistas para empezar a construir tu lineup</p><button class="btn btn-primary">+ AGREGAR DJ</button></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── MUSIC ─── -->
+    <section class="sec" data-sec="music" hidden>
+      <div class="ch">
+        <div class="ch-l"><div class="crumb">Contenido · <b>Música</b></div><h1>Catálogo de <em>tracks</em></h1></div>
+        <div class="ch-r">
+          <button class="btn btn-ghost">⌖ POR GÉNERO</button>
+          <button class="btn btn-ghost">⤓ M3U</button>
+          <button class="btn btn-primary">+ NUEVO TRACK</button>
+        </div>
+      </div>
+      <div class="tabs"><button class="tab on">TODOS<span class="ct">0</span></button><button class="tab">SETS LIVE<span class="ct">0</span></button><button class="tab">EPs<span class="ct">0</span></button><button class="tab">VINILOS<span class="ct">0</span></button></div>
+      <div class="body">
+        <div class="panel">
+          <div class="panel-h"><span class="ttl">TRACK · <b>Lista de reproducción</b></span><div class="actions"><button class="btn btn-icon">⌕</button></div></div>
+          <table class="track-table">
+            <thead><tr><th>#</th><th>TRACK</th><th>ARTISTA</th><th>GÉNERO</th><th>DURACIÓN</th><th>PLAYS</th><th></th></tr></thead>
+            <tbody id="musicRows">
+              <tr class="empty-row"><td colspan="7"><div class="empty"><div class="ic">♪</div><h3>Sin tracks</h3><p>Agrega tu primer track al catálogo</p><button class="btn btn-primary">+ NUEVO TRACK</button></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── VIDEOS ─── -->
+    <section class="sec" data-sec="videos" hidden>
+      <div class="ch">
+        <div class="ch-l"><div class="crumb">Contenido · <b>Videos</b></div><h1>Aftermovies & <em>sets</em></h1></div>
+        <div class="ch-r">
+          <button class="btn btn-ghost">⌖ POR EVENTO</button>
+          <button class="btn btn-primary">+ SUBIR VIDEO</button>
+        </div>
+      </div>
+      <div class="tabs"><button class="tab on">TODOS<span class="ct">0</span></button><button class="tab">AFTERMOVIES<span class="ct">0</span></button><button class="tab">LIVE SETS<span class="ct">0</span></button><button class="tab">DOCUMENTAL<span class="ct">0</span></button></div>
+      <div class="body">
+        <div class="video-grid" id="videosGrid">
+          <div class="empty" style="grid-column:1/-1"><div class="ic">▶</div><h3>Sin videos</h3><p>Sube aftermovies, live sets y clips para llenar la galería</p><button class="btn btn-primary">+ SUBIR VIDEO</button></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── GALLERY ─── -->
+    <section class="sec" data-sec="gallery" hidden>
+      <div class="ch">
+        <div class="ch-l"><div class="crumb">Contenido · <b>Galería</b></div><h1>Archivo <em>visual</em></h1></div>
+        <div class="ch-r">
+          <button class="btn btn-ghost">⌖ POR EVENTO</button>
+          <button class="btn btn-ghost">⤓ DESCARGAR</button>
+          <button class="btn btn-primary">+ SUBIR FOTOS</button>
+        </div>
+      </div>
+      <div class="tabs"><button class="tab on">TODAS<span class="ct">0</span></button><button class="tab">2026<span class="ct">0</span></button><button class="tab">2025<span class="ct">0</span></button><button class="tab">FOTÓGRAFOS</button></div>
+      <div class="body">
+        <div class="gal-masonry" id="galleryGrid" style="display:block">
+          <div class="empty"><div class="ic">▦</div><h3>Sin fotos en el archivo</h3><p>Sube tu primera serie de fotos del evento</p><button class="btn btn-primary">+ SUBIR FOTOS</button></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── MERCH ─── -->
+    <section class="sec" data-sec="merch" hidden>
+      <div class="ch">
+        <div class="ch-l"><div class="crumb">Comercio · <b>Merch</b></div><h1>Catálogo <em>físico</em></h1></div>
+        <div class="ch-r">
+          <button class="btn btn-ghost">⌖ POR CATEGORÍA</button>
+          <button class="btn btn-ghost">⚠ STOCK BAJO</button>
+          <button class="btn btn-primary">+ NUEVO PRODUCTO</button>
+        </div>
+      </div>
+      <div class="tabs"><button class="tab on">TODOS<span class="ct">0</span></button><button class="tab">HOODIES<span class="ct">0</span></button><button class="tab">TEES<span class="ct">0</span></button><button class="tab">HATS<span class="ct">0</span></button><button class="tab">VINILOS<span class="ct">0</span></button></div>
+      <div class="body">
+        <div class="kpi-row" style="grid-template-columns:repeat(4,1fr)">
+          <div class="kpi"><span class="l">SKU · ACTIVOS</span><div class="v">0</div><div class="delta">—</div></div>
+          <div class="kpi"><span class="l">VENDIDOS · MES</span><div class="v">0</div><div class="delta">—</div></div>
+          <div class="kpi"><span class="l">INGRESOS · MES</span><div class="v">$0</div><div class="delta">MXN</div></div>
+          <div class="kpi"><span class="l">STOCK BAJO</span><div class="v">0</div><div class="delta">—</div></div>
+        </div>
+        <div class="merch-grid" id="merchGrid">
+          <div class="empty" style="grid-column:1/-1"><div class="ic">$</div><h3>Sin productos</h3><p>Crea tu primer drop para empezar a vender</p><button class="btn btn-primary">+ NUEVO PRODUCTO</button></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── ÓRDENES ─── -->
+    <section class="sec" data-sec="orders" hidden>
+      <div class="ch">
+        <div class="ch-l"><div class="crumb">Comercio · <b>Órdenes</b></div><h1>Órdenes <em>recientes</em></h1></div>
+        <div class="ch-r"><button class="btn btn-ghost">⤓ EXPORT CSV</button><button class="btn btn-ghost">⌖ FILTRAR</button></div>
+      </div>
+      <div class="tabs"><button class="tab on">PENDIENTES<span class="ct">0</span></button><button class="tab">CONFIRMADAS<span class="ct">0</span></button><button class="tab">ENVIADAS<span class="ct">0</span></button><button class="tab">CANCELADAS</button></div>
+      <div class="body">
+        <div class="panel">
+          <div class="panel-h"><span class="ttl">ÓRDENES · <b>Últimas 48h</b></span><div class="actions"><button class="btn btn-icon">⌕</button></div></div>
+          <table>
+            <thead><tr><th>#</th><th>CLIENTE</th><th>ITEMS</th><th>PAGO</th><th>TOTAL</th><th>FECHA</th><th>STATUS</th><th></th></tr></thead>
+            <tbody id="ordersRows">
+              <tr class="empty-row"><td colspan="8"><div class="empty"><div class="ic">≡</div><h3>Sin órdenes</h3><p>Las compras aparecerán aquí cuando lleguen</p></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── TICKETS ─── -->
+    <section class="sec" data-sec="tickets" hidden>
+      <div class="ch">
+        <div class="ch-l"><div class="crumb">Comercio · <b>Tickets</b></div><h1>Tickets <em>emitidos</em></h1></div>
+        <div class="ch-r">
+          <button class="btn btn-ghost">⤓ EXPORT</button>
+          <button class="btn btn-primary">+ EMITIR TICKET</button>
+        </div>
+      </div>
+      <div class="tabs"><button class="tab on">EMITIDOS<span class="ct">0</span></button><button class="tab">USADOS<span class="ct">0</span></button><button class="tab">PENDIENTES<span class="ct">0</span></button><button class="tab">REEMBOLSADOS</button></div>
+      <div class="body">
+        <div class="kpi-row" style="grid-template-columns:repeat(4,1fr)">
+          <div class="kpi"><span class="l">TOTAL EMITIDOS</span><div class="v">0</div><div class="delta">—</div></div>
+          <div class="kpi"><span class="l">USADOS · CHECK-IN</span><div class="v">0</div><div class="delta">—</div></div>
+          <div class="kpi"><span class="l">EVENTO ACTIVO</span><div class="v" style="font-size:18px;color:var(--text-muted)">—</div><div class="delta">—</div></div>
+          <div class="kpi"><span class="l">REVENUE TICKETS</span><div class="v">$0</div><div class="delta">MXN · histórico</div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-h"><span class="ttl">TICKETS · <b>Por evento</b></span><div class="actions"><button class="filter-pill on">TODOS</button></div></div>
+          <table>
+            <thead><tr><th>CÓDIGO</th><th>EVENTO</th><th>COMPRADOR</th><th>TIPO</th><th>PRECIO</th><th>EMITIDO</th><th>STATUS</th><th></th></tr></thead>
+            <tbody id="ticketsRows">
+              <tr class="empty-row"><td colspan="8"><div class="empty"><div class="ic">⌘</div><h3>Sin tickets emitidos</h3><p>Los tickets aparecerán aquí al confirmarse las órdenes</p></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── CHECK-IN ─── -->
+    <section class="sec" data-sec="checkin" hidden>
+      <div class="ch">
+        <div class="ch-l"><div class="crumb">Comercio · <b>Check-in</b> · scanner</div><h1>Check-in <em>en vivo</em></h1></div>
+        <div class="ch-r"><button class="btn btn-ghost">📷 CÁMARA TRASERA</button></div>
+      </div>
+      <div class="body">
+        <div class="dual" style="grid-template-columns:1.2fr 1fr">
+          <div class="panel scanner">
+            <div class="panel-h"><span class="ttl">SCANNER · <b>Apunta el QR</b></span><span class="ttl" style="color:var(--brand)">● ACTIVO</span></div>
+            <div class="scan-stage">
+              <div class="scan-frame">
+                <span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
+                <div class="scan-line"></div>
+              </div>
+              <div class="scan-meta"><div>EVENTO ACTIVO</div><b>SUMMER DAZE · 15 JUN</b></div>
+            </div>
+            <div class="scan-input"><input type="text" placeholder="O ingresa el código manual… (ej: SSC-DAZE-0024)"><button class="btn btn-primary">VALIDAR</button></div>
+          </div>
+          <div class="panel">
+            <div class="panel-h"><span class="ttl">SCAN LOG · <b>Últimos 12</b></span></div>
+            <div class="activity" id="scanLog">
+              <div class="empty"><div class="ic">~</div><h3>Sin scans</h3><p>Los check-ins aparecerán aquí al validar tickets</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── SETTINGS ─── -->
+    <section class="sec" data-sec="settings" hidden>
+      <div class="ch">
+        <div class="ch-l"><div class="crumb">Sistema · <b>Configuración</b></div><h1>Ajustes del <em>sitio</em></h1></div>
+        <div class="ch-r"><button class="btn btn-primary">▼ GUARDAR CAMBIOS</button></div>
+      </div>
+      <div class="tabs"><button class="tab on">GENERAL</button><button class="tab">USUARIOS<span class="ct">0</span></button><button class="tab">PAGOS</button><button class="tab">SOCIAL</button><button class="tab">ANALYTICS</button></div>
+      <div class="body">
+        <div class="settings-grid">
+          <div class="panel">
+            <div class="panel-h"><span class="ttl">SITIO · <b>Identidad</b></span></div>
+            <div style="padding:18px;display:flex;flex-direction:column;gap:14px">
+              <div class="field"><label>Nombre del sitio</label><input id="set_site_name" type="text" placeholder="Sun Session Club"></div>
+              <div class="field"><label>Tagline</label><input id="set_tagline" type="text" placeholder="Mexicali · B.C."></div>
+              <div class="field"><label>Email de contacto</label><input id="set_email" type="email" placeholder="hola@sunsesh.club"></div>
+              <div class="field-row">
+                <div class="field"><label>Color primario</label><div style="display:flex;gap:6px"><input id="set_primary" type="color" value="#00ffaa" style="width:40px;height:40px;border:1px solid var(--border-strong);border-radius:2px"><input id="set_primary_text" type="text" value="#00ffaa" style="flex:1"></div></div>
+                <div class="field"><label>Color de fondo</label><div style="display:flex;gap:6px"><input id="set_bg" type="color" value="#000000" style="width:40px;height:40px;border:1px solid var(--border-strong);border-radius:2px"><input id="set_bg_text" type="text" value="#000000" style="flex:1"></div></div>
+              </div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-h"><span class="ttl">REDES · <b>Social</b></span></div>
+            <div style="padding:18px;display:flex;flex-direction:column;gap:14px">
+              <div class="field"><label>Instagram</label><input id="set_ig" type="text" placeholder="@usuario"></div>
+              <div class="field"><label>SoundCloud</label><input id="set_sc" type="text" placeholder="usuario"></div>
+              <div class="field"><label>YouTube</label><input id="set_yt" type="text" placeholder="@canal"></div>
+              <div class="field"><label>Spotify</label><input id="set_sp" type="text" placeholder="usuario"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── FRIENDS / PARTNERS ─── -->
+    <section class="sec" data-sec="friends" hidden>
+      <div class="ch">
+        <div class="ch-l"><div class="crumb">Sistema · <b>Friends</b></div><h1>Partners & <em>aliados</em></h1></div>
+        <div class="ch-r"><button class="btn btn-primary">+ AGREGAR PARTNER</button></div>
+      </div>
+      <div class="body">
+        <div class="dj-grid" id="friendsGrid">
+          <div class="empty" style="grid-column:1/-1"><div class="ic">♡</div><h3>Sin partners</h3><p>Agrega clubs, prensa, sponsors o labels aliados</p><button class="btn btn-primary">+ AGREGAR PARTNER</button></div>
+        </div>
+      </div>
+    </section>
+
+    </main>
+  </div>
+
+  <!-- ═══ FOOTER ═══ -->
+  <footer>
+    <div class="seg">
+      <span>NET: <b id="netStatus" style="color:var(--brand)">●</b> ONLINE</span>
+      <span>DB: <b id="dbCount">0</b> records</span>
+    </div>
+    <div class="seg">
+      <span>PROJECT: <b>SSC_MXLI</b></span>
+      <span>SESSION: <b id="sessTime">00:00:00</b></span>
+      <span>USER: <b id="userEmail">—</b></span>
+    </div>
+    <div class="right">
+      <span>© SSC LABORATORIES</span>
+      <svg width="50" height="12" viewBox="0 0 50 12"><path d="M0 6 Q8 0 16 6 T32 6 T50 6" stroke="var(--brand)" stroke-width="1" fill="none"><animate attributeName="d" values="M0 6 Q8 0 16 6 T32 6 T50 6;M0 6 Q8 12 16 6 T32 6 T50 6;M0 6 Q8 0 16 6 T32 6 T50 6" dur="2s" repeatCount="indefinite"/></path></svg>
+    </div>
+  </footer>
+</div>
+
+<!-- ═══ SHEET (Event editor) ═══ -->
+<div class="sheet-overlay" id="sheetOv"></div>
+<aside class="sheet" id="sheet">
+  <div class="sheet-h">
+    <div class="sheet-h-l">
+      <div class="crumb">Eventos · <b>Editor</b> · nuevo</div>
+      <h2>Nuevo Evento</h2>
+    </div>
+    <button class="btn btn-icon" id="closeSheet">×</button>
+  </div>
+  <div class="sheet-body">
+
+    <div class="section-divider">DATOS BÁSICOS</div>
+    <div class="field"><label>Título del evento</label><input id="ev_title" type="text" placeholder="Ej. NOMBRE DEL EVENTO"></div>
+    <div class="field"><label>Lineup / Artistas</label><input id="ev_artists" type="text" placeholder="DJ 1 · DJ 2 · GUEST"></div>
+    <div class="field-row">
+      <div class="field"><label>Lugar</label><input id="ev_venue" type="text" placeholder="Nombre del venue"></div>
+      <div class="field"><label>Ubicación</label><input id="ev_location" type="text" placeholder="Mexicali · B.C."></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Fecha</label><input id="ev_date" type="date"></div>
+      <div class="field"><label>Horario</label><input id="ev_time" type="text" placeholder="22:00 - 04:00"></div>
+    </div>
+
+    <div class="section-divider">PRECIO · TICKETS</div>
+    <div class="field-row">
+      <div class="field">
+        <label>Tipo</label>
+        <div class="toggle-grp" data-toggle="ev_type">
+          <button class="on" data-val="paid">DE COBRO</button>
+          <button data-val="free">GRATUITO</button>
+        </div>
+      </div>
+      <div class="field"><label>Precio (MXN)</label><input id="ev_price" type="number" step="0.01" placeholder="0" value="0"></div>
+    </div>
+    <div class="field"><label>Límite de boletos</label><input id="ev_limit" type="number" placeholder="vacío = sin límite"></div>
+
+    <div class="section-divider">DISEÑO DEL TICKET QR</div>
+    <div class="tk-preview">
+      <div class="l">
+        <div>
+          <div class="head" id="tk_head">SUN SESSION CLUB</div>
+          <div class="name" id="tk_name">— Sin título —</div>
+        </div>
+        <div class="stats">
+          <div><div class="lbl">FECHA</div><div id="tk_date">—</div></div>
+          <div><div class="lbl">LUGAR</div><div id="tk_venue">—</div></div>
+          <div><div class="lbl">PRECIO</div><div id="tk_price">$0</div></div>
+        </div>
+      </div>
+      <div class="r">
+        <div class="qr"></div>
+        <div class="code" id="tk_code">SSC-XXXX-0000</div>
+      </div>
+    </div>
+
+    <div class="color-row">
+      <div class="color-cell">
+        <label style="font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:var(--text-muted);text-transform:uppercase">FONDO</label>
+        <div class="swatch"><input type="color" value="#0b0e10"><input type="text" value="#0b0e10"></div>
+      </div>
+      <div class="color-cell">
+        <label style="font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:var(--text-muted);text-transform:uppercase">ACENTO</label>
+        <div class="swatch"><input type="color" value="#00ffaa"><input type="text" value="#00ffaa"></div>
+      </div>
+      <div class="color-cell">
+        <label style="font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:var(--text-muted);text-transform:uppercase">TINTA</label>
+        <div class="swatch"><input type="color" value="#f5f5f5"><input type="text" value="#f5f5f5"></div>
+      </div>
+    </div>
+    <div class="checkbox-grid">
+      <label><input type="checkbox" checked>Mostrar fecha</label>
+      <label><input type="checkbox" checked>Mostrar lugar</label>
+      <label><input type="checkbox" checked>Mostrar artistas</label>
+      <label><input type="checkbox" checked>Mostrar precio</label>
+    </div>
+
+    <div class="section-divider">PUBLICACIÓN</div>
+    <div class="field-row">
+      <div class="field">
+        <label>Status</label>
+        <select><option>ACTIVE</option><option>DRAFT</option><option>CANCELLED</option></select>
+      </div>
+      <div class="field">
+        <label>Destacado</label>
+        <div class="toggle-grp">
+          <button class="on">SÍ</button>
+          <button>NO</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="sheet-foot">
+    <span class="left">Ctrl+S → guardar · Esc → cerrar</span>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-ghost">CANCELAR</button>
+      <button class="btn btn-primary">▼ GUARDAR</button>
+    </div>
+  </div>
+</aside>
+
+<script>
+'use strict';
+
+// SIDEBAR TRACK SELECT + SECTION SWAP
+function showSection(id){
+  document.querySelectorAll('.sec').forEach(s => {
+    s.hidden = s.dataset.sec !== id;
+  });
+  document.querySelectorAll('.track').forEach(t => t.classList.toggle('active', t.dataset.id === id));
+  // scroll content to top
+  const body = document.querySelector('.sec[data-sec="'+id+'"] .body');
+  if(body) body.scrollTop = 0;
+}
+document.querySelectorAll('.track').forEach(t => {
+  t.addEventListener('click', () => { showSection(t.dataset.id); });
+});
+
+// SHEET (Event editor)
+const sheet = document.getElementById('sheet');
+const ov = document.getElementById('sheetOv');
+function openSheet(){ sheet.classList.add('open'); ov.classList.add('open'); }
+function closeSheet(){ sheet.classList.remove('open'); ov.classList.remove('open'); }
+document.getElementById('newEventBtn').addEventListener('click', openSheet);
+document.querySelectorAll('[data-open-sheet]').forEach(b => b.addEventListener('click', openSheet));
+document.querySelectorAll('tbody tr').forEach(r => r.addEventListener('click', e => { if(!e.target.closest('button')) openSheet(); }));
+document.getElementById('closeSheet').addEventListener('click', closeSheet);
+ov.addEventListener('click', closeSheet);
+window.addEventListener('keydown', e => { if(e.key === 'Escape') closeSheet(); });
+
+// Session timer (counts up from page load)
+const secStart = Date.now();
+setInterval(() => {
+  const elapsed = Math.floor((Date.now() - secStart)/1000);
+  const h = Math.floor(elapsed/3600);
+  const m = Math.floor((elapsed%3600)/60);
+  const ss = elapsed%60;
+  const el = document.getElementById('sessTime');
+  if(el) el.textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
+}, 1000);
+
+// COLOR PICKERS sync
+document.querySelectorAll('.color-cell .swatch').forEach(sw => {
+  const [color, text] = sw.querySelectorAll('input');
+  color.addEventListener('input', () => text.value = color.value);
+  text.addEventListener('input', () => { if(/^#[0-9a-f]{6}$/i.test(text.value)) color.value = text.value; });
+});
+
+// TOGGLE GROUPS
+document.querySelectorAll('.toggle-grp').forEach(g => {
+  g.querySelectorAll('button').forEach(b => {
+    b.addEventListener('click', () => {
+      g.querySelectorAll('button').forEach(x => x.classList.remove('on'));
+      b.classList.add('on');
+    });
+  });
+});
+
+// FILTER PILLS
+document.querySelectorAll('.filter-pill').forEach(p => {
+  p.addEventListener('click', () => {
+    p.parentElement.querySelectorAll('.filter-pill').forEach(x => x.classList.remove('on'));
+    p.classList.add('on');
+  });
+});
+
+// TABS
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('on'));
+    t.classList.add('on');
+  });
+});
+
+// VU meters in sidebar pulse
+document.querySelectorAll('.track').forEach(t => {
+  const leds = t.querySelectorAll('.vu i');
+  setInterval(() => {
+    if(t.classList.contains('active') || t.matches(':hover')){
+      const lvl = Math.floor(Math.random()*8) + 1;
+      leds.forEach((l, i) => l.style.background = i < lvl ? '#00ffaa' : '#222');
+    } else {
+      leds.forEach(l => l.style.background = '#222');
+    }
+  }, 120);
+});
+</script>
+</body>
+</html>

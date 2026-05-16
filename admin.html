@@ -3,10 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Panel de Administración | Sun Session Club</title>
+<title>TSSC // ADMIN_CONSOLE</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="/assets/css/admin-v2.css?v=20260428" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
@@ -195,41 +197,71 @@ input::placeholder, textarea::placeholder{color:rgba(255,255,255,.7)}
 .section-badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#00FFAA;margin-bottom:16px}
 </style>
 </head>
-<body data-no-anim class="bg-panel text-white">
+<body data-no-anim class="bg-panel text-white adm-v2">
+<div class="adm-grain"></div>
 <script>
-(()=>{const STORE_KEY='ssc_store_v1';const ROLE_KEY='ssc_admin_role';const USER_KEY='ssc_admin_user';window.addEventListener('keydown',function(e){if(e.key==='Escape'){window.location.href='sunsessionesp_fixed_v3.html'}if((e.key==='R'||e.key==='r')&&e.shiftKey){try{localStorage.removeItem(STORE_KEY);localStorage.removeItem(ROLE_KEY);localStorage.removeItem(USER_KEY)}catch{}location.reload()}})})();
+(()=>{const STORE_KEY='ssc_store_v1';const ROLE_KEY='ssc_admin_role';const USER_KEY='ssc_admin_user';window.addEventListener('keydown',function(e){if(e.key==='Escape'){window.location.href='/home.html'}if((e.key==='R'||e.key==='r')&&e.shiftKey){try{localStorage.removeItem(STORE_KEY);localStorage.removeItem(ROLE_KEY);localStorage.removeItem(USER_KEY)}catch{}location.reload()}})})();
 </script>
-<div id="adminLayout" class="grid grid-cols-[260px_1fr] min-h-screen">
-<aside class="sidebar bg-muted border-r border-white/10 p-4 sticky top-0 h-screen">
-<div class="flex items-center space-x-2 mb-6">
-<img src="/assets/img/logo.jpg" class="h-10 object-contain">
-<span class="font-extrabold tracking-wide">SSC Admin</span>
+
+<!-- ═══ HEADER ═══ -->
+<header class="adm-v2-hdr">
+  <div class="adm-v2-brand">
+    <div class="logo">TSSC</div>
+    <div class="mode">ADMIN_CONSOLE // V.2.0.0</div>
+  </div>
+  <div class="adm-v2-search">
+    <input type="text" placeholder="Buscar evento, DJ, orden, ticket…  ⌘K">
+  </div>
+  <div class="adm-v2-master">
+    <button class="adm-v2-icon-btn" title="Notificaciones">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 0 0 4 0"/></svg>
+      <span class="dot"></span>
+    </button>
+    <a href="/home.html" class="adm-v2-icon-btn" title="Ver sitio">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg>
+    </a>
+    <div class="adm-v2-user-pill"><div class="av"></div><span>ADMIN · MXLI</span></div>
+  </div>
+</header>
+
+<div id="adminLayout">
+<div class="adm-v2-main">
+<aside class="sidebar">
+<div class="sb-head"><span class="ttl">TRACK BROWSER</span><span class="ct">— / 14</span></div>
+<div class="tracks">
+  <span class="cat">─── OVERVIEW</span>
+  <a href="#dashboard" class="track" data-id="dashboard"><div class="stripe"></div><div class="num">01</div><div class="info"><div class="ttl">Dashboard</div><div class="meta">live</div></div><span></span><div class="vu"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></a>
+
+  <span class="cat">─── CONTENIDO</span>
+  <a href="#events" class="track" data-id="events"><div class="stripe"></div><div class="num">02</div><div class="info"><div class="ttl">Eventos</div><div class="meta">—</div></div><span></span><div class="vu"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></a>
+  <a href="#artists" class="track" data-id="artists"><div class="stripe"></div><div class="num">03</div><div class="info"><div class="ttl">DJs · Roster</div><div class="meta">—</div></div><span></span><div class="vu"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></a>
+  <a href="#music" class="track" data-id="music"><div class="stripe"></div><div class="num">04</div><div class="info"><div class="ttl">Música</div><div class="meta">—</div></div><span></span><div class="vu"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></a>
+  <a href="#vinyl" class="track" data-id="vinyl"><div class="stripe"></div><div class="num">05</div><div class="info"><div class="ttl">Vinilos</div><div class="meta">subsección</div></div><span></span><div class="vu"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></a>
+  <a href="#videos" class="track" data-id="videos"><div class="stripe"></div><div class="num">06</div><div class="info"><div class="ttl">Videos</div><div class="meta">—</div></div><span></span><div class="vu"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></a>
+  <a href="#gallery-manager" class="track" data-id="gallery-manager"><div class="stripe"></div><div class="num">07</div><div class="info"><div class="ttl">Galería</div><div class="meta">manager</div></div><span></span><div class="vu"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></a>
+  <a href="#media" class="track" data-id="media"><div class="stripe"></div><div class="num">08</div><div class="info"><div class="ttl">Medios</div><div class="meta">biblioteca</div></div><span></span><div class="vu"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></a>
+
+  <span class="cat">─── COMERCIO</span>
+  <a href="#merch" class="track" data-id="merch"><div class="stripe"></div><div class="num">09</div><div class="info"><div class="ttl">Mercancía</div><div class="meta">—</div></div><span></span><div class="vu"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></a>
+  <a href="#orders" class="track" data-id="orders"><div class="stripe"></div><div class="num">10</div><div class="info"><div class="ttl">Órdenes</div><div class="meta">—</div></div><span></span><div class="vu"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></a>
+  <a href="#tickets" class="track" data-id="tickets"><div class="stripe"></div><div class="num">11</div><div class="info"><div class="ttl">Tickets</div><div class="meta">—</div></div><span></span><div class="vu"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></a>
+  <a href="#checkin" class="track" data-id="checkin"><div class="stripe"></div><div class="num">12</div><div class="info"><div class="ttl">Check-in</div><div class="meta">scanner</div></div><span></span><div class="vu"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></a>
+
+  <span class="cat">─── SISTEMA</span>
+  <a href="#settings" class="track" data-id="settings"><div class="stripe"></div><div class="num">13</div><div class="info"><div class="ttl">Configuración</div><div class="meta">site · users</div></div><span></span><div class="vu"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></a>
+  <a href="#store-settings" class="track" data-id="store-settings"><div class="stripe"></div><div class="num">14</div><div class="info"><div class="ttl">Tienda</div><div class="meta">settings</div></div><span></span><div class="vu"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></a>
+  <a href="#friends" class="track" data-id="friends"><div class="stripe"></div><div class="num">15</div><div class="info"><div class="ttl">Friends</div><div class="meta">partners</div></div><span></span><div class="vu"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></a>
 </div>
-<nav class="space-y-2">
-<a href="#dashboard" class="block px-3 py-2 rounded hover:bg-soft">Panel</a>
-<a href="#artists" class="block px-3 py-2 rounded hover:bg-soft">DJs</a>
-<a href="#events" class="block px-3 py-2 rounded hover:bg-soft">Eventos</a>
-<a href="#music" class="block px-3 py-2 rounded hover:bg-soft">Música</a>
-<a href="#vinyl" class="block px-6 py-2 rounded hover:bg-soft text-white/80">Vinilos (subsección)</a>
-<a href="#videos" class="block px-3 py-2 rounded hover:bg-soft">Videos</a>
-<a href="#gallery-manager" class="block px-3 py-2 rounded hover:bg-soft">Gallery Manager</a>
-<a href="#merch" class="block px-3 py-2 rounded hover:bg-soft">Mercancía</a>
-<a href="#orders" class="block px-3 py-2 rounded hover:bg-soft">Órdenes</a>
-<a href="#tickets" class="block px-3 py-2 rounded hover:bg-soft">Tickets</a>
-<a href="#checkin" class="block px-3 py-2 rounded hover:bg-soft">Check-in</a>
-<a href="#settings" class="block px-3 py-2 rounded hover:bg-soft">Configuración</a>
-<a href="#store-settings" class="block px-3 py-2 rounded hover:bg-soft">Store Settings</a>
-<a href="#friends" class="block px-3 py-2 rounded hover:bg-soft">Our Friends</a>
-<a href="#media" class="block px-3 py-2 rounded hover:bg-soft">Biblioteca de Medios</a>
-<button id="logoutBtn" class="mt-4 w-full bg-white/10 hover:bg-white/20 text-white py-2 rounded-button">Cerrar sesión</button>
-</nav>
+<div class="sb-foot">
+  <button id="logoutBtn">Cerrar sesión</button>
+</div>
 </aside>
 <main class="p-6">
 <header class="flex items-center justify-between mb-6">
-<h1 class="text-2xl font-extrabold">Panel de Administración</h1>
+<h1 class="text-2xl font-extrabold">Panel de <em>control</em></h1>
 <div class="flex items-center space-x-3">
 <span id="roleBadge" class="px-3 py-1 rounded bg-accent text-black font-bold">Administrador</span>
-<a href="sunsessionesp_fixed_v3.html" class="px-3 py-2 rounded-button bg-white/10 hover:bg-white/20">Ver Sitio</a>
+<a href="/home.html" class="px-3 py-2 rounded-button bg-white/10 hover:bg-white/20">Ver Sitio</a>
 </div>
 </header>
 <section id="dashboard" class="space-y-6">
@@ -615,7 +647,7 @@ input::placeholder, textarea::placeholder{color:rgba(255,255,255,.7)}
         <div class="space-y-4">
           <div>
             <label class="block text-white/60 mb-2 text-sm">Título de la portada</label>
-            <input id="settingHeroTitle" class="w-full bg-muted border border-white/10 rounded px-3 py-2" placeholder="THE SUN SESSION CLUB">
+            <input id="settingHeroTitle" class="w-full bg-muted border border-white/10 rounded px-3 py-2" placeholder="THE SUN SESSION CLUB · TSSC">
           </div>
           <div>
             <label class="block text-white/60 mb-2 text-sm">Imagen de fondo</label>
@@ -806,6 +838,23 @@ input::placeholder, textarea::placeholder{color:rgba(255,255,255,.7)}
 </section>
 </main>
 </div>
+<!-- ═══ FOOTER (transport bar) ═══ -->
+<footer class="adm-v2-foot">
+  <div class="seg">
+    <span>NET: <b id="netStatus" style="color:var(--v2-brand)">●</b> ONLINE</span>
+    <span>DB: <b id="dbCount">—</b> records</span>
+  </div>
+  <div class="seg">
+    <span>PROJECT: <b>TSSC_MXLI</b></span>
+    <span>SESSION: <b id="sessTime">00:00:00</b></span>
+    <span>USER: <b id="userEmail">—</b></span>
+  </div>
+  <div class="right">
+    <span>© TSSC LABORATORIES</span>
+    <svg width="50" height="12" viewBox="0 0 50 12"><path d="M0 6 Q8 0 16 6 T32 6 T50 6" stroke="var(--v2-brand)" stroke-width="1" fill="none"><animate attributeName="d" values="M0 6 Q8 0 16 6 T32 6 T50 6;M0 6 Q8 12 16 6 T32 6 T50 6;M0 6 Q8 0 16 6 T32 6 T50 6" dur="2s" repeatCount="indefinite"/></path></svg>
+  </div>
+</footer>
+</div><!-- /#adminLayout -->
 <div class="card p-6 space-y-4" id="eventEditor" style="display:none">
 <h2 class="text-xl font-bold">Editor de Eventos</h2>
 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -962,6 +1011,89 @@ input::placeholder, textarea::placeholder{color:rgba(255,255,255,.7)}
 <label class="flex items-center space-x-2"><input id="ee_hero" type="checkbox"><span class="text-amber-300 font-semibold">Evento Hero (portada)</span></label>
 <input id="ee_order" type="number" placeholder="Orden manual" class="w-full bg-muted border border-white/10 rounded px-3 py-2">
 </div>
+
+<!-- ─── DISEÑO DEL TICKET QR ─── -->
+<div id="ee_ticket_design_block" class="mt-6 border border-white/10 rounded-xl p-4 bg-black/30 space-y-4">
+  <div class="flex items-center justify-between">
+    <div>
+      <h3 class="text-lg font-bold flex items-center gap-2"><span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-xs">QR</span>Diseño del Ticket</h3>
+      <p class="text-white/50 text-xs mt-1">Configura cómo se ve el ticket QR que recibe el comprador. Solo aplica para eventos de cobro.</p>
+    </div>
+    <label class="flex items-center gap-2 text-sm">
+      <input id="ee_ticket_design_enabled" type="checkbox" checked>
+      <span>Habilitar</span>
+    </label>
+  </div>
+
+  <div id="ee_ticket_design_fields" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="space-y-3">
+      <div>
+        <label class="text-white/70 text-xs block mb-1">Color de fondo</label>
+        <div class="flex gap-2">
+          <input id="ee_td_bg" type="color" value="#0b0e10" class="h-10 w-12 bg-transparent border border-white/10 rounded cursor-pointer">
+          <input id="ee_td_bg_text" type="text" value="#0b0e10" class="flex-1 bg-muted border border-white/10 rounded px-3 py-2 font-mono text-sm">
+        </div>
+      </div>
+      <div>
+        <label class="text-white/70 text-xs block mb-1">Color de acento</label>
+        <div class="flex gap-2">
+          <input id="ee_td_accent" type="color" value="#00ffaa" class="h-10 w-12 bg-transparent border border-white/10 rounded cursor-pointer">
+          <input id="ee_td_accent_text" type="text" value="#00ffaa" class="flex-1 bg-muted border border-white/10 rounded px-3 py-2 font-mono text-sm">
+        </div>
+      </div>
+      <div>
+        <label class="text-white/70 text-xs block mb-1">Color de texto</label>
+        <div class="flex gap-2">
+          <input id="ee_td_ink" type="color" value="#f5f5f5" class="h-10 w-12 bg-transparent border border-white/10 rounded cursor-pointer">
+          <input id="ee_td_ink_text" type="text" value="#f5f5f5" class="flex-1 bg-muted border border-white/10 rounded px-3 py-2 font-mono text-sm">
+        </div>
+      </div>
+      <div>
+        <label class="text-white/70 text-xs block mb-1">Texto del header (opcional)</label>
+        <input id="ee_td_header" type="text" placeholder="Ej: TSSC · The Sun Session Club" class="w-full bg-muted border border-white/10 rounded px-3 py-2">
+      </div>
+      <div>
+        <label class="text-white/70 text-xs block mb-1">Texto al pie (opcional)</label>
+        <input id="ee_td_footer" type="text" placeholder="Ej: Presenta este QR en la entrada" class="w-full bg-muted border border-white/10 rounded px-3 py-2">
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <label class="flex items-center gap-2 text-sm"><input id="ee_td_show_date" type="checkbox" checked><span>Mostrar fecha</span></label>
+        <label class="flex items-center gap-2 text-sm"><input id="ee_td_show_venue" type="checkbox" checked><span>Mostrar lugar</span></label>
+        <label class="flex items-center gap-2 text-sm"><input id="ee_td_show_artists" type="checkbox" checked><span>Mostrar artistas</span></label>
+        <label class="flex items-center gap-2 text-sm"><input id="ee_td_show_price" type="checkbox" checked><span>Mostrar precio</span></label>
+      </div>
+    </div>
+
+    <div>
+      <label class="text-white/70 text-xs block mb-2">Vista previa</label>
+      <div id="ee_ticket_preview" class="rounded-xl overflow-hidden border border-white/10" style="aspect-ratio:1.6/1;background:#0b0e10;color:#f5f5f5">
+        <div style="display:flex;height:100%">
+          <div id="ee_tp_left" style="flex:2;padding:18px;display:flex;flex-direction:column;justify-content:space-between;border-right:1px dashed rgba(255,255,255,0.15)">
+            <div>
+              <div id="ee_tp_header" style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;opacity:.6">TSSC</div>
+              <div id="ee_tp_title" style="font-family:'Bebas Neue',sans-serif;font-size:32px;line-height:1;margin-top:6px">Evento</div>
+              <div id="ee_tp_artists" style="font-size:13px;margin-top:6px;opacity:.85">Artistas</div>
+            </div>
+            <div style="display:flex;gap:14px;flex-wrap:wrap;font-size:11px;letter-spacing:.06em">
+              <div><div style="opacity:.5">FECHA</div><div id="ee_tp_date" style="margin-top:2px">--</div></div>
+              <div><div style="opacity:.5">LUGAR</div><div id="ee_tp_venue" style="margin-top:2px">--</div></div>
+              <div><div style="opacity:.5">PRECIO</div><div id="ee_tp_price" style="margin-top:2px">$--</div></div>
+            </div>
+          </div>
+          <div id="ee_tp_right" style="flex:1;padding:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:rgba(255,255,255,0.03)">
+            <div id="ee_tp_qr" style="width:90px;height:90px;background:#fff;border-radius:6px;position:relative">
+              <svg viewBox="0 0 60 60" width="100%" height="100%" style="display:block"><path d="M0 0h20v20H0zM4 4v12h12V4zM8 8v4h4V8zM40 0h20v20H40zM44 4v12h12V4zM48 8v4h4V8zM0 40h20v20H0zM4 44v12h12V44zM8 48v4h4V48zM26 6h4v4h-4zM30 0v6h-4v4h-4v8h8V8h4V4h-4V0zM34 24h4v4h-4zM30 16v4h4v4h-4v4h4v-4h4v-4h-4v-4zM44 26h4v4h-4zM44 30v4h-4v4h4v-4h4v-4zM30 30v4h-4v4h4v8h4v-4h4v-4h-8v-8z" fill="#0b0e10"/></svg>
+            </div>
+            <div id="ee_tp_code" style="font-family:monospace;font-size:10px;letter-spacing:.1em;opacity:.7">SSC-XXXX-0000</div>
+          </div>
+        </div>
+        <div id="ee_tp_footer" style="display:none;padding:6px 18px;font-size:10px;letter-spacing:.18em;text-transform:uppercase;border-top:1px dashed rgba(255,255,255,0.15);opacity:.6">Presenta este QR en la entrada</div>
+      </div>
+      <p class="text-white/40 text-xs mt-2">Vista previa actualizada en tiempo real. El QR real se genera al emitir el ticket.</p>
+    </div>
+  </div>
+</div>
+
 <div class="flex items-center gap-3">
 <button class="bg-accent text-black font-bold px-4 py-2 rounded-button" onclick="saveEventEditor()">Guardar</button>
 <button class="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-button" onclick="cancelEventEditor()">Cancelar</button>
@@ -1085,7 +1217,15 @@ function normalizeEventForStore(evt){
   else if(rawStatus==='draft'){e.status='DRAFT'}
   else{e.status='DRAFT'}
   e.featured=!!e.featured;
-  e.isFree=!!e.isFree||e.price===0;
+  // Respect explicit isFree value from user/API. Only auto-derive from price
+  // when isFree is genuinely missing (legacy data). This fixes the bug where
+  // a paid event with price=0 (e.g. user selected "paid" but hasn't typed
+  // amount yet) was being silently flipped to free.
+  if(e.isFree===undefined||e.isFree===null){
+    e.isFree=e.price===0;
+  }else{
+    e.isFree=!!e.isFree;
+  }
   return e;
 }
 function eventFingerprint(evt){
@@ -2003,6 +2143,98 @@ document.getElementById('ee_title').focus()
   
   // Add change listener for future changes
   eventTypeSelect.addEventListener('change', updateTicketLinkVisibility);
+
+  // ─── Ticket Design loader + live preview ───
+  try { hydrateTicketDesignEditor(e); } catch(err) { console.warn('[ticket-design] hydrate failed', err); }
+}
+
+function hydrateTicketDesignEditor(evt){
+  const block = document.getElementById('ee_ticket_design_block');
+  const fields = document.getElementById('ee_ticket_design_fields');
+  if(!block || !fields) return;
+  // parse existing ticket_design_json
+  let cfg = { enabled: true, bg:'#0b0e10', accent:'#00ffaa', ink:'#f5f5f5', header:'', footer:'',
+    show_date:true, show_venue:true, show_artists:true, show_price:true };
+  if(evt && evt.ticket_design_json){
+    try {
+      const parsed = (typeof evt.ticket_design_json === 'string')
+        ? JSON.parse(evt.ticket_design_json) : evt.ticket_design_json;
+      cfg = Object.assign(cfg, parsed||{});
+    } catch(_) {}
+  }
+  // populate inputs
+  document.getElementById('ee_ticket_design_enabled').checked = cfg.enabled !== false;
+  document.getElementById('ee_td_bg').value = cfg.bg;
+  document.getElementById('ee_td_bg_text').value = cfg.bg;
+  document.getElementById('ee_td_accent').value = cfg.accent;
+  document.getElementById('ee_td_accent_text').value = cfg.accent;
+  document.getElementById('ee_td_ink').value = cfg.ink;
+  document.getElementById('ee_td_ink_text').value = cfg.ink;
+  document.getElementById('ee_td_header').value = cfg.header;
+  document.getElementById('ee_td_footer').value = cfg.footer;
+  document.getElementById('ee_td_show_date').checked = cfg.show_date !== false;
+  document.getElementById('ee_td_show_venue').checked = cfg.show_venue !== false;
+  document.getElementById('ee_td_show_artists').checked = cfg.show_artists !== false;
+  document.getElementById('ee_td_show_price').checked = cfg.show_price !== false;
+
+  function syncEnabledFields(){
+    const on = document.getElementById('ee_ticket_design_enabled').checked;
+    fields.style.opacity = on ? '1' : '0.4';
+    fields.style.pointerEvents = on ? 'auto' : 'none';
+  }
+  function syncColorPair(colorId, textId){
+    const c = document.getElementById(colorId), t = document.getElementById(textId);
+    c.addEventListener('input', () => { t.value = c.value; updatePreview(); });
+    t.addEventListener('input', () => { if(/^#[0-9a-f]{6}$/i.test(t.value)) c.value = t.value; updatePreview(); });
+  }
+  function updatePreview(){
+    const bg = document.getElementById('ee_td_bg_text').value;
+    const accent = document.getElementById('ee_td_accent_text').value;
+    const ink = document.getElementById('ee_td_ink_text').value;
+    const preview = document.getElementById('ee_ticket_preview');
+    preview.style.background = bg;
+    preview.style.color = ink;
+    document.getElementById('ee_tp_left').style.borderRightColor = accent + '55';
+    document.getElementById('ee_tp_right').style.background = accent + '14';
+    document.getElementById('ee_tp_qr').style.boxShadow = `0 0 0 3px ${accent}`;
+    // map event fields to preview
+    const title = (document.getElementById('ee_title').value || 'Evento').trim();
+    const artists = (document.getElementById('ee_artists').value || '').trim();
+    const venue = (document.getElementById('ee_venue').value || document.getElementById('ee_location').value || '').trim();
+    const date = document.getElementById('ee_date').value;
+    const price = document.getElementById('ee_price').value || 0;
+    const isFree = document.getElementById('ee_type').value === 'free';
+    const headerText = document.getElementById('ee_td_header').value || 'TSSC';
+    const footerText = document.getElementById('ee_td_footer').value || '';
+    document.getElementById('ee_tp_header').textContent = headerText;
+    document.getElementById('ee_tp_title').textContent = title || 'Evento';
+    document.getElementById('ee_tp_artists').textContent = artists || '';
+    document.getElementById('ee_tp_artists').style.display = (artists && document.getElementById('ee_td_show_artists').checked) ? '' : 'none';
+    const dateBox = document.getElementById('ee_tp_date').parentElement;
+    document.getElementById('ee_tp_date').textContent = date ? new Date(date).toLocaleDateString('es-MX',{day:'2-digit',month:'short'}).toUpperCase() : '--';
+    dateBox.style.display = document.getElementById('ee_td_show_date').checked ? '' : 'none';
+    const venueBox = document.getElementById('ee_tp_venue').parentElement;
+    document.getElementById('ee_tp_venue').textContent = venue || '--';
+    venueBox.style.display = document.getElementById('ee_td_show_venue').checked ? '' : 'none';
+    const priceBox = document.getElementById('ee_tp_price').parentElement;
+    document.getElementById('ee_tp_price').textContent = isFree ? 'GRATIS' : ('$' + Number(price||0).toFixed(0));
+    priceBox.style.display = document.getElementById('ee_td_show_price').checked ? '' : 'none';
+    const fEl = document.getElementById('ee_tp_footer');
+    if(footerText){ fEl.style.display=''; fEl.textContent = footerText; } else { fEl.style.display='none'; }
+  }
+  // wire color pairs + checkboxes + text inputs
+  syncColorPair('ee_td_bg', 'ee_td_bg_text');
+  syncColorPair('ee_td_accent', 'ee_td_accent_text');
+  syncColorPair('ee_td_ink', 'ee_td_ink_text');
+  ['ee_td_header','ee_td_footer','ee_title','ee_artists','ee_venue','ee_location','ee_date','ee_price','ee_type'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.addEventListener('input', updatePreview); if(el) el.addEventListener('change', updatePreview);
+  });
+  ['ee_td_show_date','ee_td_show_venue','ee_td_show_artists','ee_td_show_price'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.addEventListener('change', updatePreview);
+  });
+  document.getElementById('ee_ticket_design_enabled').addEventListener('change', syncEnabledFields);
+  syncEnabledFields();
+  updatePreview();
 }
 window.__realShowEventEditor=showEventEditor
 function cancelEventEditor(){document.getElementById('eventEditor').style.display='none';currentEventIndex=null;currentEventImage='';currentBannerImage=''}
@@ -2035,6 +2267,27 @@ async function saveEventEditor(){
   base.status = st === 'active' ? 'ACTIVE' : (st === 'draft' ? 'DRAFT' : 'CANCELLED');
   base.featured = document.getElementById('ee_featured').checked;
   base.sort_order = Number(document.getElementById('ee_order').value || 0);
+  // Capture ticket design configuration
+  try {
+    const tdEnabled = document.getElementById('ee_ticket_design_enabled');
+    if (tdEnabled && tdEnabled.checked) {
+      base.ticket_design_json = JSON.stringify({
+        enabled: true,
+        bg: (document.getElementById('ee_td_bg_text').value || '#0b0e10').trim(),
+        accent: (document.getElementById('ee_td_accent_text').value || '#00ffaa').trim(),
+        ink: (document.getElementById('ee_td_ink_text').value || '#f5f5f5').trim(),
+        header: (document.getElementById('ee_td_header').value || '').trim(),
+        footer: (document.getElementById('ee_td_footer').value || '').trim(),
+        show_date: !!document.getElementById('ee_td_show_date').checked,
+        show_venue: !!document.getElementById('ee_td_show_venue').checked,
+        show_artists: !!document.getElementById('ee_td_show_artists').checked,
+        show_price: !!document.getElementById('ee_td_show_price').checked,
+        version: 1
+      });
+    } else {
+      base.ticket_design_json = null;
+    }
+  } catch(_) {}
   // Only save URLs — strip base64 (upload first via drag-drop to get a URL)
   const stripB64=v=>(!v||String(v).startsWith('data:'))?'':v;
   base.image = stripB64(currentEventImage);
@@ -3891,6 +4144,80 @@ window.renderAll=renderAll;
   <script src="assets/js/ssc-ux.js" defer></script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="assets/js/ssc-socket.js"></script>
+<script>
+/* ─── ADMIN V2: sidebar active sync + meta counts + session timer ─── */
+(function(){
+  function syncActive(){
+    const h = location.hash || '#dashboard';
+    document.querySelectorAll('.sidebar .track').forEach(t => {
+      const href = t.getAttribute('href') || '';
+      t.classList.toggle('active', href === h);
+    });
+  }
+  window.addEventListener('hashchange', syncActive);
+  document.addEventListener('DOMContentLoaded', syncActive);
+  setTimeout(syncActive, 200);
+
+  function refreshMeta(){
+    try{
+      const store = (window.store || JSON.parse(localStorage.getItem('ssc_store_v1') || '{}'));
+      const map = {
+        events: (store.events || []).length,
+        artists: (store.artists || []).length,
+        music: (store.tracks || []).length,
+        vinyl: (store.vinyl || []).length,
+        videos: (store.videos || []).length,
+        merch: (store.products || []).length,
+        orders: (store.orders || []).length,
+        tickets: (store.tickets || []).length,
+        friends: (store.friends || []).length
+      };
+      document.querySelectorAll('.sidebar .track').forEach(t => {
+        const id = t.dataset.id;
+        const meta = t.querySelector('.info .meta');
+        if(!meta || !(id in map)) return;
+        meta.textContent = map[id] > 0 ? map[id] + ' items' : '—';
+      });
+      const ct = document.querySelector('.sidebar .sb-head .ct');
+      if(ct){
+        const total = Object.values(map).reduce((a,b)=>a+b,0);
+        ct.textContent = total + ' / 15';
+      }
+    }catch(_){}
+  }
+  document.addEventListener('DOMContentLoaded', refreshMeta);
+  setInterval(refreshMeta, 5000);
+
+  const t0 = Date.now();
+  setInterval(() => {
+    const el = document.getElementById('sessTime');
+    if(!el) return;
+    const elapsed = Math.floor((Date.now() - t0)/1000);
+    const h = Math.floor(elapsed/3600), m = Math.floor((elapsed%3600)/60), s = elapsed%60;
+    el.textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  }, 1000);
+
+  try{
+    const u = JSON.parse(localStorage.getItem('ssc_admin_user') || 'null');
+    if(u && u.email){
+      const el = document.getElementById('userEmail');
+      if(el) el.textContent = u.email;
+    }
+  }catch(_){}
+
+  function refreshDbCount(){
+    try{
+      const store = window.store || JSON.parse(localStorage.getItem('ssc_store_v1') || '{}');
+      const total = ['events','artists','tracks','vinyl','videos','products','orders','tickets','media','friends']
+        .reduce((sum, k) => sum + ((store[k] || []).length), 0);
+      const el = document.getElementById('dbCount');
+      if(el) el.textContent = total;
+    }catch(_){}
+  }
+  document.addEventListener('DOMContentLoaded', refreshDbCount);
+  setInterval(refreshDbCount, 5000);
+})();
+</script>
 </body>
 </html>
 
